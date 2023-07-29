@@ -16,6 +16,11 @@ OPERATION="${2}"
 
 function StartService
 {
+  if ! systemctl enable "${SERVICE_NAME}${DOMAIN_NAME}" &> /dev/null; then
+    echo "${PREFIX_PROMPT} ${PREFIX_ERROR} Failed to enable '${SERVICE_NAME}${DOMAIN_NAME}' service." >&2
+    return 1
+  fi
+
   if ! systemctl start "${SERVICE_NAME}${DOMAIN_NAME}" &> /dev/null; then
     echo "${PREFIX_PROMPT} ${PREFIX_ERROR} Failed to start '${SERVICE_NAME}${DOMAIN_NAME}' service." >&2
     return 1
@@ -27,6 +32,11 @@ function StartService
 
 function StopService
 {
+  if ! systemctl disable "${SERVICE_NAME}${DOMAIN_NAME}" &> /dev/null; then
+    echo "${PREFIX_PROMPT} ${PREFIX_ERROR} Failed to disable '${SERVICE_NAME}${DOMAIN_NAME}' service." >&2
+    return 1
+  fi
+
   if ! systemctl stop "${SERVICE_NAME}${DOMAIN_NAME}" &> /dev/null; then
     echo "${PREFIX_PROMPT} ${PREFIX_ERROR} Failed to stop '${SERVICE_NAME}${DOMAIN_NAME}' service." >&2
     return 1
