@@ -1,11 +1,11 @@
 # libvirt-hooks
 
 ## Contents
-* [About](##About)
-* [How-to](##How-to)
-* [Features](##Features)
-* [References](##References)
-* [Disclaimer](##Disclaimer)
+* [About](#about)
+* [How-to](#how-to)
+* [Features](#features)
+* [References](#references)
+* [Disclaimer](#disclaimer)
 
 ## About
 ### Description:
@@ -26,9 +26,9 @@ Scripts (hooks) for Libvirt domains (virtual machines) which run in the backgrou
 
 ## Features
 ### cfscpu
-  * Set CPU thread priority in CPU scheduler. [1]
+  * Set CPU thread priority in CPU scheduler. <sup>[1](#1)</sup>
 ### ddcutil
-  * Switch active monitor input at domain start. [1]
+  * Switch active monitor input at domain start. <sup>[1](#1)</sup>
 ### dohibernate
   * Hibernate domain at host hibernation.
   * Stops *nosleep* service.
@@ -36,11 +36,11 @@ Scripts (hooks) for Libvirt domains (virtual machines) which run in the backgrou
   * Sleep domain at host sleep.
   * Stops *nosleep* service.
 ### hugepages
-  * Allocate host RAM to pages for domain(s). [1] [3]
+  * Allocate host RAM to pages for domain(s). <sup>[1](#1)</sup> <sup>[2](#2)</sup>
 ### isolcpu
-  * Isolate CPU threads from host, to allocate to domain(s). [1]
+  * Isolate CPU threads from host, to allocate to domain(s). <sup>[1](#1)</sup> <sup>[3](#3)</sup>
 ### nosleep
-  * Prevent host sleep if given domain is running. [4]
+  * Prevent host sleep if given domain is running. <sup>[4](#4)</sup>
 
 ## References
 #### 1.
