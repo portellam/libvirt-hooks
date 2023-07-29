@@ -1,0 +1,50 @@
+#!/bin/bash
+
+#
+# Filename:       /etc/libvirt/hooks/nosleep
+# Description:    Prevent host sleep while libvirt domain is running.
+# URL(s):         https://web.archive.org/web/20220808031554/https://old.reddit.com/r/VFIO/comments/8ypedp/for_anyone_getting_issues_with_their_guest_when/
+# Author(s):      sm-Fifteen <reddit.com/u/sm-Fifteen>
+# Maintainer(s):  Alex Portell <github.com/portellam>
+#
+
+HOOK_NAME="nosleep"
+PREFIX_ERROR="An error occurred:"
+PREFIX_PROMPT="libvirt-qemu ${HOOK_NAME}:"
+SERVICE_NAME="libvirt-${HOOK_NAME}@"
+DOMAIN_NAME="${1}"
+OPERATION="${2}"
+
+function StartService
+{
+  if ! systemctl start "${SERVICE_NAME}${DOMAIN_NAME}" &> /dev/null; then
+    echo "${PREFIX_PROMPT} ${PREFIX_ERROR} Failed to start '${SERVICE_NAME}${DOMAIN_NAME}' service." >&2
+    return 1
+  fi
+
+  echo "${PREFIX_PROMPT} Started '${SERVICE_NAME}${DOMAIN_NAME}' service."
+  return 0
+}
+
+function StopService
+{
+  if ! systemctl stop "${SERVICE_NAME}${DOMAIN_NAME}" &> /dev/null; then
+    echo "${PREFIX_PROMPT} ${PREFIX_ERROR} Failed to stop '${SERVICE_NAME}${DOMAIN_NAME}' service." >&2
+    return 1
+  fi
+
+  echo "${PREFIX_PROMPT} Stopped '${SERVICE_NAME}${DOMAIN_NAME}' service."
+  return 0
+}
+
+function Main
+{
+  case "${OPERATION}" in
+    "prepare")
+      StartService ;;
+    "release")
+      StopService ;;
+  esac
+}
+
+Main

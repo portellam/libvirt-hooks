@@ -1,0 +1,57 @@
+#!/bin/bash
+
+#
+# Filename:       /usr/local/bin/libvirt-dohibernate
+# Description:    Try to hibernate libvirt domain before host hibernation.
+# Author(s):      Alex Portell <github.com/portellam>
+# Maintainer(s):  Alex Portell <github.com/portellam>
+#
+
+DOMAIN_NAME="${1}"
+HOOK_NAME="dohibernate"
+NOSLEEP_SERVICE_NAME="libvirt-nosleep@"
+PREFIX_PROMPT="libvirt-qemu ${HOOK_NAME}:"
+PREFIX_ERROR="An error occurred:"
+
+function HibernateDomain
+{
+  if ! virsh dompmsuspend --target disk "${DOMAIN_NAME}"; then
+    echo "${PREFIX_PROMPT} ${PREFIX_ERROR} Failed to hibernate Libvirt domain '${DOMAIN_NAME}'." >&2
+    return 1
+  fi
+
+  return 0
+}
+
+function IsDomainSuspendedOrOffline
+{
+  case $( virsh domstate ${DOMAIN_NAME} | tr -d '\n' ) in
+    *"pmsuspended"* | *"shut off"* )
+      echo "${PREFIX_PROMPT} Libvirt domain '${DOMAIN_NAME}' is offline." >&2
+      return 0 ;;
+  esac
+
+  echo "${PREFIX_PROMPT} Libvirt domain '${DOMAIN_NAME}' is online." >&2
+  return 1
+}
+
+function StopNosleepService
+{
+  if ! systemctl stop "${NOSLEEP_SERVICE_NAME}${DOMAIN_NAME}" &> /dev/null; then
+    echo "${PREFIX_PROMPT} ${PREFIX_ERROR} Failed to stop '${NOSLEEP_SERVICE_NAME}${DOMAIN_NAME}' service." >&2
+    return 1
+  fi
+
+  return 0
+}
+
+function Main
+{
+  IsDomainSuspendedOrOffline && StopNosleepService && exit $?
+  HibernateDomain
+  sleep 1
+  IsDomainSuspendedOrOffline && StopNosleepService
+  exit $?
+}
+
+Main

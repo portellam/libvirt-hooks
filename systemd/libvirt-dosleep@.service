@@ -1,0 +1,10 @@
+[Unit]
+Description=Hibernate, hybrid sleep, or sleep libvirt domain "%i" before host sleep (not hibernation).
+Before=sleep.target
+
+[Service]
+Type=oneshot
+ExecStart=/usr/local/bin/libvirt-dosleep "%i"
+
+[Install]
+WantedBy=sleep.target

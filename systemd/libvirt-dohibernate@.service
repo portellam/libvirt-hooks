@@ -1,0 +1,10 @@
+[Unit]
+Description=Hibernate libvirt domain "%i" before host hibernation.
+Before=hibernate.target
+
+[Service]
+Type=oneshot
+ExecStart=/usr/local/bin/libvirt-dohibernate "%i"
+
+[Install]
+WantedBy=hibernate.target
