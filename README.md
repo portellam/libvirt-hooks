@@ -9,7 +9,7 @@
 
 ## About
 ### Description:
-Scripts (hooks) for Libvirt domains (virtual machines) which run in the background. Scripts which extend and enhance the functionality of a Libvirt domain. See [Features](##Features) for more information.
+Scripts (hooks) for Libvirt domains (virtual machines) which run in the background. Scripts which extend and enhance the functionality of a Libvirt domain. See [Features](#features) for more information.
 
 #### Useful links
 * [About VFIO](https://www.kernel.org/doc/html/latest/driver-api/vfio.html)
