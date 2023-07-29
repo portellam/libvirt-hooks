@@ -31,10 +31,10 @@ Scripts (hooks) for Libvirt domains (virtual machines) which run in the backgrou
   * Switch active monitor input at domain start. <sup>[1](#1)</sup>
 ### dohibernate
   * Hibernate domain at host hibernation.
-  * Stops *nosleep* service.
+  * ~~Stops *nosleep* service.~~ *dohibernate* does not work currently.
 ### dosleep
   * Sleep domain at host sleep.
-  * Stops *nosleep* service.
+  * ~~Stops *nosleep* service.~~ *dosleep* does not work currently.
 ### hugepages
   * Allocate host RAM to pages for domain(s). <sup>[1](#1)</sup> <sup>[2](#2)</sup>
 ### isolcpu

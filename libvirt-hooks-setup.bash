@@ -72,8 +72,8 @@
     local -ar HOOK_LIST=(
       "cfscpu"
       "ddcutil"
-      "dohibernate"
-      "dosleep"
+      # "dohibernate"
+      # "dosleep"
       "hugepages"
       "isolcpu"
       "nosleep"
@@ -82,8 +82,8 @@
     )
 
     local -ar SERVICE_LIST=(
-      "libvirt-dohibernate@.service"
-      "libvirt-dosleep@.service"
+      # "libvirt-dohibernate@.service"
+      # "libvirt-dosleep@.service"
       "libvirt-nosleep@.service"
     )
 
@@ -208,11 +208,11 @@
 
   function DoesDestinationPathExist
   {
-    if [[ ! -d "${BIN_DEST_PATH}" ]] \
-      && ! sudo mkdir -p "${BIN_DEST_PATH}"; then
-      echo -e "${PREFIX_ERROR} Could not create directory '${BIN_DEST_PATH}'."
-      return 1
-    fi
+    # if [[ ! -d "${BIN_DEST_PATH}" ]] \
+    #   && ! sudo mkdir -p "${BIN_DEST_PATH}"; then
+    #   echo -e "${PREFIX_ERROR} Could not create directory '${BIN_DEST_PATH}'."
+    #   return 1
+    # fi
 
     if [[ ! -d "${HOOK_DEST_PATH}" ]]; then
       echo -e "${PREFIX_ERROR} Could not find directory '${HOOK_DEST_PATH}'."
@@ -229,13 +229,13 @@
 
   function CopyFilesToDesination
   {
-    cd ..
-    cd "${BIN_SOURCE_PATH}" || return 1
+    # cd ..
+    # cd "${BIN_SOURCE_PATH}" || return 1
 
-    if ! sudo cp -rf * "${BIN_DEST_PATH}" &> /dev/null; then
-      echo -e "${PREFIX_ERROR} Failed to copy project binaries."
-      return 1
-    fi
+    # if ! sudo cp -rf * "${BIN_DEST_PATH}" &> /dev/null; then
+    #   echo -e "${PREFIX_ERROR} Failed to copy project binaries."
+    #   return 1
+    # fi
 
     cd ..
     cd "${HOOK_SOURCE_PATH}" || return 1
@@ -258,7 +258,7 @@
 
   function Install
   {
-    DoBinariesExist || return 1
+    # DoBinariesExist || return 1
     DoScriptsExist || return 1
     DoServicesExist || return 1
     DoesDestinationPathExist || return 1
@@ -285,9 +285,15 @@
 
   function SetFilePermissions
   {
-    if ! sudo chown -R root:root "${BIN_DEST_PATH}" &> /dev/null \
-      || ! sudo chmod -R +x "${BIN_DEST_PATH}" &> /dev/null \
-      || ! sudo chmod -R +x "${HOOK_DEST_PATH}" &> /dev/null \
+    # if ! sudo chown -R root:root "${BIN_DEST_PATH}" &> /dev/null \
+    #   || ! sudo chmod -R +x "${BIN_DEST_PATH}" &> /dev/null \
+    #   || ! sudo chmod -R +x "${HOOK_DEST_PATH}" &> /dev/null \
+    #   || ! sudo chown -R root:root "${SERVICE_DEST_PATH}" &> /dev/null; then
+    #   echo -e "${PREFIX_ERROR} Failed to set file permissions."
+    #   return 1
+    # fi
+
+    if ! sudo chmod -R +x "${HOOK_DEST_PATH}" &> /dev/null \
       || ! sudo chown -R root:root "${SERVICE_DEST_PATH}" &> /dev/null; then
       echo -e "${PREFIX_ERROR} Failed to set file permissions."
       return 1
@@ -298,7 +304,7 @@
 
   function Uninstall
   {
-    DeleteDestinationBinaries || return 1
+    # DeleteDestinationBinaries || return 1
     DeleteDestinationScripts || return 1
     DeleteDestinationServices || return 1
     return 0
