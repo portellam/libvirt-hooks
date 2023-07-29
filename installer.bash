@@ -9,10 +9,11 @@
 
 # <params>
   readonly REPO_NAME="libvirt-hooks"
+  readonly WORKING_DIR=$( pwd )
   readonly OPTION="${1}"
 
   # <summary>Execution Flags</summary>
-    readonly DO_INSTALL=true
+    DO_INSTALL=true
 
   # <summary>
   # Color coding
@@ -56,12 +57,35 @@
 
     GetOption || exit 1
 
-    local BIN_DEST_PATH="/usr/local/bin/"
-    local BIN_SOURCE_PATH="bin"
-    local SERVICE_DEST_PATH="/etc/systemd/system/"
-    local SERVICE_SOURCE_PATH="systemd"
-    local HOOK_DEST_PATH="/etc/libvirt/hooks/"
-    local HOOK_SOURCE_PATH="hooks"
+    local -r BIN_DEST_PATH="/usr/local/bin/libvirt-hooks/"
+    local -r BIN_SOURCE_PATH="bin"
+    local -r SERVICE_DEST_PATH="/etc/systemd/system/"
+    local -r SERVICE_SOURCE_PATH="systemd"
+    local -r HOOK_DEST_PATH="/etc/libvirt/hooks/"
+    local -r HOOK_SOURCE_PATH="hooks"
+
+    local -ar BIN_LIST=(
+      "libvirt-dohibernate"
+      "libvirt-dosleep"
+    )
+
+    local -ar HOOK_LIST=(
+      "cfscpu"
+      "ddcutil"
+      "dohibernate"
+      "dosleep"
+      "hugepages"
+      "isolcpu"
+      "nosleep"
+      "qemu"
+      "set-hooks"
+    )
+
+    local -ar SERVICE_LIST=(
+      "libvirt-dohibernate@.service"
+      "libvirt-dosleep@.service"
+      "libvirt-nosleep@.service"
+    )
 
     if "${DO_INSTALL}"; then
       if ! Install; then
@@ -83,57 +107,110 @@
     exit 0
   }
 
-  function DoBinariesExist
+  function DeleteDestinationBinaries
   {
-    cd "${BIN_SOURCE_PATH}" || return 1
-
-    if  [[ ! -e "libvirt-dohibernate" ]] \
-      || [[ ! -e "libvirt-dosleep" ]]; then
-      echo -e "${PREFIX_ERROR} Missing project binaries."
-      return 1
+    if [[ ! -d "${BIN_DEST_PATH}" ]]; then
+      return 0
     fi
+
+    cd "${BIN_DEST_PATH}"
+
+    for BIN in "${BIN_LIST[@]}"; do
+      if ! rm -rf "${BIN}" &> /dev/null; then
+        echo -e "${PREFIX_ERROR} Failed to delete project binaries."
+        return 1
+      fi
+    done
 
     return 0
   }
 
-  function DoHooksExist
+  function DeleteDestinationScripts
   {
+    if [[ ! -d "${HOOK_DEST_PATH}" ]]; then
+      return 0
+    fi
+
+    cd "${HOOK_DEST_PATH}"
+
+    for HOOK in "${HOOK_LIST[@]}"; do
+      if ! rm -rf "${HOOK}" &> /dev/null; then
+        echo -e "${PREFIX_ERROR} Failed to delete project script(s)."
+        return 1
+      fi
+    done
+
+    return 0
+  }
+
+  function DeleteDestinationServices
+  {
+    if [[ ! -d "${SERVICE_DEST_PATH}" ]]; then
+      return 0
+    fi
+
+    cd "${SERVICE_DEST_PATH}"
+
+    for SERVICE in "${SERVICE_LIST[@]}"; do
+      if ! rm -rf "${SERVICE}" &> /dev/null; then
+        echo -e "${PREFIX_ERROR} Failed to delete project service(s)."
+        return 1
+      fi
+    done
+
+    return 0
+  }
+
+  function DoBinariesExist
+  {
+    cd "${WORKING_DIR}"
+    cd "${BIN_SOURCE_PATH}" || return 1
+
+    for BIN in "${BIN_LIST[@]}"; do
+      if [[ ! -e "${BIN}" ]]; then
+        echo -e "${PREFIX_ERROR} Missing project binaries."
+        return 1
+      fi
+    done
+
+    return 0
+  }
+
+  function DoScriptsExist
+  {
+    cd "${WORKING_DIR}"
     cd "${HOOK_SOURCE_PATH}" || return 1
 
-    if  [[ ! -e "cfscpu" ]] \
-      || [[ ! -e "ddcutil" ]] \
-      || [[ ! -e "dohibernate" ]] \
-      || [[ ! -e "dosleep" ]] \
-      || [[ ! -e "hugepages" ]] \
-      || [[ ! -e "isolcpu" ]] \
-      || [[ ! -e "nosleep" ]] \
-      || [[ ! -e "qemu" ]] \
-      || [[ ! -e "set-hooks" ]]; then
-      echo -e "${PREFIX_ERROR} Missing project scripts."
-      return 1
-    fi
+    for HOOK in "${HOOK_LIST[@]}"; do
+      if [[ ! -e "${HOOK}" ]]; then
+        echo -e "${PREFIX_ERROR} Missing project scripts."
+        return 1
+      fi
+    done
 
     return 0
   }
 
   function DoServicesExist
   {
+    cd "${WORKING_DIR}"
     cd "${SERVICE_SOURCE_PATH}" || return 1
 
-    if [[ ! -e "libvirt-dohibernate@.service" ]] \
-      || [[ ! -e "libvirt-dosleep@.service" ]] \
-      || [[ ! -e "libvirt-nosleep@.service" ]]; then
-      echo -e "${PREFIX_ERROR} Missing project services."
-      return 1
-    fi
+    for SERVICE in "${SERVICE_LIST[@]}"; do
+      if [[ ! -e "${SERVICE}" ]]; then
+        echo -e "${PREFIX_ERROR} Missing project services."
+        return 1
+      fi
+    done
 
     return 0
   }
 
   function DoesDestinationPathExist
   {
-    if [[ ! -d "${BIN_DEST_PATH}" ]]; then
-      echo -e "${PREFIX_ERROR} Could not find directory '${BIN_DEST_PATH}'."
+    if [[ ! -d "${BIN_DEST_PATH}" ]] \
+      && ! sudo mkdir -p "${BIN_DEST_PATH}"; then
+      echo -e "${PREFIX_ERROR} Could not create directory '${BIN_DEST_PATH}'."
       return 1
     fi
 
@@ -142,9 +219,8 @@
       return 1
     fi
 
-    if [[ ! -d "${SERVICE_DEST_PATH}" ]] \
-      && ! sudo mkdir -p "${SERVICE_DEST_PATH}"; then
-      echo -e "${PREFIX_ERROR} Could not create directory '${SERVICE_DEST_PATH}'."
+    if [[ ! -d "${SERVICE_DEST_PATH}" ]]; then
+      echo -e "${PREFIX_ERROR} Could not find directory '${SERVICE_DEST_PATH}'."
       return 1
     fi
 
@@ -162,9 +238,9 @@
     fi
 
     cd ..
-    cd "${SCRIPT_SOURCE_PATH}" || return 1
+    cd "${HOOK_SOURCE_PATH}" || return 1
 
-    if ! sudo cp -rf * "${SCRIPT_DEST_PATH}" &> /dev/null; then
+    if ! sudo cp -rf * "${HOOK_DEST_PATH}" &> /dev/null; then
       echo -e "${PREFIX_ERROR} Failed to copy project script(s)."
       return 1
     fi
@@ -183,9 +259,7 @@
   function Install
   {
     DoBinariesExist || return 1
-    cd ..
     DoScriptsExist || return 1
-    cd ..
     DoServicesExist || return 1
     DoesDestinationPathExist || return 1
     CopyFilesToDesination || return 1
@@ -224,24 +298,9 @@
 
   function Uninstall
   {
-    if [[ -d "${BIN_DEST_PATH}" ]] \
-      && ! rm -rf "${BIN_DEST_PATH}" &> /dev/null; then
-      echo -e "${PREFIX_ERROR} Failed to delete project binaries."
-      return 1
-    fi
-
-    if [[ -d "${HOOK_DEST_PATH}" ]] \
-      && ! rm -rf "${HOOK_DEST_PATH}" &> /dev/null; then
-      echo -e "${PREFIX_ERROR} Failed to delete project script(s)."
-      return 1
-    fi
-
-    if [[ -d "${SERVICE_DEST_PATH}" ]] \
-      && ! rm -rf "${SERVICE_DEST_PATH}" &> /dev/null; then
-      echo -e "${PREFIX_ERROR} Failed to delete project service(s)."
-      return 1
-    fi
-
+    DeleteDestinationBinaries || return 1
+    DeleteDestinationScripts || return 1
+    DeleteDestinationServices || return 1
     return 0
   }
 # </functions>
