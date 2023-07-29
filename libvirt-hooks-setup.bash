@@ -1,7 +1,7 @@
 #!/bin/bash/env bash
 
 #
-# Filename:       installer.bash
+# Filename:       libvirt-hooks-setup.bash
 # Description:    Manages libvirt-hooks binaries and files.
 # Author(s):      Alex Portell <github.com/portellam>
 # Maintainer(s):  Alex Portell <github.com/portellam>
@@ -271,7 +271,7 @@
     IFS=$'\n'
 
     local -a OUTPUT=(
-      "Usage:\tbash installer [OPTION]"
+      "Usage:\tbash libvirt-hooks-setup [OPTION]"
       "Manages ${REPO_NAME} binaries, scripts, and services.\n"
       "  -h, --help\t\tPrint this help and exit."
       "  -i, --install\t\tInstall project to system."

@@ -18,11 +18,11 @@ Scripts (hooks) for Libvirt domains (virtual machines) which run in the backgrou
 ## How-to
 ### To install:
 
-        sudo bash installer.bash -i
+        sudo bash libvirt-hooks-setup.bash -i
 
 ### To uninstall:
 
-        sudo bash installer.bash -u
+        sudo bash libvirt-hooks-setup.bash -u
 
 ## Features
 ### cfscpu
