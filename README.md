@@ -9,7 +9,7 @@
 
 ## About
 ### Description:
-Scripts (hooks) for Libvirt domains (virtual machines) which run in the background. Scripts which extend and enhance the functionality of a Libvirt domain. See [Features](#features) for more information.
+Install Libvirt hooks (scripts) which extend and enhance the functionality of Libvirt domains (virtual machines). See [Features](#features) for more information.
 
 #### Useful links
 * [About VFIO](https://www.kernel.org/doc/html/latest/driver-api/vfio.html)
@@ -29,10 +29,10 @@ Scripts (hooks) for Libvirt domains (virtual machines) which run in the backgrou
   * Set CPU thread priority in CPU scheduler. <sup>[1](#1)</sup>
 ### ddcutil
   * Switch active monitor input at domain start. <sup>[1](#1)</sup>
-### dohibernate
+### dohibernate (to be implemented in a future release)
   * Hibernate domain at host hibernation.
   * ~~Stops *nosleep* service.~~ *dohibernate* does not work currently.
-### dosleep
+### dosleep (to be implemented in a future release)
   * Sleep domain at host sleep.
   * ~~Stops *nosleep* service.~~ *dosleep* does not work currently.
 ### hugepages
