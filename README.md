@@ -31,10 +31,10 @@ Install Libvirt hooks (scripts) which extend and enhance the functionality of Li
   * Switch active monitor input at domain start. <sup>[1](#1)</sup>
 ### dohibernate (to be implemented in a future release)
   * Hibernate domain at host hibernation.
-  * ~~Stops *nosleep* service.~~ *dohibernate* does not work currently.
+  * Stops *nosleep* service.
 ### dosleep (to be implemented in a future release)
   * Sleep domain at host sleep.
-  * ~~Stops *nosleep* service.~~ *dosleep* does not work currently.
+  * Stops *nosleep* service.
 ### hugepages
   * Allocate host RAM to pages for domain(s). <sup>[1](#1)</sup> <sup>[2](#2)</sup>
 ### isolcpu
