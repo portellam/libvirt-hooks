@@ -33,15 +33,15 @@
     readonly BIN_SOURCE_PATH="bin"
     readonly SERVICE_DEST_PATH="/etc/systemd/system/"
     readonly SERVICE_SOURCE_PATH="systemd"
-    readonly HOOK_DEST_PATH="/etc/libvirt/hooks/"
-    readonly HOOK_SOURCE_PATH="hooks"
+    readonly SCRIPT_DEST_PATH="/etc/libvirt/hooks/"
+    readonly SCRIPT_SOURCE_PATH="hooks"
 
     declare -ar BIN_LIST=(
       "libvirt-dohibernate"
       "libvirt-dosleep"
     )
 
-    declare -ar HOOK_LIST=(
+    declare -ar SCRIPT_LIST=(
       "cfscpu"
       "ddcutil"
       # "dohibernate"
@@ -110,10 +110,12 @@
       cd ..
       cd "${BIN_SOURCE_PATH}" || return 1
 
-      if ! sudo cp --recursive --force * "${BIN_DEST_PATH}" &> /dev/null; then
-        echo -e "${PREFIX_ERROR} Failed to copy project binaries."
-        return 1
-      fi
+      for BIN in "${BIN_LIST[@]}"; do
+        if ! sudo cp --force "${BIN}" "${BIN_DEST_PATH}" &> /dev/null; then
+          echo -e "${PREFIX_ERROR} Failed to copy project binaries."
+          return 1
+        fi
+      done
 
       return 0
     }
@@ -121,12 +123,14 @@
     function CopyScriptFilesToDestination
     {
       cd ..
-      cd "${HOOK_SOURCE_PATH}" || return 1
+      cd "${SCRIPT_SOURCE_PATH}" || return 1
 
-      if ! sudo cp --recursive --force * "${HOOK_DEST_PATH}" &> /dev/null; then
-        echo -e "${PREFIX_ERROR} Failed to copy project script(s)."
-        return 1
-      fi
+      for SCRIPT in "${SCRIPT_LIST[@]}"; do
+        if ! sudo cp --force "${SCRIPT}" "${SCRIPT_DEST_PATH}" &> /dev/null; then
+          echo -e "${PREFIX_ERROR} Failed to copy project script(s)."
+          return 1
+        fi
+      done
 
       return 0
     }
@@ -136,10 +140,12 @@
       cd .. || return 1
       cd "${SERVICE_SOURCE_PATH}" || return 1
 
-      if ! sudo cp --recursive --force * "${SERVICE_DEST_PATH}" &> /dev/null; then
-        echo -e "${PREFIX_ERROR} Failed to copy project service(s)."
-        return 1
-      fi
+      for SERVICE in "${SERVICE_LIST[@]}"; do
+        if ! sudo cp --force "${SERVICE}" "${SERVICE_DEST_PATH}" &> /dev/null; then
+          echo -e "${PREFIX_ERROR} Failed to copy project service(s)."
+          return 1
+        fi
+      done
 
       return 0
     }
@@ -192,7 +198,7 @@
       cd "${BIN_DEST_PATH}"
 
       for BIN in "${BIN_LIST[@]}"; do
-        if ! rm --recursive --force "${BIN}" &> /dev/null; then
+        if ! rm --force "${BIN}" &> /dev/null; then
           echo -e "${PREFIX_ERROR} Failed to delete project binaries."
           return 1
         fi
@@ -203,14 +209,14 @@
 
     function DeleteScriptFiles
     {
-      if [[ ! -d "${HOOK_DEST_PATH}" ]]; then
+      if [[ ! -d "${SCRIPT_DEST_PATH}" ]]; then
         return 0
       fi
 
-      cd "${HOOK_DEST_PATH}"
+      cd "${SCRIPT_DEST_PATH}"
 
-      for HOOK in "${HOOK_LIST[@]}"; do
-        if ! rm --recursive --force "${HOOK}" &> /dev/null; then
+      for SCRIPT in "${SCRIPT_LIST[@]}"; do
+        if ! rm --force "${SCRIPT}" &> /dev/null; then
           echo -e "${PREFIX_ERROR} Failed to delete project script(s)."
           return 1
         fi
@@ -228,7 +234,7 @@
       cd "${SERVICE_DEST_PATH}"
 
       for SERVICE in "${SERVICE_LIST[@]}"; do
-        if ! rm --recursive --force "${SERVICE}" &> /dev/null; then
+        if ! rm --force "${SERVICE}" &> /dev/null; then
           echo -e "${PREFIX_ERROR} Failed to delete project service(s)."
           return 1
         fi
@@ -263,10 +269,10 @@
     function DoScriptFilesExist
     {
       cd "${WORKING_DIR}"
-      cd "${HOOK_SOURCE_PATH}" || return 1
+      cd "${SCRIPT_SOURCE_PATH}" || return 1
 
-      for HOOK in "${HOOK_LIST[@]}"; do
-        if [[ ! -e "${HOOK}" ]]; then
+      for SCRIPT in "${SCRIPT_LIST[@]}"; do
+        if [[ ! -e "${SCRIPT}" ]]; then
           echo -e "${PREFIX_ERROR} Missing project scripts."
           return 1
         fi
@@ -312,9 +318,9 @@
 
     function DoesScriptPathExist
     {
-      if [[ ! -d "${HOOK_DEST_PATH}" ]] \
-        && ! sudo mkdir --parents "${HOOK_DEST_PATH}" &> /dev/null; then
-        echo -e "${PREFIX_ERROR} Could not create directory '${HOOK_DEST_PATH}'."
+      if [[ ! -d "${SCRIPT_DEST_PATH}" ]] \
+        && ! sudo mkdir --parents "${SCRIPT_DEST_PATH}" &> /dev/null; then
+        echo -e "${PREFIX_ERROR} Could not create directory '${SCRIPT_DEST_PATH}'."
         return 1
       fi
 
@@ -352,7 +358,7 @@
 
     function SetPermissionsForScriptFiles
     {
-      if ! sudo chown --recursive --silent root:root "${HOOK_DEST_PATH}"; then
+      if ! sudo chown --recursive --silent root:root "${SCRIPT_DEST_PATH}"; then
         echo -e "${PREFIX_ERROR} Failed to set file permissions for script(s)."
         return 1
       fi
