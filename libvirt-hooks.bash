@@ -312,10 +312,12 @@
 
     function DoesScriptPathExist
     {
-      if [[ ! -d "${HOOK_DEST_PATH}" ]]; then
-        echo -e "${PREFIX_ERROR} Could not find directory '${HOOK_DEST_PATH}'."
+      if [[ ! -d "${HOOK_DEST_PATH}" ]] \
+        && ! sudo mkdir --parents "${HOOK_DEST_PATH}" &> /dev/null; then
+        echo -e "${PREFIX_ERROR} Could not create directory '${HOOK_DEST_PATH}'."
         return 1
       fi
+
       return 0
     }
 
