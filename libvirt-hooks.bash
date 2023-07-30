@@ -162,15 +162,15 @@
   {
     IFS=$'\n'
 
-    local -a OUTPUT=(
-      "Usage:\tbash libvirt-hooks-setup [OPTION]"
+    local -a output=(
+      "Usage:\tbash libvirt-hooks [OPTION]"
       "Manages ${REPO_NAME} binaries, scripts, and services.\n"
       "  -h, --help\t\tPrint this help and exit."
-      "  -i, --install\t\tInstall project to system."
-      "  -u, --uninstall\tUninstall project from system."
+      "  -i, --install\t\tInstall ${REPO_NAME} to system."
+      "  -u, --uninstall\tUninstall ${REPO_NAME} from system."
     )
 
-    echo -e "${OUTPUT[*]}"
+    echo -e "${output[*]}"
     unset IFS
     return 0
   }
