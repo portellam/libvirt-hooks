@@ -29,6 +29,8 @@
     readonly PREFIX_FAIL="${SET_COLOR_RED}Failure:${RESET_COLOR}"
     readonly PREFIX_PASS="${SET_COLOR_GREEN}Success:${RESET_COLOR}"
 
+    readonly LIBVIRTD_SERVICE="libvirtd"
+
     readonly BIN_DEST_PATH="/usr/local/bin/libvirt-hooks/"
     readonly BIN_SOURCE_PATH="bin"
     readonly SERVICE_DEST_PATH="/etc/systemd/system/"
@@ -88,12 +90,55 @@
     GetOption || exit 1
 
     if ! "${DO_INSTALL}"; then
-      Uninstall
-      exit "${?}"
+      Uninstall || exit 1
+    else
+      AreDependenciesInstalled || exit 1
+      Install || exit 1
     fi
 
-    Install
-    exit "${?}"
+    UpdateServices || exit 1
+    exit 0
+  }
+
+  function AreDependenciesInstalled
+  {
+    local systemd_app="systemd"
+
+    if ! command -v "${systemd_app}" &> /dev/null; then
+      echo -e "${PREFIX_ERROR} Required dependency '${systemd_app}' is not installed."
+      return 1
+    fi
+
+    local output="$( systemctl status "${LIBVIRTD_SERVICE}" )"
+
+    if [[ "${output}" == "Unit ${LIBVIRTD_SERVICE}.service could not be found." ]]; then
+      echo -e "${PREFIX_ERROR} Required service '${LIBVIRTD_SERVICE}' is not installed."
+      return 1
+    fi
+
+    echo -e "${PREFIX_PASS} Dependencies are installed."
+    return 0
+  }
+
+  function UpdateServices
+  {
+    if ! systemctl daemon-reload &> /dev/null; then
+      echo -e "${PREFIX_ERROR} Could not update services."
+      return 1
+    fi
+
+    if ! systemctl enable "${LIBVIRTD_SERVICE}" &> /dev/null; then
+      echo -e "${PREFIX_ERROR} Could not enable ${LIBVIRTD_SERVICE}."
+      return 1
+    fi
+
+    if ! systemctl restart "${LIBVIRTD_SERVICE}" &> /dev/null; then
+      echo -e "${PREFIX_ERROR} Could not start ${LIBVIRTD_SERVICE}."
+      return 1
+    fi
+
+    echo -e "${PREFIX_PASS} Updated services."
+    return 0
   }
 
   # <summary>Copy Source Files to Destination</summary>
