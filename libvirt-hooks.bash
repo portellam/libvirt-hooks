@@ -382,7 +382,8 @@
 
     function set_permissions_for_script_files
     {
-      if ! sudo chown --recursive --silent root:root "${SCRIPT_DEST_PATH}"; then
+      if ! sudo chown --recursive --silent root:root "${SCRIPT_DEST_PATH}" \
+        || ! sudo chmod --recursive --silent +x "${SCRIPT_DEST_PATH}"; then
         echo -e "${PREFIX_ERROR} Failed to set file permissions for script(s)."
         return 1
       fi
@@ -396,6 +397,14 @@
         return 1
       fi
 
+      for service in "${SERVICE_LIST[@]}"; do
+        local this_service_path="${SERVICE_DEST_PATH}${service}"
+
+        if ! sudo chmod --recursive --silent +x "${this_service_path}"; then
+          echo -e "${PREFIX_ERROR} Failed to set file permissions for service '${service}'."
+          return 1
+        fi
+      done
     }
 
   function uninstall
