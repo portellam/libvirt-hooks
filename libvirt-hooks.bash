@@ -140,24 +140,24 @@
   # <summary>Copy Source Files to Destination</summary>
     function copy_source_files_to_destination
     {
-      # copy_binary_files_to_destination || return 1
+      # copy_binary_files_to_destination || return 1    # <note>To be implemented in a future release.</note>
       copy_script_files_to_destination || return 1
       copy_service_files_to_destination
     }
 
-    function copy_binary_files_to_destination
-    {
-      cd ..
-      cd "${BIN_SOURCE_PATH}" || return 1
+    # function copy_binary_files_to_destination         # <note>To be implemented in a future release.</note>
+    # {
+    #   cd ..
+    #   cd "${BIN_SOURCE_PATH}" || return 1
 
-      for bin in "${BIN_LIST[@]}"; do
-        if ! sudo cp --force "${bin}" "${BIN_DEST_PATH}" &> /dev/null; then
-          echo -e "${PREFIX_ERROR} Failed to copy project binaries."
-          return 1
-        fi
-      done
+    #   for bin in "${BIN_LIST[@]}"; do
+    #     if ! sudo cp --force "${bin}" "${BIN_DEST_PATH}" &> /dev/null; then
+    #       echo -e "${PREFIX_ERROR} Failed to copy project binaries."
+    #       return 1
+    #     fi
+    #   done
 
-    }
+    # }
 
     function copy_script_files_to_destination
     {
