@@ -242,8 +242,6 @@ function release_or_reserve_cpu
       local release_cpu_set="0-${last_thread_id}"
       release_thread_sets "${release_cpu_set}" || return 1 ;;
   esac
-
-  return 0
 }
 
 get_cpu && release_or_reserve_cpu
