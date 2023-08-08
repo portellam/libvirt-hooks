@@ -16,24 +16,22 @@ OPERATION="${2}"
 
 function start_service
 {
-  if ! systemctl start "libvirt-nosleep@${DOMAIN_NAME}" &> /dev/null; then
+  if ! systemctl start libvirt-nosleep@"${DOMAIN_NAME}" &> /dev/null; then
     echo "${PREFIX_PROMPT} ${PREFIX_ERROR} Failed to start 'libvirt-nosleep@${DOMAIN_NAME}' service." >&2
     return 1
   fi
 
   echo "${PREFIX_PROMPT} Started 'libvirt-nosleep@${DOMAIN_NAME}' service."
-  return 0
 }
 
 function stop_service
 {
-  if ! systemctl stop "libvirt-nosleep@${DOMAIN_NAME}" &> /dev/null; then
+  if ! systemctl stop libvirt-nosleep@"${DOMAIN_NAME}" &> /dev/null; then
     echo "${PREFIX_PROMPT} ${PREFIX_ERROR} Failed to stop 'libvirt-nosleep@${DOMAIN_NAME}' service." >&2
     return 1
   fi
 
   echo "${PREFIX_PROMPT} Stopped 'libvirt-nosleep@${DOMAIN_NAME}' service."
-  return 0
 }
 
 case "${OPERATION}" in

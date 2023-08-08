@@ -10,40 +10,37 @@
 HOOK_NAME="dohibernate"
 PREFIX_ERROR="An error occurred:"
 PREFIX_PROMPT="libvirt-qemu ${HOOK_NAME}:"
-SERVICE_NAME="libvirt-${HOOK_NAME}@"
 DOMAIN_NAME="${1}"
 OPERATION="${2}"
 
 function start_service
 {
-  if ! systemctl enable "${SERVICE_NAME}${DOMAIN_NAME}" &> /dev/null; then
-    echo "${PREFIX_PROMPT} ${PREFIX_ERROR} Failed to enable '${SERVICE_NAME}${DOMAIN_NAME}' service." >&2
+  if ! systemctl enable libvirt-dohibernate@"${DOMAIN_NAME}" &> /dev/null; then
+    echo "${PREFIX_PROMPT} ${PREFIX_ERROR} Failed to enable 'libvirt-dohibernate@${DOMAIN_NAME}' service." >&2
     return 1
   fi
 
-  if ! systemctl start "${SERVICE_NAME}${DOMAIN_NAME}" &> /dev/null; then
-    echo "${PREFIX_PROMPT} ${PREFIX_ERROR} Failed to start '${SERVICE_NAME}${DOMAIN_NAME}' service." >&2
+  if ! systemctl start libvirt-dohibernate@"${DOMAIN_NAME}" &> /dev/null; then
+    echo "${PREFIX_PROMPT} ${PREFIX_ERROR} Failed to start 'libvirt-dohibernate@${DOMAIN_NAME}' service." >&2
     return 1
   fi
 
-  echo "${PREFIX_PROMPT} Started '${SERVICE_NAME}${DOMAIN_NAME}' service."
-  return 0
+  echo "${PREFIX_PROMPT} Started 'libvirt-dohibernate@${DOMAIN_NAME}' service."
 }
 
 function stop_service
 {
-  if ! systemctl disable "${SERVICE_NAME}${DOMAIN_NAME}" &> /dev/null; then
-    echo "${PREFIX_PROMPT} ${PREFIX_ERROR} Failed to disable '${SERVICE_NAME}${DOMAIN_NAME}' service." >&2
+  if ! systemctl disable libvirt-dohibernate@"${DOMAIN_NAME}" &> /dev/null; then
+    echo "${PREFIX_PROMPT} ${PREFIX_ERROR} Failed to disable 'libvirt-dohibernate@${DOMAIN_NAME}' service." >&2
     return 1
   fi
 
-  if ! systemctl stop "${SERVICE_NAME}${DOMAIN_NAME}" &> /dev/null; then
-    echo "${PREFIX_PROMPT} ${PREFIX_ERROR} Failed to stop '${SERVICE_NAME}${DOMAIN_NAME}' service." >&2
+  if ! systemctl stop libvirt-dohibernate@"${DOMAIN_NAME}" &> /dev/null; then
+    echo "${PREFIX_PROMPT} ${PREFIX_ERROR} Failed to stop 'libvirt-dohibernate@${DOMAIN_NAME}' service." >&2
     return 1
   fi
 
-  echo "${PREFIX_PROMPT} Stopped '${SERVICE_NAME}${DOMAIN_NAME}' service."
-  return 0
+  echo "${PREFIX_PROMPT} Stopped 'libvirt-dohibernate@${DOMAIN_NAME}' service."
 }
 
 case "${OPERATION}" in
