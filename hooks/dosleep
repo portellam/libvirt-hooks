@@ -12,35 +12,36 @@ PREFIX_ERROR="An error occurred:"
 PREFIX_PROMPT="libvirt-qemu ${HOOK_NAME}:"
 DOMAIN_NAME="${1}"
 OPERATION="${2}"
+SERVICE_NAME="libvirt-${HOOK_NAME}@${DOMAIN_NAME}"
 
 function start_service
 {
-  if ! systemctl enable libvirt-dosleep@"${DOMAIN_NAME}" &> /dev/null; then
-    echo "${PREFIX_PROMPT} ${PREFIX_ERROR} Failed to enable 'libvirt-dosleep@${DOMAIN_NAME}' service." >&2
+  if ! systemctl enable "${SERVICE_NAME}" &> /dev/null; then
+    echo "${PREFIX_PROMPT} ${PREFIX_ERROR} Failed to enable '${SERVICE_NAME}' service." >&2
     return 1
   fi
 
-  if ! systemctl start libvirt-dosleep@"${DOMAIN_NAME}" &> /dev/null; then
-    echo "${PREFIX_PROMPT} ${PREFIX_ERROR} Failed to start 'libvirt-dosleep@${DOMAIN_NAME}' service." >&2
+  if ! sudo systemctl start "${SERVICE_NAME}" &> /dev/null; then
+    echo "${PREFIX_PROMPT} ${PREFIX_ERROR} Failed to start '${SERVICE_NAME}' service." >&2
     return 1
   fi
 
-  echo "${PREFIX_PROMPT} Started 'libvirt-dosleep@${DOMAIN_NAME}' service."
+  echo "${PREFIX_PROMPT} Started '${SERVICE_NAME}' service."
 }
 
 function stop_service
 {
-  if ! systemctl disable libvirt-dosleep@"${DOMAIN_NAME}" &> /dev/null; then
-    echo "${PREFIX_PROMPT} ${PREFIX_ERROR} Failed to disable 'libvirt-dosleep@${DOMAIN_NAME}' service." >&2
+  if ! systemctl disable "${SERVICE_NAME}" &> /dev/null; then
+    echo "${PREFIX_PROMPT} ${PREFIX_ERROR} Failed to disable '${SERVICE_NAME}' service." >&2
     return 1
   fi
 
-  if ! systemctl stop libvirt-dosleep@"${DOMAIN_NAME}" &> /dev/null; then
-    echo "${PREFIX_PROMPT} ${PREFIX_ERROR} Failed to stop 'libvirt-dosleep@${DOMAIN_NAME}' service." >&2
+  if ! sudo systemctl stop "${SERVICE_NAME}" &> /dev/null; then
+    echo "${PREFIX_PROMPT} ${PREFIX_ERROR} Failed to stop '${SERVICE_NAME}' service." >&2
     return 1
   fi
 
-  echo "${PREFIX_PROMPT} Stopped 'libvirt-dosleep@${DOMAIN_NAME}' service."
+  echo "${PREFIX_PROMPT} Stopped '${SERVICE_NAME}' service."
 }
 
 case "${OPERATION}" in
