@@ -45,9 +45,9 @@
 
     declare -ar SCRIPT_LIST=(
       "cfscpu"
-      "ddcutil"
-      # "dohibernate"
-      # "dosleep"
+      # "ddcutil"                       # <note>To be implemented in a future release.</note>
+      # "dohibernate"                   # <note>To be implemented in a future release.</note>
+      # "dosleep"                       # <note>To be implemented in a future release.</note>
       "hugepages"
       "isolcpu"
       "nosleep"
@@ -56,14 +56,14 @@
     )
 
     declare -ar SERVICE_LIST=(
-      # "libvirt-dohibernate@.service"
-      # "libvirt-dosleep@.service"
+      # "libvirt-dohibernate@.service"  # <note>To be implemented in a future release.</note>
+      # "libvirt-dosleep@.service"      # <note>To be implemented in a future release.</note>
       "libvirt-nosleep@.service"
     )
 # </params>
 
 # <functions>
-  function GetOption
+  function get_option
   {
     case "${OPTION}" in
       "-u" | "--uninstall" )
@@ -73,34 +73,32 @@
         DO_INSTALL=true ;;
 
       "-h" | "--help" | * )
-        PrintUsage
+        print_usage
         return 1 ;;
     esac
-
-    return 0
   }
 
-  function Main
+  function main
   {
     if [[ $( whoami ) != "root" ]]; then
       echo -e "${PREFIX_ERROR} User is not sudo/root."
       exit 1
     fi
 
-    GetOption || exit 1
+    get_option || exit 1
 
     if ! "${DO_INSTALL}"; then
-      Uninstall || exit 1
+      uninstall || exit 1
     else
-      AreDependenciesInstalled || exit 1
-      Install || exit 1
+      are_dependencies_installed || exit 1
+      install || exit 1
     fi
 
-    UpdateServices || exit 1
+    update_services || exit 1
     exit 0
   }
 
-  function AreDependenciesInstalled
+  function are_dependencies_installed
   {
     local systemd_app="systemd"
 
@@ -117,10 +115,9 @@
     fi
 
     echo -e "${PREFIX_PASS} Dependencies are installed."
-    return 0
   }
 
-  function UpdateServices
+  function update_services
   {
     if ! systemctl daemon-reload &> /dev/null; then
       echo -e "${PREFIX_ERROR} Could not update services."
@@ -138,78 +135,72 @@
     fi
 
     echo -e "${PREFIX_PASS} Updated services."
-    return 0
   }
 
   # <summary>Copy Source Files to Destination</summary>
-    function CopySourceFilesToDestination
+    function copy_source_files_to_destination
     {
-      # CopyBinaryFilesToDestination || return 1
-      CopyScriptFilesToDestination || return 1
-      CopyServiceFilesToDestination || return 1
-      return 0
+      # copy_binary_files_to_destination || return 1
+      copy_script_files_to_destination || return 1
+      copy_service_files_to_destination
     }
 
-    function CopyBinaryFilesToDestination
+    function copy_binary_files_to_destination
     {
       cd ..
       cd "${BIN_SOURCE_PATH}" || return 1
 
-      for BIN in "${BIN_LIST[@]}"; do
-        if ! sudo cp --force "${BIN}" "${BIN_DEST_PATH}" &> /dev/null; then
+      for bin in "${BIN_LIST[@]}"; do
+        if ! sudo cp --force "${bin}" "${BIN_DEST_PATH}" &> /dev/null; then
           echo -e "${PREFIX_ERROR} Failed to copy project binaries."
           return 1
         fi
       done
 
-      return 0
     }
 
-    function CopyScriptFilesToDestination
+    function copy_script_files_to_destination
     {
       cd ..
       cd "${SCRIPT_SOURCE_PATH}" || return 1
 
-      for SCRIPT in "${SCRIPT_LIST[@]}"; do
-        if ! sudo cp --force "${SCRIPT}" "${SCRIPT_DEST_PATH}" &> /dev/null; then
+      for script in "${SCRIPT_LIST[@]}"; do
+        if ! sudo cp --force "${script}" "${SCRIPT_DEST_PATH}" &> /dev/null; then
           echo -e "${PREFIX_ERROR} Failed to copy project script(s)."
           return 1
         fi
       done
 
-      return 0
     }
 
-    function CopyServiceFilesToDestination
+    function copy_service_files_to_destination
     {
       cd .. || return 1
       cd "${SERVICE_SOURCE_PATH}" || return 1
 
-      for SERVICE in "${SERVICE_LIST[@]}"; do
-        if ! sudo cp --force "${SERVICE}" "${SERVICE_DEST_PATH}" &> /dev/null; then
+      for service in "${SERVICE_LIST[@]}"; do
+        if ! sudo cp --force "${service}" "${SERVICE_DEST_PATH}" &> /dev/null; then
           echo -e "${PREFIX_ERROR} Failed to copy project service(s)."
           return 1
         fi
       done
 
-      return 0
     }
 
-  function Install
+  function install
   {
-    if ! DoSourceFilesExist \
-      || ! DoesDestinationPathExist \
-      || ! CopySourceFilesToDestination \
-      || ! SetPermissionsForDestinationFiles; then
+    if ! do_source_files_exist \
+      || ! does_destination_path_exist \
+      || ! copy_source_files_to_destination \
+      || ! set_permissions_for_destination_files; then
       echo -e "${PREFIX_FAIL} Could not install ${REPO_NAME}."
       return 1
     fi
 
-    echo -e "${PREFIX_PASS} Installed ${REPO_NAME}."
-    return 0
+    echo -e "${PREFIX_PASS} installed ${REPO_NAME}."
   }
 
-  function PrintUsage
+  function print_usage
   {
     IFS=$'\n'
 
@@ -223,18 +214,17 @@
 
     echo -e "${output[*]}"
     unset IFS
-    return 0
   }
 
   # <summary>Delete Destination Files</summary>
-    function DeleteDestinationFiles
+    function delete_destination_files
     {
-      DeleteBinaryFiles || return 1
-      DeleteScriptFiles || return 1
-      DeleteServiceFiles || return 1
+      delete_binary_files || return 1
+      delete_script_files || return 1
+      delete_service_files
     }
 
-    function DeleteBinaryFiles
+    function delete_binary_files
     {
       if [[ ! -d "${BIN_DEST_PATH}" ]]; then
         return 0
@@ -242,17 +232,16 @@
 
       cd "${BIN_DEST_PATH}"
 
-      for BIN in "${BIN_LIST[@]}"; do
-        if ! rm --force "${BIN}" &> /dev/null; then
+      for bin in "${BIN_LIST[@]}"; do
+        if ! rm --force "${bin}" &> /dev/null; then
           echo -e "${PREFIX_ERROR} Failed to delete project binaries."
           return 1
         fi
       done
 
-      return 0
     }
 
-    function DeleteScriptFiles
+    function delete_script_files
     {
       if [[ ! -d "${SCRIPT_DEST_PATH}" ]]; then
         return 0
@@ -260,17 +249,16 @@
 
       cd "${SCRIPT_DEST_PATH}"
 
-      for SCRIPT in "${SCRIPT_LIST[@]}"; do
-        if ! rm --force "${SCRIPT}" &> /dev/null; then
+      for script in "${SCRIPT_LIST[@]}"; do
+        if ! rm --force "${script}" &> /dev/null; then
           echo -e "${PREFIX_ERROR} Failed to delete project script(s)."
           return 1
         fi
       done
 
-      return 0
     }
 
-    function DeleteServiceFiles
+    function delete_service_files
     {
       if [[ ! -d "${SERVICE_DEST_PATH}" ]]; then
         return 0
@@ -278,79 +266,74 @@
 
       cd "${SERVICE_DEST_PATH}"
 
-      for SERVICE in "${SERVICE_LIST[@]}"; do
-        if ! rm --force "${SERVICE}" &> /dev/null; then
+      for service in "${SERVICE_LIST[@]}"; do
+        if ! rm --force "${service}" &> /dev/null; then
           echo -e "${PREFIX_ERROR} Failed to delete project service(s)."
           return 1
         fi
       done
 
-      return 0
     }
 
   # <summary>Do Source Files Exist</summary>
-    function DoSourceFilesExist
+    function do_source_files_exist
     {
-      # DoBinaryFilesExist || return 1
-      DoScriptFilesExist || return 1
-      DoServiceFilesExist || return 1
+      # do_binary_files_exist || return 1
+      do_script_files_exist || return 1
+      do_service_files_exist
     }
 
-    function DoBinaryFilesExist
+    function do_binary_files_exist
     {
       cd "${WORKING_DIR}"
       cd "${BIN_SOURCE_PATH}" || return 1
 
-      for BIN in "${BIN_LIST[@]}"; do
-        if [[ ! -e "${BIN}" ]]; then
+      for bin in "${BIN_LIST[@]}"; do
+        if [[ ! -e "${bin}" ]]; then
           echo -e "${PREFIX_ERROR} Missing project binaries."
           return 1
         fi
       done
 
-      return 0
     }
 
-    function DoScriptFilesExist
+    function do_script_files_exist
     {
       cd "${WORKING_DIR}"
       cd "${SCRIPT_SOURCE_PATH}" || return 1
 
-      for SCRIPT in "${SCRIPT_LIST[@]}"; do
-        if [[ ! -e "${SCRIPT}" ]]; then
+      for script in "${SCRIPT_LIST[@]}"; do
+        if [[ ! -e "${script}" ]]; then
           echo -e "${PREFIX_ERROR} Missing project scripts."
           return 1
         fi
       done
 
-      return 0
     }
 
-    function DoServiceFilesExist
+    function do_service_files_exist
     {
       cd "${WORKING_DIR}"
       cd "${SERVICE_SOURCE_PATH}" || return 1
 
-      for SERVICE in "${SERVICE_LIST[@]}"; do
-        if [[ ! -e "${SERVICE}" ]]; then
+      for service in "${SERVICE_LIST[@]}"; do
+        if [[ ! -e "${service}" ]]; then
           echo -e "${PREFIX_ERROR} Missing project services."
           return 1
         fi
       done
 
-      return 0
     }
 
   # <summary>Do Destination Paths Exist</summary>
-    function DoesDestinationPathExist
+    function does_destination_path_exist
     {
-      # DoesBinaryPathExist || return 1
-      DoesScriptPathExist || return 1
-      DoesServicePathExist || return 1
-      return 0
+      # does_binary_path_exist || return 1
+      does_script_path_exist || return 1
+      does_service_path_exist
     }
 
-    function DoesBinaryPathExist
+    function does_binary_path_exist
     {
       if [[ ! -d "${BIN_DEST_PATH}" ]] \
         && ! sudo mkdir --parents "${BIN_DEST_PATH}" &> /dev/null; then
@@ -358,10 +341,9 @@
         return 1
       fi
 
-      return 0
     }
 
-    function DoesScriptPathExist
+    function does_script_path_exist
     {
       if [[ ! -d "${SCRIPT_DEST_PATH}" ]] \
         && ! sudo mkdir --parents "${SCRIPT_DEST_PATH}" &> /dev/null; then
@@ -369,28 +351,26 @@
         return 1
       fi
 
-      return 0
     }
 
-    function DoesServicePathExist
+    function does_service_path_exist
     {
       if [[ ! -d "${SERVICE_DEST_PATH}" ]]; then
         echo -e "${PREFIX_ERROR} Could not find directory '${SERVICE_DEST_PATH}'."
         return 1
       fi
 
-      return 0
     }
 
   # <summary>Set Permissions For Destination Files</summary>
-    function SetPermissionsForDestinationFiles
+    function set_permissions_for_destination_files
     {
-      # SetPermissionsForBinaryFiles || return 1
-      SetPermissionsForScriptFiles || return 1
-      SetPermissionsForServiceFiles || return 1
+      # set_permissions_for_binary_files || return 1
+      set_permissions_for_script_files || return 1
+      set_permissions_for_service_files
     }
 
-    function SetPermissionsForBinaryFiles
+    function set_permissions_for_binary_files
     {
       if ! sudo chown --recursive --silent root:root "${BIN_DEST_PATH}" \
         || ! sudo chmod --recursive --silent +x "${BIN_DEST_PATH}"; then
@@ -398,39 +378,35 @@
         return 1
       fi
 
-      return 0
     }
 
-    function SetPermissionsForScriptFiles
+    function set_permissions_for_script_files
     {
       if ! sudo chown --recursive --silent root:root "${SCRIPT_DEST_PATH}"; then
         echo -e "${PREFIX_ERROR} Failed to set file permissions for script(s)."
         return 1
       fi
 
-      return 0
     }
 
-    function SetPermissionsForServiceFiles
+    function set_permissions_for_service_files
     {
       if ! sudo chown --recursive --silent root:root "${SERVICE_DEST_PATH}"; then
         echo -e "${PREFIX_ERROR} Failed to set file permissions for service(s)."
         return 1
       fi
 
-      return 0
     }
 
-  function Uninstall
+  function uninstall
   {
-    if ! DeleteDestinationFiles; then
+    if ! delete_destination_files; then
       echo -e "${PREFIX_FAIL} Could not uninstall ${REPO_NAME}."
       return 1
     fi
 
     echo -e "${PREFIX_PASS} Uninstalled ${REPO_NAME}."
-    return 0
   }
 # </functions>
 
-Main
+main

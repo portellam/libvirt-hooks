@@ -33,7 +33,7 @@ DOMAIN_VIDEO_INPUT="12"
 HOST_VIDEO_INPUT="0f"
 VIDEO_INPUT=""
 
-function GetVideoInput
+function get_video_input
 {
 	case "${OPERATION}/${SUBOPERATION}" in
 		"started/begin" )
@@ -48,7 +48,7 @@ function GetVideoInput
 	return 1
 }
 
-function SetVideoOutput
+function set_video_input
 {
   if [[ "$( ddcutil -d "${DOMAIN_DISPLAY}" getvcp 60 --terse | awk '{print ${4}}' )" == "x${VIDEO_INPUT}" ]]; then
     return 0
@@ -58,8 +58,6 @@ function SetVideoOutput
     echo "${PREFIX_PROMPT} ${PREFIX_ERROR} Failed to switch video input."
 		return 1
 	fi
-
-	return 0
 }
 
-GetVideoInput && SetVideoOutput
+get_video_input && set_video_input

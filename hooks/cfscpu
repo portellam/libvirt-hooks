@@ -31,7 +31,7 @@ DOMAIN_NAME="${1}"
 # <remarks>Ranges from 20 (lowest priority) to -20 (highest priority).</remarks>
 TARGET_NICE="-1"
 
-function GetVCPUPath
+function get_vcpu_path
 {
   if ls /sys/fs/cgroup/cpu/machine.slice/machine-qemu*${DOMAIN_NAME}.scope/libvirt/vcpu* 1> /dev/null 2>&1; then
     echo "${PREFIX_PROMPT} Found vCPU paths in Libvirt subdirectory." > /dev/kmsg
@@ -40,38 +40,33 @@ function GetVCPUPath
     echo "${PREFIX_PROMPT} Failed to find vCPU paths in Libvirt subdirectory. Found vCPU directory." > /dev/kmsg
     VCPU_PATH="/sys/fs/cgroup/cpu/machine.slice/machine-qemu*${DOMAIN_NAME}.scope/vcpu*"
   fi
-
-  return 0
 }
 
-function PrioritizeVCPUForDomain
+function prioritize_vcpu_for_domain
 {
-  if ! SetNiceLevelForDomain; then
+  if ! set_nice_level_for_domain; then
     echo "${PREFIX_PROMPT} ${PREFIX_ERROR} Failed to prioritize vCPU threads of Libvirt domain '${DOMAIN_NAME}'" > /dev/kmsg
     return 1
   fi
 
   echo "${PREFIX_PROMPT} Prioritized vCPU threads of Libvirt domain '${DOMAIN_NAME}'" > /dev/kmsg
-  return 0
 }
 
-function SetNiceLevelForDomain
+function set_nice_level_for_domain
 {
-  for VCPU_GROUP in ${VCPU_PATH}; do
-    echo "${PREFIX_PROMPT} Setting nice level of ${TARGET_NICE} to vCPU group '$( basename ${VCPU_GROUP} ).'" > /dev/kmsg
+  for vcpu_group in ${VCPU_PATH}; do
+    echo "${PREFIX_PROMPT} Setting nice level of ${TARGET_NICE} to vCPU group '$( basename ${vcpu_group} ).'" > /dev/kmsg
 
-    for PID in $( cat ${VCPU_GROUP}/tasks ); do
-      if ! renice -n "${TARGET_NICE}" -p "${PID}" 2> /dev/null; then
-        echo "${PREFIX_PROMPT} ${PREFIX_ERROR} Failed to set nice level for PID '${PID}'"
+    for pid in $( cat ${vcpu_group}/tasks ); do
+      if ! renice -n "${TARGET_NICE}" -p "${pid}" 2> /dev/null; then
+        echo "${PREFIX_PROMPT} ${PREFIX_ERROR} Failed to set nice level for PID '${pid}'"
         return 1
       fi
     done
   done
-
-  return 0
 }
 
 if [[ ! -z "${DOMAIN_NAME}" ]]; then
-  GetVCPUPath
-  PrioritizeVCPUForDomain
+  get_vcpu_path
+  prioritize_vcpu_for_domain
 fi

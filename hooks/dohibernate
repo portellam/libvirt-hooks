@@ -14,7 +14,7 @@ SERVICE_NAME="libvirt-${HOOK_NAME}@"
 DOMAIN_NAME="${1}"
 OPERATION="${2}"
 
-function StartService
+function start_service
 {
   if ! systemctl enable "${SERVICE_NAME}${DOMAIN_NAME}" &> /dev/null; then
     echo "${PREFIX_PROMPT} ${PREFIX_ERROR} Failed to enable '${SERVICE_NAME}${DOMAIN_NAME}' service." >&2
@@ -30,7 +30,7 @@ function StartService
   return 0
 }
 
-function StopService
+function stop_service
 {
   if ! systemctl disable "${SERVICE_NAME}${DOMAIN_NAME}" &> /dev/null; then
     echo "${PREFIX_PROMPT} ${PREFIX_ERROR} Failed to disable '${SERVICE_NAME}${DOMAIN_NAME}' service." >&2
@@ -48,7 +48,7 @@ function StopService
 
 case "${OPERATION}" in
   "prepare")
-    StartService ;;
+    start_service ;;
   "release")
-    StopService ;;
+    stop_service ;;
 esac
