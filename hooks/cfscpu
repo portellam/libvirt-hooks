@@ -71,12 +71,7 @@ function SetNiceLevelForDomain
   return 0
 }
 
-function Main
-{
-  if [[ ! -z "${DOMAIN_NAME}" ]]; then
-    GetVCPUPath
-    PrioritizeVCPUForDomain
-  fi
-}
-
-Main
+if [[ ! -z "${DOMAIN_NAME}" ]]; then
+  GetVCPUPath
+  PrioritizeVCPUForDomain
+fi

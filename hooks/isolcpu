@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 
 #
 # Filename:       /etc/libvirt/hooks/isolcpu
@@ -255,6 +255,4 @@ function ReleaseOrReserveCPU
   return 0
 }
 
-if GetCPU; then
-  ReleaseOrReserveCPU
-fi
+GetCPU && ReleaseOrReserveCPU

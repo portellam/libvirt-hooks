@@ -62,9 +62,4 @@ function SetVideoOutput
 	return 0
 }
 
-function Main
-{
-	if GetVideoInput; then
-    SetVideoOutput
-  fi
-}
+GetVideoInput && SetVideoOutput

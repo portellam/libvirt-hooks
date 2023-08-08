@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 
 #
 # Filename:       /etc/libvirt/hooks/nosleep
@@ -11,40 +11,34 @@
 HOOK_NAME="nosleep"
 PREFIX_ERROR="An error occurred:"
 PREFIX_PROMPT="libvirt-qemu ${HOOK_NAME}:"
-SERVICE_NAME="libvirt-${HOOK_NAME}@"
 DOMAIN_NAME="${1}"
 OPERATION="${2}"
 
 function StartService
 {
-  if ! systemctl start "${SERVICE_NAME}${DOMAIN_NAME}" &> /dev/null; then
-    echo "${PREFIX_PROMPT} ${PREFIX_ERROR} Failed to start '${SERVICE_NAME}${DOMAIN_NAME}' service." >&2
+  if ! systemctl start "libvirt-nosleep@${DOMAIN_NAME}" &> /dev/null; then
+    echo "${PREFIX_PROMPT} ${PREFIX_ERROR} Failed to start 'libvirt-nosleep@${DOMAIN_NAME}' service." >&2
     return 1
   fi
 
-  echo "${PREFIX_PROMPT} Started '${SERVICE_NAME}${DOMAIN_NAME}' service."
+  echo "${PREFIX_PROMPT} Started 'libvirt-nosleep@${DOMAIN_NAME}' service."
   return 0
 }
 
 function StopService
 {
-  if ! systemctl stop "${SERVICE_NAME}${DOMAIN_NAME}" &> /dev/null; then
-    echo "${PREFIX_PROMPT} ${PREFIX_ERROR} Failed to stop '${SERVICE_NAME}${DOMAIN_NAME}' service." >&2
+  if ! systemctl stop "libvirt-nosleep@${DOMAIN_NAME}" &> /dev/null; then
+    echo "${PREFIX_PROMPT} ${PREFIX_ERROR} Failed to stop 'libvirt-nosleep@${DOMAIN_NAME}' service." >&2
     return 1
   fi
 
-  echo "${PREFIX_PROMPT} Stopped '${SERVICE_NAME}${DOMAIN_NAME}' service."
+  echo "${PREFIX_PROMPT} Stopped 'libvirt-nosleep@${DOMAIN_NAME}' service."
   return 0
 }
 
-function Main
-{
-  case "${OPERATION}" in
-    "prepare")
-      StartService ;;
-    "release")
-      StopService ;;
-  esac
-}
-
-Main
+case "${OPERATION}" in
+  "prepare")
+    StartService ;;
+  "release")
+    StopService ;;
+esac

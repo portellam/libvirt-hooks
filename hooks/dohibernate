@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 
 #
 # Filename:       /etc/libvirt/hooks/dohibernate
@@ -46,14 +46,9 @@ function StopService
   return 0
 }
 
-function Main
-{
-  case "${OPERATION}" in
-    "prepare")
-      StartService ;;
-    "release")
-      StopService ;;
-  esac
-}
-
-Main
+case "${OPERATION}" in
+  "prepare")
+    StartService ;;
+  "release")
+    StopService ;;
+esac
