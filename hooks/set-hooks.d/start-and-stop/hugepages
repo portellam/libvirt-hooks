@@ -1,0 +1,79 @@
+#!/usr/bin/env bash
+
+#
+# Filename:       /etc/libvirt/hooks/hugepages
+# Description:    Reserve memory hugepages at start of Libvirt domain(s).
+# URL(s):         https://github.com/PassthroughPOST/VFIO-Tools
+# Author(s):      Sebastiaan <github.com/SharkWipf>
+# Maintainer(s):  Alex Portell <github.com/portellam>
+#
+
+# <remarks>
+# This hook only needs to run on `prepare/begin`, not on stop.
+#
+# This hook will help free and compact memory to ease THP allocation.
+# QEMU VMs will use THP (Transparent HugePages) by default if enough
+# unfragmented memory can be found on startup. If your memory is very
+# fragmented, this may cause a slow VM startup (like a slowly responding
+# VM start button/command), and may cause QEMU to fall back to regular
+# memory pages, slowing down VM performance.
+# If you (suspect you) suffer from this, this hook will help ease THP
+# allocation so you don't need to resort to misexplained placebo scripts.
+# </remarks>
+
+  PREFIX_ERROR="An error occurred:"
+  PREFIX_PROMPT="libvirt-qemu $( basename "${0}" ):"
+
+# <functions>
+  function write_host_memory_to_storage
+  {
+    if ! sync; then
+      print_prompt_and_error_to_log "Failed to write Host memory to storage."
+      return 1
+    fi
+
+    print_prompt_to_log "Wrote Host memory to storage."
+  }
+
+  function drop_filesystem_caches
+  {
+    if ! echo 3 > /proc/sys/vm/drop_caches; then
+      print_prompt_and_error_to_log "Failed to drop filesystem caches."
+      return 1
+    fi
+
+    print_prompt_to_log "Dropped filesystem caches."
+  }
+
+  function defragment_host_memory
+  {
+    if ! echo 1 > /proc/sys/vm/compact_memory; then
+      print_prompt_and_error_to_log "Failed to defragment Host memory."
+      return 1
+    fi
+
+    print_prompt_to_log "Defragmented Host memory."
+  }
+
+  function print_prompt
+  {
+    echo -e "${PREFIX_PROMPT} ${1}"
+  }
+
+  function print_prompt_to_log
+  {
+    print_prompt "${1}" >&2
+  }
+
+  function print_prompt_and_error_to_log
+  {
+    print_prompt_to_log "${PREFIX_ERROR} ${1}"
+  }
+# </functions>
+
+# <code>
+  write_host_memory_to_storage
+  drop_filesystem_caches
+  write_host_memory_to_storage
+  defragment_host_memory
+# </code>

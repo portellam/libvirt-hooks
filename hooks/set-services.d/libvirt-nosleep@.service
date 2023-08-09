@@ -1,0 +1,6 @@
+[Unit]
+Description=Prevent Host suspend while Libvirt domain "%i" is online.
+
+[Service]
+Type=simple
+ExecStart=/usr/bin/systemd-inhibit --what=sleep --why="Libvirt domain \"%i\" is online." --who=%U --mode=block sleep infinity
