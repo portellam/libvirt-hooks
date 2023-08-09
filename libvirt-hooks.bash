@@ -46,13 +46,11 @@
     declare -ar SCRIPT_LIST=(
       "cfscpu"
       # "ddcutil"                       # <note>To be implemented in a future release.</note>
-      # "dohibernate"                   # <note>To be implemented in a future release.</note>
-      # "dosleep"                       # <note>To be implemented in a future release.</note>
       "hugepages"
       "isolcpu"
-      "nosleep"
       "qemu"
       "set-hooks"
+      "set-services"
     )
 
     declare -ar SERVICE_LIST=(
@@ -94,8 +92,8 @@
       install || exit 1
     fi
 
-    update_services || exit 1
-    exit 0
+    update_services
+    exit "${?}"
   }
 
   function are_dependencies_installed
@@ -170,7 +168,6 @@
           return 1
         fi
       done
-
     }
 
     function copy_service_files_to_destination
@@ -184,7 +181,6 @@
           return 1
         fi
       done
-
     }
 
   function install
@@ -255,7 +251,6 @@
           return 1
         fi
       done
-
     }
 
     function delete_service_files
@@ -272,7 +267,6 @@
           return 1
         fi
       done
-
     }
 
   # <summary>Do Source Files Exist</summary>
@@ -294,7 +288,6 @@
           return 1
         fi
       done
-
     }
 
     function do_script_files_exist
@@ -308,7 +301,6 @@
           return 1
         fi
       done
-
     }
 
     function do_service_files_exist
@@ -322,7 +314,6 @@
           return 1
         fi
       done
-
     }
 
   # <summary>Do Destination Paths Exist</summary>
@@ -340,7 +331,6 @@
         echo -e "${PREFIX_ERROR} Could not create directory '${BIN_DEST_PATH}'."
         return 1
       fi
-
     }
 
     function does_script_path_exist
@@ -350,7 +340,6 @@
         echo -e "${PREFIX_ERROR} Could not create directory '${SCRIPT_DEST_PATH}'."
         return 1
       fi
-
     }
 
     function does_service_path_exist
@@ -359,7 +348,6 @@
         echo -e "${PREFIX_ERROR} Could not find directory '${SERVICE_DEST_PATH}'."
         return 1
       fi
-
     }
 
   # <summary>Set Permissions For Destination Files</summary>
@@ -377,7 +365,6 @@
         echo -e "${PREFIX_ERROR} Failed to set file permissions for binaries."
         return 1
       fi
-
     }
 
     function set_permissions_for_script_files
@@ -387,7 +374,6 @@
         echo -e "${PREFIX_ERROR} Failed to set file permissions for script(s)."
         return 1
       fi
-
     }
 
     function set_permissions_for_service_files
