@@ -1,77 +1,88 @@
-#!/bin/bash
+#!/usr/bin/env bash
 
 #
 # Filename:       /usr/local/bin/libvirt-dosleep
-# Description:    Try to suspend libvirt domain before host sleep.
+# Description:    Try to suspend Libvirt domain before Host sleep.
 # Author(s):      Alex Portell <github.com/portellam>
 # Maintainer(s):  Alex Portell <github.com/portellam>
 #
 
-HOOK_NAME="dosleep"
-PREFIX_ERROR="An error occurred:"
-PREFIX_PROMPT="libvirt-qemu ${HOOK_NAME}:"
-NOSLEEP_SERVICE_NAME="libvirt-nosleep@"
-DOMAIN_NAME="${1}"
+# <params>
+  DOMAIN_NAME="${1}"
+  HOOK_NAME="dosleep"
+  PREFIX_ERROR="An error occurred:"
+  PREFIX_PROMPT="libvirt-qemu ${HOOK_NAME}:"
+# </params>
 
-function HibernateDomain
-{
-  if ! virsh dompmsuspend --target disk "${DOMAIN_NAME}"; then
-    echo "${PREFIX_PROMPT} ${PREFIX_ERROR} Failed to hibernate Libvirt domain '${DOMAIN_NAME}'." >&2
-    return 1
-  fi
+# <functions>
+  function print_prompt
+  {
+    echo -e "${PREFIX_PROMPT} ${1}"
+  }
 
-  return 0
-}
+  function print_prompt_to_log
+  {
+    print_prompt "${1}" >&2
+  }
 
-function HybridSleepDomain
-{
-  if ! virsh dompmsuspend --target both "${DOMAIN_NAME}"; then
-    echo "${PREFIX_PROMPT} ${PREFIX_ERROR} Failed to hybrid-sleep Libvirt domain '${DOMAIN_NAME}'." >&2
-    return 1
-  fi
+  function print_prompt_and_error_to_log
+  {
+    print_prompt_to_log "${PREFIX_ERROR} ${1}"
+  }
 
-  return 0
-}
+  function hibernate_domain
+  {
+    if ! virsh dompmsuspend --target disk "${DOMAIN_NAME}"; then
+      print_prompt_and_error_to_log "Failed to hibernate Libvirt domain '${DOMAIN_NAME}'."
+      return 1
+    fi
 
-function SleepDomain
-{
-  if ! virsh dompmsuspend --target both "${DOMAIN_NAME}"; then
-    echo "${PREFIX_PROMPT} ${PREFIX_ERROR} Failed to sleep Libvirt domain '${DOMAIN_NAME}'." >&2
-    return 1
-  fi
+    print_prompt_to_log "Hibernating Libvirt domain '${DOMAIN_NAME}'."
+  }
 
-  return 0
-}
+  function hybrid_sleep_domain
+  {
+    if ! virsh dompmsuspend --target both "${DOMAIN_NAME}"; then
+      print_prompt_and_error_to_log "Failed to hybrid-sleep Libvirt domain '${DOMAIN_NAME}'."
+      return 1
+    fi
 
-function IsDomainSuspendedOrOffline
-{
-  case $( virsh domstate ${DOMAIN_NAME} | tr -d '\n' ) in
-    *"pmsuspended"* | *"shut off"* )
-      echo "${PREFIX_PROMPT} Libvirt domain '${DOMAIN_NAME}' is offline." >&2
-      return 0 ;;
-  esac
+    print_prompt_to_log "Hybrid-sleeping Libvirt domain '${DOMAIN_NAME}'."
+  }
 
-  echo "${PREFIX_PROMPT} Libvirt domain '${DOMAIN_NAME}' is online." >&2
-  return 1
-}
+  function sleep_domain
+  {
+    if ! virsh dompmsuspend --target both "${DOMAIN_NAME}"; then
+      print_prompt_and_error_to_log "Failed to sleep Libvirt domain '${DOMAIN_NAME}'."
+      return 1
+    fi
 
-function StopNosleepService
-{
-  if ! systemctl stop "${NOSLEEP_SERVICE_NAME}${DOMAIN_NAME}" &> /dev/null; then
-    echo "${PREFIX_PROMPT} ${PREFIX_ERROR} Failed to stop '${NOSLEEP_SERVICE_NAME}${DOMAIN_NAME}' service." >&2
-    return 1
-  fi
+    print_prompt_to_log "Sleeping Libvirt domain '${DOMAIN_NAME}'."
+  }
 
-  return 0
-}
+  function is_domain_suspended_or_offline
+  {
+    local -r domain_state="$( virsh domstate ${DOMAIN_NAME} | tr -d '\n' )"
 
-function Main
-{
-  IsDomainSuspendedOrOffline && StopNosleepService && exit $?
-  HibernateDomain || HybridSleepDomain || SleepDomain
-  sleep 1
-  IsDomainSuspendedOrOffline && StopNosleepService
-  exit $?
-}
+    if [[ "${domain_state}" != *"pmsuspended"* ]] \
+      && [[ "${domain_state}" != *"shut off"* ]]; then
+      print_prompt_and_error_to_log "Libvirt domain '${DOMAIN_NAME}' is online."
+      return 1
+    fi
 
-Main
+    print_prompt_to_log "Libvirt domain '${DOMAIN_NAME}' is offline."
+  }
+
+  function sleep_for_one_cycle
+  {
+    sleep 1
+  }
+# </functions>
+
+# <code>
+  is_domain_suspended_or_offline && exit 0
+  hibernate_domain || hybrid_sleep_domain || sleep_domain
+  sleep_for_one_cycle
+  is_domain_suspended_or_offline
+  exit "${?}"
+# </code>
