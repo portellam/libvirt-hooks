@@ -1,0 +1,24 @@
+#!/usr/bin/env bash
+
+#
+# Filename:       /etc/libvirt/hooks/nosleep
+# Description:    Prevent Host suspend while Libvirt domain is online.
+# Author(s):      Alex Portell <github.com/portellam>
+# Maintainer(s):  Alex Portell <github.com/portellam>
+#
+
+# <sources>
+  source set-service
+# </sources>
+
+# <params>
+  DOMAIN_NAME="${1}"
+  HOOK_NAME="$( basename "${0}" )"
+  THIS_SERVICE_NAME="libvirt-${HOOK_NAME}@${DOMAIN_NAME}.service"
+  REAL_SERVICE_NAME="libvirt-${HOOK_NAME}@.service"
+  SERVICE_FULL_PATH="/etc/systemd/system/libvirt-${REAL_SERVICE_NAME}@.service"
+# </params>
+
+# <code>
+  setup_this_service "${THIS_SERVICE_NAME}" "${SERVICE_FULL_PATH}" "$@"
+# </code>
