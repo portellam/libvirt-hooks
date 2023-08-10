@@ -1,0 +1,106 @@
+#!/bin/false
+
+#
+# Filename:       /etc/libvirt/hooks/set-service
+# Description:    Source file. Start or stop given systemd service.
+# Author(s):      Alex Portell <github.com/portellam>
+# Maintainer(s):  Alex Portell <github.com/portellam>
+#
+
+# <params>
+  PREFIX_ERROR="An error occurred:"
+  PREFIX_PROMPT="libvirt-qemu $( basename "${0}" ):"
+# </params>
+
+# <functions>
+  function setup_this_service
+  {
+    local -r service_name="${1}"
+
+    if ! is_string "${service_name}"; then
+      return 1
+    fi
+
+    local -r service_full_path="${2}"
+
+    if ! is_string "${service_full_path}" \
+      || ! is_path_valid "${service_full_path}"; then
+      return 1
+    fi
+
+    shift; shift
+    local -r operation="${2}"
+
+    if ! is_string "${operation}"; then
+      return 1
+    fi
+
+    set_operation "${service_name}" "${operation}" || return 1
+  }
+
+  function is_path_valid
+  {
+    if [[ ! -e "${1}" ]]; then
+      print_prompt_and_error_to_log "Path '${1}' is not valid."
+    fi
+  }
+
+  function is_string
+  {
+    if [[ ! -z "${1}" ]]; then
+      print_prompt_and_error_to_log "Empty string."
+    fi
+  }
+
+  function print_prompt
+  {
+    echo -e "${PREFIX_PROMPT} ${1}"
+  }
+
+  function print_prompt_to_log
+  {
+    print_prompt "${1}" >&2
+  }
+
+  function print_prompt_and_error_to_log
+  {
+    print_prompt_to_log "${PREFIX_ERROR} ${1}"
+  }
+
+  function set_operation
+  {
+    local -r service_name="${1}"
+    local -r operation="${2}"
+
+    case "${operation}" in
+      "prepare")
+        start_service "${service_name}" || return 1 ;;
+      "release")
+        stop_service "${service_name}" || return 1 ;;
+    esac
+  }
+
+  function start_service
+  {
+    local -r service="${1}"
+
+    if ! systemctl start "${service}" &> /dev/null; then
+      print_prompt_and_error_to_log "Failed to start '${service}' service."
+      return 1
+    fi
+
+    print_prompt_to_log "Started '${service}' service."
+  }
+
+  function stop_service
+  {
+    local -r service="${1}"
+
+    if ! systemctl stop "${service}" &> /dev/null; then
+      print_prompt_and_error_to_log "Failed to stop '${service}' service."
+      return 1
+    fi
+
+    print_prompt_to_log "Stopped '${service}' service."
+  }
+# </functions>
