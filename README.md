@@ -18,11 +18,11 @@ Install Libvirt hooks (scripts) which extend and enhance the functionality of Li
 ## How-to
 ### To install:
 
-        sudo bash libvirt-hooks.bash -i
+        sudo bash installer.bash -i
 
 ### To uninstall:
 
-        sudo bash libvirt-hooks.bash -u
+        sudo bash installer.bash -u
 
 ## Features
 ### cfscpu
