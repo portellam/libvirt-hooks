@@ -9,7 +9,7 @@
 
 # <params>
   readonly REPO_NAME="libvirt-hooks"
-  readonly WORKING_DIR="$( dirname "${0}" )/"
+  readonly WORKING_DIR="$( dirname $( realpath "${0}" ) )/"
   readonly OPTION="${1}"
 
   # <summary>Execution Flags</summary>
@@ -29,18 +29,21 @@
     readonly PREFIX_FAIL="${SET_COLOR_RED}Failure:${RESET_COLOR}"
     readonly PREFIX_PASS="${SET_COLOR_GREEN}Success:${RESET_COLOR}"
 
-    readonly LIBVIRTD_SERVICE="libvirtd"
+  readonly LIBVIRTD_SERVICE="libvirtd"
 
-    readonly BIN_DEST_PATH="/usr/local/bin/libvirt-hooks/"
-    readonly BIN_SOURCE_PATH="${WORKING_DIR}bin/"
-    readonly SCRIPT_DEST_PATH="/etc/libvirt/hooks/"
-    readonly SCRIPT_SOURCE_PATH="${WORKING_DIR}hooks/"
-    readonly SERVICE_DEST_PATH="/etc/systemd/system/"
-    readonly SERVICE_SOURCE_PATH="${WORKING_DIR}systemd/"
+  readonly BIN_DEST_PATH="/usr/local/bin/libvirt-hooks/"
+  readonly BIN_SOURCE_PATH="${WORKING_DIR}bin/"
+  readonly SCRIPT_DEST_PATH="/etc/libvirt/hooks/"
+  readonly SCRIPT_SOURCE_RELATIVE_PATH="hooks/"
+  readonly SERVICE_DEST_PATH="/etc/systemd/system/"
+  readonly SERVICE_SOURCE_PATH="${WORKING_DIR}systemd/"
 
-    declare -ar BIN_LIST=$( find -L "${BIN_SOURCE_PATH}" -maxdepth 1 -type f )
-    declare -ar SCRIPT_LIST=$( find -L "${SCRIPT_SOURCE_PATH}" -maxdepth 1 -type f )
-    declare -ar SERVICE_LIST=$( find -L "${SERVICE_SOURCE_PATH}" -maxdepth 1 -type f )
+  declare -ar BIN_LIST=( $( find -L "${BIN_SOURCE_PATH}" -maxdepth 1 -type f ) )
+  declare -ar SCRIPT_LIST=( $( find -L "${SCRIPT_SOURCE_RELATIVE_PATH}" -type f ) )
+  declare -a SCRIPT_SUBDIR_LIST=( $( find -L "${SCRIPT_SOURCE_RELATIVE_PATH}" -type d ) )
+  unset SCRIPT_SUBDIR_LIST[0]
+  readonly SCRIPT_SUBDIR_LIST
+  declare -ar SERVICE_LIST=( $( find -L "${SERVICE_SOURCE_PATH}" -maxdepth 1 -type f ) )
 # </params>
 
 # <functions>
@@ -121,7 +124,7 @@
   # <summary>Copy Source Files to Destination</summary>
     function copy_source_files_to_destination
     {
-      # copy_binary_files_to_destination || return 1    # <note>To be implemented in a future release.</note>
+      copy_binary_files_to_destination || return 1
       copy_script_files_to_destination || return 1
       copy_service_files_to_destination
     }
@@ -130,7 +133,7 @@
     {
       for bin in "${BIN_LIST[@]}"; do
         local bin_name="$( basename "${bin}" )"
-        local bin_path="${BIN_DEST_PATH}/${bin_name}"
+        local bin_path="${BIN_DEST_PATH}${bin_name}"
 
         if ! sudo cp --force "${bin}" "${bin_path}" &> /dev/null; then
           print_error "Failed to copy project binaries."
@@ -142,10 +145,12 @@
     function copy_script_files_to_destination
     {
       for script in "${SCRIPT_LIST[@]}"; do
-        local script_name="$( basename "${script}" )"
-        local script_path="${SCRIPT_DEST_PATH}/${script_name}"
+        local script_source_file="${WORKING_DIR}${script}"
+        local script_dest_file="${SCRIPT_DEST_PATH}${script:6}"
+        local script_dest_dir="$( dirname "${script_dest_file}" )/"
 
-        if ! sudo cp --force "${script}" "${script_path}" &> /dev/null; then
+        if ! does_path_exist "${script_dest_dir}" \
+          || ! sudo rsync --archive --recursive --verbose "${script_source_file}" "${script_dest_dir}" &> /dev/null; then
           print_error "Failed to copy project script(s)."
           return 1
         fi
@@ -171,7 +176,7 @@
       || ! does_destination_path_exist \
       || ! copy_source_files_to_destination \
       || ! set_permissions_for_destination_files; then
-      print_pass "Could not install ${REPO_NAME}."
+      print_fail "Could not install ${REPO_NAME}."
       return 1
     fi
 
@@ -180,17 +185,17 @@
 
   function print_error
   {
-    print_prompt "${PREFIX_ERROR} ${1}"
+    echo -e "${PREFIX_ERROR} ${1}"
   }
 
   function print_fail
   {
-    print_prompt "${PREFIX_FAIL} ${1}"
+    echo -e "${PREFIX_FAIL} ${1}"
   }
 
   function print_pass
   {
-    print_prompt "${PREFIX_PASS} ${1}"
+    echo -e "${PREFIX_PASS} ${1}"
   }
 
   function print_usage
@@ -231,7 +236,6 @@
           return 1
         fi
       done
-
     }
 
     function delete_script_files
@@ -240,14 +244,10 @@
         return 0
       fi
 
-      for script in "${SCRIPT_LIST[@]}"; do
-        local script_path="${SCRIPT_DEST_PATH}${script}"
-
-        if ! rm --force "${script_path}" &> /dev/null; then
-          print_error "Failed to delete project script(s)."
-          return 1
-        fi
-      done
+      if ! rm --force --recursive ${SCRIPT_DEST_PATH}* &> /dev/null; then
+        print_error "Failed to delete project script(s)."
+        return 1
+      fi
     }
 
     function delete_service_files
@@ -266,7 +266,7 @@
       done
     }
 
-  function do_source_files_exist
+    function do_source_files_exist
     {
       do_binary_files_exist || return 1
       do_script_files_exist || return 1
@@ -306,35 +306,31 @@
   # <summary>Do Destination Paths Exist</summary>
     function does_destination_path_exist
     {
-      does_binary_path_exist || return 1
+      does_path_exist "${BIN_DEST_PATH}" || return 1
       does_script_path_exist || return 1
-      does_service_path_exist
+      does_path_exist "${SERVICE_DEST_PATH}" || return 1
     }
 
-    function does_binary_path_exist
+    function does_path_exist
     {
-      if [[ ! -d "${BIN_DEST_PATH}" ]] \
-        && ! sudo mkdir --parents "${BIN_DEST_PATH}" &> /dev/null; then
-        print_error "Could not create directory '${BIN_DEST_PATH}'."
+      local -r path="${1}"
+
+      if [[ ! -d "${path}" ]] \
+        && ! sudo mkdir --parents "${path}" &> /dev/null; then
+        print_error "Could not create directory '${path}'."
         return 1
       fi
     }
 
     function does_script_path_exist
     {
-      if [[ ! -d "${SCRIPT_DEST_PATH}" ]] \
-        && ! sudo mkdir --parents "${SCRIPT_DEST_PATH}" &> /dev/null; then
-        print_error "Could not create directory '${SCRIPT_DEST_PATH}'."
-        return 1
-      fi
-    }
+      does_path_exist "${SCRIPT_DEST_PATH}" || return 1
 
-    function does_service_path_exist
-    {
-      if [[ ! -d "${SERVICE_DEST_PATH}" ]]; then
-        print_error "Could not find directory '${SERVICE_DEST_PATH}'."
-        return 1
-      fi
+      for script_subdir in "${SCRIPT_SUBDIR_LIST[@]}"; do
+        script_subdir="${script_subdir:6}"
+        script_subdir="${SCRIPT_DEST_PATH}${script_subdir}"
+        does_path_exist "${script_subdir}" || return 1
+      done
     }
 
   # <summary>Set Permissions For Destination Files</summary>
@@ -371,7 +367,7 @@
       fi
 
       for service in "${SERVICE_LIST[@]}"; do
-        local this_service_path="${SERVICE_DEST_PATH}${service}"
+        local this_service_path="${SERVICE_DEST_PATH}$( basename "${service}" )"
 
         if ! sudo chmod --recursive --silent +x "${this_service_path}"; then
           print_error "Failed to set file permissions for service '${service}'."
@@ -389,6 +385,18 @@
 
     print_pass "Uninstalled ${REPO_NAME}."
   }
+
+  function set_ifs_to_newline
+  {
+    IFS=$'\n'
+  }
+
+  function unset_ifs
+  {
+    unset IFS
+  }
 # </functions>
 
-main
+# <code>
+  main
+# </code>
