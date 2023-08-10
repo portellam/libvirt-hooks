@@ -10,17 +10,16 @@
 set -e
 
 # <params>
-  ARGUMENTS="$@"
   MASTER_HOOK="${0}"
-  DIR_NAME="$( dirname $( realpath "${0}" ) )/"
-  HOOKS_LIST+=( $( find -L "${DIR_NAME}" -maxdepth 1 -name "${MASTER_HOOK}" -type f ) )
+  DIR_NAME="$( dirname $( realpath "${0}" ) )/hooks/"
+  HOOKS_LIST_EXCLUDES_MASTER_HOOK+=( $( find -L "${DIR_NAME}" -maxdepth 1 ! -name "${MASTER_HOOK}" -type f ) )
 # </params>
 
 # <functions>
   function execute_hooks
   {
-    for hook in "${HOOKS_LIST[@]}"; do
-      eval ${hook} "${ARGUMENTS}"
+    for hook in "${HOOKS_LIST_EXCLUDES_MASTER_HOOK[@]}"; do
+      eval ${hook} "$@"
     done
   }
 # </functions>
