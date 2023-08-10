@@ -16,8 +16,33 @@
 #     * start-and-stop
 # </remarks>
 
-# <functions>
+# <params>
+  DOMAIN_NAME="${1}"
+  # ARGUMENTS="$@"
 
+  PREFIX_ERROR="An error occurred:"
+  PREFIX_PROMPT="libvirt-qemu $( basename "${0}" ):"
+
+  HOOKS_BASE_DIR="$( dirname $( realpath "${0}" ) )/"
+  DOMAIN_NAME_BASE_DIR="${HOOKS_BASE_DIR}qemu.d/${DOMAIN_NAME}/"
+  DOMAIN_NAME_START_DIR="${DOMAIN_NAME_BASE_DIR}started/begin/"
+  DOMAIN_NAME_STOP_DIR="${DOMAIN_NAME_BASE_DIR}stopped/end/"
+
+  SET_HOOKS_DIR="${HOOKS_BASE_DIR}${0}.d/"
+
+  STATEFUL_HOOKS_DIR="${SET_HOOKS_DIR}"
+  STATEFUL_HOOKS_START_ONLY_DIR="${STATEFUL_HOOKS_DIR}start-only/"
+  STATEFUL_HOOKS_STOP_ONLY_DIR="${STATEFUL_HOOKS_DIR}stop-only/"
+  STATEFUL_HOOKS_BOTH_DIR="${STATEFUL_HOOKS_DIR}start-and-stop/"
+
+  STATEFUL_HOOKS_START_LIST=( $( find -L "${STATEFUL_HOOKS_START_ONLY_DIR}" -maxdepth 1 -type f ) )
+  STATEFUL_HOOKS_START_LIST+=( $( find -L "${STATEFUL_HOOKS_BOTH_DIR}" -maxdepth 1 -type f ) )
+
+  STATEFUL_HOOKS_STOP_LIST=( $( find -L "${STATEFUL_HOOKS_STOP_ONLY_DIR}" -maxdepth 1 -type f ) )
+  STATEFUL_HOOKS_STOP_LIST+=( $( find -L "${STATEFUL_HOOKS_BOTH_DIR}" -maxdepth 1 -type f ) )
+# </params>
+
+# <functions>
   function get_paths_for_domain
   {
     if ( [[ ! -d "${DOMAIN_NAME_BASE_DIR}" ]] && ! mkdir -p "${DOMAIN_NAME_BASE_DIR}" &> /dev/null ) \
@@ -137,37 +162,10 @@
   }
 # </functions>
 
-# <params>
-  DOMAIN_NAME="${1}"
-  # ARGUMENTS="$@"
-
-  PREFIX_ERROR="An error occurred:"
-  PREFIX_PROMPT="libvirt-qemu $( basename "${0}" ):"
-
-  HOOKS_BASE_DIR="$( dirname $( realpath "${0}" ) )/"
-  DOMAIN_NAME_BASE_DIR="${HOOKS_BASE_DIR}qemu.d/${DOMAIN_NAME}/"
-  DOMAIN_NAME_START_DIR="${DOMAIN_NAME_BASE_DIR}started/begin/"
-  DOMAIN_NAME_STOP_DIR="${DOMAIN_NAME_BASE_DIR}stopped/end/"
-
-  SET_HOOKS_DIR="${HOOKS_BASE_DIR}${0}.d/"
-
-  STATEFUL_HOOKS_DIR="${SET_HOOKS_DIR}"
-  STATEFUL_HOOKS_START_ONLY_DIR="${STATEFUL_HOOKS_DIR}start-only/"
-  STATEFUL_HOOKS_STOP_ONLY_DIR="${STATEFUL_HOOKS_DIR}stop-only/"
-  STATEFUL_HOOKS_BOTH_DIR="${STATEFUL_HOOKS_DIR}start-and-stop/"
-
-  STATEFUL_HOOKS_START_LIST=( $( find -L "${STATEFUL_HOOKS_START_ONLY_DIR}" -maxdepth 1 -type f ) )
-  STATEFUL_HOOKS_START_LIST+=( $( find -L "${STATEFUL_HOOKS_BOTH_DIR}" -maxdepth 1 -type f ) )
-
-  STATEFUL_HOOKS_STOP_LIST=( $( find -L "${STATEFUL_HOOKS_STOP_ONLY_DIR}" -maxdepth 1 -type f ) )
-  STATEFUL_HOOKS_STOP_LIST+=( $( find -L "${STATEFUL_HOOKS_BOTH_DIR}" -maxdepth 1 -type f ) )
-# </params>
-
 # <code>
   if is_valid_domain \
     && get_paths_for_domain \
     && get_hooks; then
     setup_stateful_hooks
-    # execute_stateless_hooks
   fi
 # </code>
