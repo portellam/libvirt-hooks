@@ -1,0 +1,14 @@
+[Unit]
+Description=Hibernate Libvirt domain "%i" before Host shutdown.
+Requires=virt-guest-shutdown.target
+After=libvirt-guests.service
+After=libvirtd.service
+After=virt-guest-shutdown.target
+
+[Service]
+Type=oneshot
+RemainAfterExit=yes
+ExecStart=/usr/local/bin/libvirt-dohibernate "%i"
+
+[Install]
+WantedBy=multi-user.target
