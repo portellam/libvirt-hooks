@@ -68,18 +68,18 @@
 
   function print_prompt_to_log
   {
-    print_prompt "${1}" >&2
+    print_prompt "${1}" >&0
   }
 
-  function print_prompt_and_error_to_log
+  function print_error_to_log
   {
-    print_prompt_to_log "${PREFIX_ERROR} ${1}"
+    print_prompt "${PREFIX_ERROR} ${1}" >&2
   }
 
 	function switch_video_input
 	{
 		if ! ddcutil -d "${DOMAIN_DISPLAY}" setvcp 60 "0x${VIDEO_INPUT}"; then
-			print_prompt_and_error_to_log "Failed to switch video input."
+			print_error_to_log "Failed to switch video input."
 			return 1
 		fi
 

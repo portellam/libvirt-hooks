@@ -33,18 +33,18 @@
 
   function print_prompt_to_log
   {
-    print_prompt "${1}" >&2
+    print_prompt "${1}" >&0
   }
 
-  function print_prompt_and_error_to_log
+  function print_error_to_log
   {
-    print_prompt_to_log "${PREFIX_ERROR} ${1}"
+    print_prompt "${PREFIX_ERROR} ${1}" >&2
   }
 
   function hibernate_domain
   {
     if ! virsh dompmsuspend --target disk "${DOMAIN_NAME}"; then
-      print_prompt_and_error_to_log "Failed to hibernate Libvirt domain '${DOMAIN_NAME}'."
+      print_error_to_log "Failed to hibernate Libvirt domain '${DOMAIN_NAME}'."
       return 1
     fi
 
@@ -54,7 +54,7 @@
   function hybrid_sleep_domain
   {
     if ! virsh dompmsuspend --target both "${DOMAIN_NAME}"; then
-      print_prompt_and_error_to_log "Failed to hybrid-sleep Libvirt domain '${DOMAIN_NAME}'."
+      print_error_to_log "Failed to hybrid-sleep Libvirt domain '${DOMAIN_NAME}'."
       return 1
     fi
 
@@ -64,7 +64,7 @@
   function sleep_domain
   {
     if ! virsh dompmsuspend --target both "${DOMAIN_NAME}"; then
-      print_prompt_and_error_to_log "Failed to sleep Libvirt domain '${DOMAIN_NAME}'."
+      print_error_to_log "Failed to sleep Libvirt domain '${DOMAIN_NAME}'."
       return 1
     fi
 
@@ -77,7 +77,7 @@
 
     if [[ "${domain_state}" != *"pmsuspended"* ]] \
       && [[ "${domain_state}" != *"shut off"* ]]; then
-      print_prompt_and_error_to_log "Libvirt domain '${DOMAIN_NAME}' is online."
+      print_error_to_log "Libvirt domain '${DOMAIN_NAME}' is online."
       return 1
     fi
 

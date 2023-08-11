@@ -38,7 +38,7 @@
   function write_host_memory_to_storage
   {
     if ! sync; then
-      print_prompt_and_error_to_log "Failed to write Host memory to storage."
+      print_error_to_log "Failed to write Host memory to storage."
       return 1
     fi
 
@@ -48,7 +48,7 @@
   function drop_filesystem_caches
   {
     if ! echo 3 > /proc/sys/vm/drop_caches; then
-      print_prompt_and_error_to_log "Failed to drop filesystem caches."
+      print_error_to_log "Failed to drop filesystem caches."
       return 1
     fi
 
@@ -58,7 +58,7 @@
   function defragment_host_memory
   {
     if ! echo 1 > /proc/sys/vm/compact_memory; then
-      print_prompt_and_error_to_log "Failed to defragment Host memory."
+      print_error_to_log "Failed to defragment Host memory."
       return 1
     fi
 
@@ -72,12 +72,12 @@
 
   function print_prompt_to_log
   {
-    print_prompt "${1}" >&2
+    print_prompt "${1}" >&0
   }
 
-  function print_prompt_and_error_to_log
+  function print_error_to_log
   {
-    print_prompt_to_log "${PREFIX_ERROR} ${1}"
+    print_prompt "${PREFIX_ERROR} ${1}" >&2
   }
 # </functions>
 

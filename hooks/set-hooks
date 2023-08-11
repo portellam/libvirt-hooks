@@ -58,7 +58,7 @@
 
     if [[ -d "${dir}" ]] \
       && ! mkdir --parents "${dir}" &> /dev/null; then
-      print_prompt_and_error_to_log "Failed to create directory "${dir}"."
+      print_error_to_log "Failed to create directory "${dir}"."
     fi
   }
 
@@ -67,7 +67,7 @@
     if ! create_directory "${DOMAIN_NAME_BASE_DIR}" \
       || ! create_directory "${DOMAIN_NAME_START_DIR}" \
       || ! create_directory "${DOMAIN_NAME_STOP_DIR}"; then
-      print_prompt_and_error_to_log "Failed to create directories for domain."
+      print_error_to_log "Failed to create directories for domain."
       return 1
     fi
   }
@@ -76,7 +76,7 @@
   {
     for hook_name in "${HOOKS_LIST[@]}"; do
       if [[ ! -e "${HOOK_BASE_DIR}${hook_name}" ]]; then
-        print_prompt_and_error_to_log "Failed to find domain hook(s)."
+        print_error_to_log "Failed to find domain hook(s)."
         return 1
       fi
     done
@@ -96,12 +96,12 @@
 
   function print_prompt_to_log
   {
-    print_prompt "${1}" >&2
+    print_prompt "${1}" >&0
   }
 
-  function print_prompt_and_error_to_log
+  function print_error_to_log
   {
-    print_prompt_to_log "${PREFIX_ERROR} ${1}"
+    print_prompt "${PREFIX_ERROR} ${1}" >&2
   }
 
   function set_start_hook_for_domain
@@ -112,12 +112,12 @@
     fi
 
     if ! ln -s "${DOMAIN_NAME_START_DIR}${1}" "${HOOK_BASE_DIR}${1}" &> /dev/null; then
-      print_prompt_and_error_to_log "Failed to set symlinks for start hook '${1}'."
+      print_error_to_log "Failed to set symlinks for start hook '${1}'."
       return 1
     fi
 
     if ! chmod +x "${DOMAIN_NAME_START_DIR}${1}" &> /dev/null; then
-      print_prompt_and_error_to_log "Failed to set file permissions for start hook '${1}'."
+      print_error_to_log "Failed to set file permissions for start hook '${1}'."
       return 1
     fi
   }
@@ -130,12 +130,12 @@
     fi
 
     if ! ln -s "${DOMAIN_NAME_STOP_DIR}${1}" "${HOOK_BASE_DIR}${1}" &> /dev/null; then
-      print_prompt_and_error_to_log "Failed to set symlinks for stop hook '${1}'."
+      print_error_to_log "Failed to set symlinks for stop hook '${1}'."
       return 1
     fi
 
     if ! chmod +x "${DOMAIN_NAME_STOP_DIR}${1}" &> /dev/null; then
-      print_prompt_and_error_to_log "Failed to set file permissions for stop hook '${1}'."
+      print_error_to_log "Failed to set file permissions for stop hook '${1}'."
       return 1
     fi
   }
@@ -164,13 +164,13 @@
 
     if [[ ! -e "${DOMAIN_NAME_START_DIR}${1}" ]] \
       && ! rm -rf "${DOMAIN_NAME_START_DIR}${1}" &> /dev/null; then
-      print_prompt_and_error_to_log "Failed to unset symlinks for start hook '${1}'."
+      print_error_to_log "Failed to unset symlinks for start hook '${1}'."
       return 1
     fi
 
     if [[ ! -z "${DOMAIN_NAME_STOP_DIR}${1}" ]] \
       && ! rm -rf "${DOMAIN_NAME_STOP_DIR}${1}" &> /dev/null; then
-      print_prompt_and_error_to_log "Failed to unset symlinks for stop hook '${1}'."
+      print_error_to_log "Failed to unset symlinks for stop hook '${1}'."
       return 1
     fi
   }

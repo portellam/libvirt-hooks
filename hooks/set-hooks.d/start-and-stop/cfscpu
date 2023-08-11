@@ -77,12 +77,12 @@
 
   function print_prompt_to_log
   {
-    print_prompt "${1}" >&2
+    print_prompt "${1}" >&0
   }
 
-  function print_prompt_and_error_to_log
+  function print_error_to_log
   {
-    print_prompt_to_log "${PREFIX_ERROR} ${1}"
+    print_prompt "${PREFIX_ERROR} ${1}" >&2
   }
 
   function prioritize_vcpu_for_domain
@@ -107,7 +107,7 @@
     local -r pid="${1}"
 
     if ! renice -n "${TARGET_NICE}" -p "${pid}" 2> /dev/null; then
-      print_prompt_and_error_to_log "Failed to set nice level for PID '${pid}'"
+      print_error_to_log "Failed to set nice level for PID '${pid}'"
       return 1
     fi
 
