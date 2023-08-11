@@ -26,7 +26,7 @@
   {
     "${DIR}isolcpu" "$@" || return 1
     "${DIR}nosleep" "$@" || return 1
-    "${DIR}set-hooks" "$@" || return 1
+    # "${DIR}set-hooks" "$@" || return 1
   }
 # </functions>
 
