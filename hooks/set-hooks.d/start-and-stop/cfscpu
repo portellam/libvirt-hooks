@@ -56,7 +56,7 @@
   function is_vcpu_path_in_subdirectory
   {
     if ! ls /sys/fs/cgroup/cpu/machine.slice/machine-qemu*${DOMAIN_NAME}.scope/libvirt/vcpu* 1> /dev/null 2>&1; then
-      print_prompt "Failed to find vCPU paths in Libvirt subdirectory. Found vCPU directory." > /dev/kmsg
+      print_error_to_log "Failed to find vCPU paths in Libvirt subdirectory. Found vCPU directory." > /dev/kmsg
       return 1
     fi
 
@@ -88,11 +88,11 @@
   function prioritize_vcpu_for_domain
   {
     if ! set_nice_level_for_domain; then
-      print_prompt "Failed to prioritize vCPU threads of Libvirt domain '${DOMAIN_NAME}'" > /dev/kmsg
+      print_error_to_log "Failed to prioritize vCPU threads of Libvirt domain '${DOMAIN_NAME}'" > /dev/kmsg
       return 1
     fi
 
-    print_prompt "Prioritized vCPU threads of Libvirt domain '${DOMAIN_NAME}'" > /dev/kmsg
+    print_prompt_to_log "Prioritized vCPU threads of Libvirt domain '${DOMAIN_NAME}'" > /dev/kmsg
   }
 
   function set_nice_level_for_domain
