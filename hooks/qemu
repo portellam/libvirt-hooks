@@ -16,13 +16,20 @@
   DIR="$( dirname "$( realpath "${0}" )" )/"
 # </params>
 
-# <summary>
-# Update list here. Example:
-#   "source PATH_TO_FILE"
-# </summary>
-# <note>Do not add 'set-service'. This script file is called as a source file to other files (example: 'nosleep').</note>
-# <sources>
-  source "${DIR}isolcpu"
-  source "${DIR}nosleep"
-  source "${DIR}set-hooks"
-# </sources>
+# <functions>
+  # <summary>
+  # Update list here. Example:
+  #   "PATH_TO_FILE" "$@"
+  # </summary>
+  # <note>Do not add 'set-service'. This script file is called as a source file to other files (example: 'nosleep').</note>
+  function main
+  {
+    "${DIR}isolcpu" "$@" || return 1
+    "${DIR}nosleep" "$@" || return 1
+    "${DIR}set-hooks" "$@" || return 1
+  }
+# </functions>
+
+# <code>
+  main "$@"
+# </code>
