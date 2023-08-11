@@ -19,7 +19,7 @@ set -e
   function execute_hooks
   {
     for hook in "${HOOKS_LIST_EXCLUDES_MASTER_HOOK[@]}"; do
-      eval ${hook} "$@"
+      source "${hook}"
     done
   }
 # </functions>
