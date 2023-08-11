@@ -29,18 +29,21 @@ Install Libvirt hooks (scripts) which extend and enhance the functionality of Li
   * Set CPU thread priority in CPU scheduler. <sup>[1](#1)</sup>
 ### ddcutil *(to be implemented in a future release)*
   * Switch active monitor input at domain start. <sup>[1](#1)</sup>
-### dohibernate *(to be implemented in a future release)*
-  * Hibernate domain at host hibernation.
+### beforeoff-dohibernate <sup>[4](#4)</sup>
+  * Hibernate domain at Host shutdown.
   * Stops *nosleep* service.
-### dosleep *(to be implemented in a future release)*
-  * Sleep domain at host sleep.
+### dohibernate <sup>[4](#4)</sup>
+  * Hibernate domain at Host sleep.
+  * Stops *nosleep* service.
+### dosleep <sup>[4](#4)</sup>
+  * Sleep domain at Host sleep.
   * Stops *nosleep* service.
 ### hugepages
-  * Allocate host RAM to pages for domain(s). <sup>[1](#1)</sup> <sup>[2](#2)</sup>
+  * Allocate Host RAM to pages for domain(s). <sup>[1](#1)</sup> <sup>[2](#2)</sup>
 ### isolcpu
-  * Isolate CPU threads from host, to allocate to domain(s). <sup>[1](#1)</sup> <sup>[3](#3)</sup>
+  * Isolate CPU threads from Host, to allocate to domain(s). <sup>[1](#1)</sup> <sup>[3](#3)</sup>
 ### nosleep
-  * Prevent host sleep if given domain is running. <sup>[4](#4)</sup>
+  * Prevent Host sleep if domain is running. <sup>[4](#4)</sup>
 
 ## References
 #### 1.
