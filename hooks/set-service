@@ -42,9 +42,33 @@
     set_operation "${service_name}" "${operation}" || return 1
   }
 
+  function disable_service
+  {
+    local -r service="${1}"
+
+    if ! systemctl disable "${service}" &> /dev/null; then
+      print_error_to_log "Failed to disable '${service}' service."
+      return 1
+    fi
+
+    print_prompt_to_log "Disabled '${service}' service."
+  }
+
+  function enable_service
+  {
+    local -r service="${1}"
+
+    if ! systemctl enable "${service}" &> /dev/null; then
+      print_error_to_log "Failed to enable '${service}' service."
+      return 1
+    fi
+
+    print_prompt_to_log "Enabled '${service}' service."
+  }
+
   function print_prompt_to_log
   {
-    echo -e "${PREFIX_PROMPT} ${1}" >&1
+    echo -e "${PREFIX_PROMPT} ${1}" >&2
   }
 
   function print_error_to_log
@@ -59,9 +83,11 @@
 
     case "${operation}" in
       "prepare")
+        enable_service "${service_name}" || return 1
         start_service "${service_name}" || return 1 ;;
       "release")
-        stop_service "${service_name}" || return 1 ;;
+        stop_service "${service_name}" || return 1
+        disable_service "${service_name}" || return 1 ;;
     esac
   }
 
