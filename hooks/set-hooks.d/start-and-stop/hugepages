@@ -72,7 +72,7 @@
 
   function print_prompt_to_log
   {
-    print_prompt "${1}" >&0
+    print_prompt "${1}" >&1
   }
 
   function print_error_to_log
