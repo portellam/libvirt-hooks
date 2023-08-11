@@ -16,6 +16,10 @@ Install Libvirt hooks (scripts) which extend and enhance the functionality of Li
 * [About](https://libvirt.org/hooks.html)
 
 ## How-to
+### To download, execute:
+
+        git clone https://github.com/portellam/libvirt-hooks
+
 ### To install:
 
         sudo bash installer.bash -i
