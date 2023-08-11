@@ -55,7 +55,7 @@
 
   function is_vcpu_path_in_subdirectory
   {
-    if ! ls /sys/fs/cgroup/cpu/machine.slice/machine-qemu*${DOMAIN_NAME}.scope/libvirt/vcpu* 1> /dev/null 2>&1; then
+    if ! ls /sys/fs/cgroup/cpu/machine.slice/machine-qemu*${DOMAIN_NAME}.scope/libvirt/vcpu* 1> /dev/null 2>&2; then
       print_error_to_log "Failed to find vCPU paths in Libvirt subdirectory. Found vCPU directory." > /dev/kmsg
       return 1
     fi
@@ -77,7 +77,7 @@
 
   function print_prompt_to_log
   {
-    echo -e "${PREFIX_PROMPT} ${1}" >&1
+    echo -e "${PREFIX_PROMPT} ${1}" >&2
   }
 
   function print_error_to_log

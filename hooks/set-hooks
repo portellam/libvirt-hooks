@@ -91,7 +91,7 @@
 
   function print_prompt_to_log
   {
-    echo -e "${PREFIX_PROMPT} ${1}" >&1
+    echo -e "${PREFIX_PROMPT} ${1}" >&2
   }
 
   function print_error_to_log
