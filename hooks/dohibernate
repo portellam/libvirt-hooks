@@ -7,18 +7,29 @@
 # Maintainer(s):  Alex Portell <github.com/portellam>
 #
 
-# <sources>
-  source set-service
-# </sources>
+# <functions>
+  function main
+  {
+    # <params>
+      dir="$( dirname "$( realpath "${0}" )" )/"
+      source="${dir}set-service"
 
-# <params>
-  DOMAIN_NAME="${1}"
-  HOOK_NAME="$( basename "${0}" )"
-  THIS_SERVICE_NAME="libvirt-${HOOK_NAME}@${DOMAIN_NAME}.service"
-  REAL_SERVICE_NAME="libvirt-${HOOK_NAME}@.service"
-  SERVICE_FULL_PATH="/etc/systemd/system/libvirt-${REAL_SERVICE_NAME}@.service"
-# </params>
+      domain_name="${1}"
+      hook_name="$( basename "${0}" )"
+      this_service_name="libvirt-${hook_name}@${domain_name}.service"
+      real_service_name="libvirt-${hook_name}@.service"
+      service_full_path="/etc/systemd/system/libvirt-${real_service_name}@.service"
+      local -ar arguments=( "${this_service_name}" "${service_full_path}" "$@" )
+    # </params>
+
+    # <sources>
+      source "${source}"
+    # </sources>
+
+    main "${arguments[@]}"
+  }
+# </functions>
 
 # <code>
-  setup_this_service "${THIS_SERVICE_NAME}" "${SERVICE_FULL_PATH}" "$@"
+  main "$@"
 # </code>

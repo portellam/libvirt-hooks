@@ -8,37 +8,29 @@
 # Maintainer(s):  Alex Portell <github.com/portellam>
 #
 
-HOOK_NAME="nosleep"
-PREFIX_ERROR="An error occurred:"
-PREFIX_PROMPT="libvirt-qemu ${HOOK_NAME}:"
-DOMAIN_NAME="${1}"
-OPERATION="${2}"
+# <functions>
+  function main
+  {
+    # <params>
+      dir="$( dirname "$( realpath "${0}" )" )/"
+      source="${dir}set-service"
 
-function start_service
-{
-  if ! systemctl start "libvirt-nosleep@${DOMAIN_NAME}" &> /dev/null; then
-    echo "${PREFIX_PROMPT} ${PREFIX_ERROR} Failed to start 'libvirt-nosleep@${DOMAIN_NAME}' service." >&2
-    return 1
-  fi
+      domain_name="${1}"
+      hook_name="$( basename "${0}" )"
+      this_service_name="libvirt-${hook_name}@${domain_name}.service"
+      real_service_name="libvirt-${hook_name}@.service"
+      service_full_path="/etc/systemd/system/libvirt-${real_service_name}@.service"
+      local -ar arguments=( "${this_service_name}" "${service_full_path}" "$@" )
+    # </params>
 
-  echo "${PREFIX_PROMPT} Started 'libvirt-nosleep@${DOMAIN_NAME}' service."
-  return 0
-}
+    # <sources>
+      source "${source}"
+    # </sources>
 
-function stop_service
-{
-  if ! systemctl stop "libvirt-nosleep@${DOMAIN_NAME}" &> /dev/null; then
-    echo "${PREFIX_PROMPT} ${PREFIX_ERROR} Failed to stop 'libvirt-nosleep@${DOMAIN_NAME}' service." >&2
-    return 1
-  fi
+    main "${arguments[@]}"
+  }
+# </functions>
 
-  echo "${PREFIX_PROMPT} Stopped 'libvirt-nosleep@${DOMAIN_NAME}' service."
-  return 0
-}
-
-case "${OPERATION}" in
-  "prepare")
-    start_service ;;
-  "release")
-    stop_service ;;
-esac
+# <code>
+  main "$@"
+# </code>
