@@ -11,7 +11,7 @@ set -e
 
 # <params>
   MASTER_HOOK="${0}"
-  DIR_NAME="$( dirname $( realpath "${0}" ) )/hooks/"
+  DIR_NAME="$( dirname $( realpath "${0}" ) )/"
   HOOKS_LIST_EXCLUDES_MASTER_HOOK+=( $( find -L "${DIR_NAME}" -maxdepth 1 ! -name "${MASTER_HOOK}" -type f ) )
 # </params>
 
