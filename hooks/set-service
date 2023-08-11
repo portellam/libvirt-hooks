@@ -26,42 +26,20 @@
   {
     local -r service_name="${1}"
 
-    # if ! is_string "${service_name}"; then
-      # print_error_to_log "Service name is not valid."
-      # return 0
-    # fi
+    if [[ -z "${service_name}" ]]; then
+      print_error_to_log "Service name is not valid."
+      return 0
+    fi
 
-    # local -r service_full_path="${2}"
-
-    # if ! is_string "${service_full_path}" \
-      # || ! is_path_valid "${service_full_path}"; then
-      # print_error_to_log "Service path is not valid."
-      # return 0
-    # fi
-
-    shift; shift
+    shift
     local -r operation="${2}"
 
-    # if ! is_string "${operation}"; then
-      # print_error_to_log "Operation argument is not valid."
-      # return 0
-    # fi
+    if [[ -z "${operation}" ]]; then
+      print_error_to_log "Operation argument is not valid."
+      return 0
+    fi
 
     set_operation "${service_name}" "${operation}" || return 1
-  }
-
-  function is_path_valid
-  {
-    if [[ ! -e "${1}" ]]; then
-      print_error_to_log "Path '${1}' is not valid."
-    fi
-  }
-
-  function is_string
-  {
-    if [[ ! -z "${1}" ]]; then
-      print_error_to_log "Empty string."
-    fi
   }
 
   function print_prompt
@@ -101,7 +79,7 @@
       return 1
     fi
 
-    print_prompt "Started '${service}' service."
+    print_prompt_to_log "Started '${service}' service."
   }
 
   function stop_service
@@ -113,6 +91,6 @@
       return 1
     fi
 
-    print_prompt "Stopped '${service}' service."
+    print_prompt_to_log "Stopped '${service}' service."
   }
 # </functions>
