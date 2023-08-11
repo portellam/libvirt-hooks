@@ -1,0 +1,70 @@
+#!/usr/bin/env bash
+
+#
+# Filename:       /usr/local/bin/libvirt-dohibernate
+# Description:    Try to hibernate Libvirt domain before Host hibernation.
+# Author(s):      Alex Portell <github.com/portellam>
+# Maintainer(s):  Alex Portell <github.com/portellam>
+#
+
+# <params>
+  DOMAIN_NAME="${1}"
+  HOOK_NAME="dohibernate"
+  PREFIX_ERROR="An error occurred:"
+  PREFIX_PROMPT="libvirt-qemu ${HOOK_NAME}:"
+# </params>
+
+# <functions>
+  function main
+  {
+    is_domain_suspended_or_offline && return 0
+
+    if ! hibernate_domain \
+      || ! sleep_for_one_cycle \
+      || ! is_domain_suspended_or_offline; then
+      return 1
+    fi
+  }
+
+  function print_prompt_to_log
+  {
+    echo -e "${PREFIX_PROMPT} ${1}" >&1
+  }
+
+  function print_error_to_log
+  {
+    echo -e "${PREFIX_PROMPT} ${PREFIX_ERROR} ${1}" >&2
+  }
+
+  function hibernate_domain
+  {
+    if ! virsh dompmsuspend --target disk "${DOMAIN_NAME}"; then
+      print_error_to_log "Failed to hibernate Libvirt domain '${DOMAIN_NAME}'."
+      return 1
+    fi
+
+    print_prompt_to_log "Hibernating Libvirt domain '${DOMAIN_NAME}'."
+  }
+
+  function is_domain_suspended_or_offline
+  {
+    local -r domain_state="$( virsh domstate ${DOMAIN_NAME} | tr -d '\n' )"
+
+    if [[ "${domain_state}" != *"pmsuspended"* ]] \
+      && [[ "${domain_state}" != *"shut off"* ]]; then
+      print_error_to_log "Libvirt domain '${DOMAIN_NAME}' is online."
+      return 1
+    fi
+
+    print_prompt_to_log "Libvirt domain '${DOMAIN_NAME}' is offline."
+  }
+
+  function sleep_for_one_cycle
+  {
+    sleep 1
+  }
+# </functions>
+
+# <code>
+  main
+# </code>

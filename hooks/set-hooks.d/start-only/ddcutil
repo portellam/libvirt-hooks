@@ -1,0 +1,106 @@
+#!/usr/bin/env bash
+
+#
+# Filename:       /etc/libvirt/hooks/ddcutil
+# Description:    Automatically switch monitor inputs when starting/stopping a libvirt domain.
+# URL(s):         https://github.com/PassthroughPOST/VFIO-Tools
+# Author(s):      Sebastiaan <github.com/SharkWipf>
+# Maintainer(s):  Alex Portell <github.com/portellam>
+#
+
+# <remarks>
+# This hook allows automatically switch monitor inputs when starting/stopping a VM.
+# This file depends on the Passthrough POST hook helper script found in this repo.
+# Place this script in BOTH these directories (or symlink it):
+#
+# Set the files as executable through `chmod +x` and configure your inputs.
+# You also need `ddcutil` and a ddcutil-compatible monitor.
+#
+# Make sure you specify the right settings for your setup below or it won't work.
+# </remarks>
+
+# return 0		# <note>Skipping: To be implemented in a future release</note>
+
+# <params>
+	OPERATION="${2}"
+	SUBOPERATION="${3}"
+
+	PREFIX_ERROR="An error occurred:"
+  PREFIX_PROMPT="libvirt-qemu $( basename "${0}" ):"
+
+	# <remarks>The display shown in `ddcutil detect`</remarks>
+	DOMAIN_DISPLAY="0"
+
+	# <remarks>Video input values (without 0x, but with leading zeroes, if any. See `ddcutil capabilities`)</remarks>
+	DOMAIN_VIDEO_INPUT="12"
+	HOST_VIDEO_INPUT="0f"
+	VIDEO_INPUT=""
+# </params>
+
+# <functions>
+	function main
+	{
+		if ! get_video_input \
+			|| ! set_video_input; then
+			return 1
+		fi
+	}
+
+	function get_video_input
+	{
+		case "${OPERATION}/${SUBOPERATION}" in
+			"started/begin" )
+				VIDEO_INPUT="${DOMAIN_VIDEO_INPUT}"
+				return 0 ;;
+
+			"stopped/end" )
+				VIDEO_INPUT="${HOST_VIDEO_INPUT}"
+				return 0 ;;
+		esac
+
+		return 1
+	}
+
+	function print_prompt
+  {
+    echo -e "${PREFIX_PROMPT} ${1}"
+  }
+
+  function print_prompt_to_log
+  {
+    echo -e "${PREFIX_PROMPT} ${1}" >&1
+  }
+
+  function print_error_to_log
+  {
+    echo -e "${PREFIX_PROMPT} ${PREFIX_ERROR} ${1}" >&2
+  }
+
+	function switch_video_input
+	{
+		if ! ddcutil -d "${DOMAIN_DISPLAY}" setvcp 60 "0x${VIDEO_INPUT}"; then
+			print_error_to_log "Failed to switch video input."
+			return 1
+		fi
+
+		print_prompt_to_log "Switched video input."
+	}
+
+	function has_switched_video_input
+	{
+		if [[ "$( ddcutil -d "${DOMAIN_DISPLAY}" getvcp 60 --terse | awk '{print ${4}}' )" == "x${VIDEO_INPUT}" ]]; then
+			print_prompt_to_log "Video input is already set."
+			return 0
+		fi
+	}
+
+	function set_video_input
+	{
+		has_switched_video_input && return 0
+		switch_video_input
+	}
+# </functions>
+
+# <code>
+	main
+# </code>
