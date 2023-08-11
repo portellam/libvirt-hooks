@@ -38,6 +38,14 @@
 # </params>
 
 # <functions>
+	function main
+	{
+		if ! get_video_input \
+			|| ! set_video_input; then
+			return 1
+		fi
+	}
+
 	function get_video_input
 	{
 		case "${OPERATION}/${SUBOPERATION}" in
@@ -94,5 +102,5 @@
 # </functions>
 
 # <code>
-	get_video_input && set_video_input
+	main
 # </code>

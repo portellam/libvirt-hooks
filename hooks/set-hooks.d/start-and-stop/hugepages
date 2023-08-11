@@ -25,6 +25,16 @@
   PREFIX_PROMPT="libvirt-qemu $( basename "${0}" ):"
 
 # <functions>
+  function main
+  {
+    if ! write_host_memory_to_storage \
+      || ! drop_filesystem_caches \
+      || ! write_host_memory_to_storage \
+      || ! defragment_host_memory; then
+      return 1
+    fi
+  }
+
   function write_host_memory_to_storage
   {
     if ! sync; then
@@ -72,8 +82,5 @@
 # </functions>
 
 # <code>
-  write_host_memory_to_storage
-  drop_filesystem_caches
-  write_host_memory_to_storage
-  defragment_host_memory
+  main
 # </code>

@@ -19,7 +19,6 @@
 # <params>
   DOMAIN_NAME="${1}"
 
-
   PREFIX_ERROR="An error occurred:"
   PREFIX_PROMPT="libvirt-qemu $( basename "${0}" ):"
 
@@ -41,11 +40,33 @@
 # </params>
 
 # <functions>
+  function main
+  {
+    is_valid_domain || return 0
+
+    if ! get_paths_for_domain \
+      || ! get_hooks; then
+      return 1
+    fi
+
+    setup_stateful_hooks
+  }
+
+  function create_directory
+  {
+    local -r dir="${1}"
+
+    if [[ -d "${dir}" ]] \
+      && ! mkdir --parents "${dir}" &> /dev/null; then
+      print_prompt_and_error_to_log "Failed to create directory "${dir}"."
+    fi
+  }
+
   function get_paths_for_domain
   {
-    if ( [[ ! -d "${DOMAIN_NAME_BASE_DIR}" ]] && ! mkdir -p "${DOMAIN_NAME_BASE_DIR}" &> /dev/null ) \
-      || ( [[ ! -d "${DOMAIN_NAME_START_DIR}" ]] && ! mkdir -p "${DOMAIN_NAME_START_DIR}" &> /dev/null ) \
-      || ( [[ ! -d "${DOMAIN_NAME_STOP_DIR}" ]] && ! mkdir -p "${DOMAIN_NAME_STOP_DIR}" &> /dev/null ); then
+    if ! create_directory "${DOMAIN_NAME_BASE_DIR}" \
+      || ! create_directory "${DOMAIN_NAME_START_DIR}" \
+      || ! create_directory "${DOMAIN_NAME_STOP_DIR}"; then
       print_prompt_and_error_to_log "Failed to create directories for domain."
       return 1
     fi
@@ -161,9 +182,5 @@
 # </functions>
 
 # <code>
-  if is_valid_domain \
-    && get_paths_for_domain \
-    && get_hooks; then
-    setup_stateful_hooks
-  fi
+  main "$@"
 # </code>

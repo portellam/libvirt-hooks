@@ -34,6 +34,16 @@
 # </params>
 
 # <functions>
+  function main
+  {
+    is_valid_domain || return 0
+
+    if ! get_vcpu_path \
+      || ! prioritize_vcpu_for_domain; then
+      return 1
+    fi
+  }
+
   function get_vcpu_path
   {
     if is_vcpu_path_in_subdirectory; then
@@ -116,8 +126,5 @@
 # </functions>
 
 # <code>
-  if is_valid_domain; then
-    get_vcpu_path
-    prioritize_vcpu_for_domain
-  fi
+  main
 # </code>

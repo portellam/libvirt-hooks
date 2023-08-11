@@ -38,6 +38,14 @@
 # </params>
 
 # <functions>
+  function main
+  {
+    if ! get_cpu \
+      || ! release_or_reserve_cpu; then
+      return 1
+    fi
+  }
+
   function are_values_not_empty
   {
     if ( "${FLAG_USE_HEX_MASKS}" && are_hex_masks_not_empty && are_thread_sets_not_empty ) \
@@ -68,16 +76,25 @@
 
   function add_threads_to_lists
   {
+    add_threads_to_host_list
+    add_threads_to_guest_list
+  }
+
+  function add_threads_to_guest_list
+  {
     for core in ${host_cores_list[@]}; do
       get_thread_by_core_and_smt
       host_threads_list+=( "${thread}" )
       host_threads_delim_list+=( "${thread}" )
     done
+  }
 
-    for core in ${guest_cores_list[@]}; do
+  function add_threads_to_host_list
+  {
+    for core in ${host_cores_list[@]}; do
       get_thread_by_core_and_smt
-      guest_threads_list+=( "${thread}" )
-      guest_threads_delim_list+=( "${thread}" )
+      host_threads_list+=( "${thread}" )
+      host_threads_delim_list+=( "${thread}" )
     done
   }
 
@@ -92,9 +109,7 @@
     set_cores_allocated_to_host || return 1
 
     local -a host_cores_list=( $( seq 0 $(( "${cores_allocated_to_host}" - 1 )) ) )
-    local -a host_threads_list=( )
-    local -a guest_cores_list=( $( seq "${cores_allocated_to_host}" $(( "${total_cores_count}" - 1 )) ) )
-    local -a guest_threads_list=( )
+    # local -a guest_cores_list=( $( seq "${cores_allocated_to_host}" $(( "${total_cores_count}" - 1 )) ) )
     local -i smt_factor=$(( "${total_threads_count}" / "${total_cores_count}" ))
     local -a smt_factor_list=( $( seq 0 $(( "${smt_factor}" - 1 )) ) )
 
@@ -281,5 +296,5 @@
 # </functions>
 
 # <code>
-  get_cpu && release_or_reserve_cpu
+  main
 # </code>
