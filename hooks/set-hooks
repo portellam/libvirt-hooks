@@ -1,4 +1,4 @@
-#!/bin/false
+#!/usr/bin/env bash
 
 #
 # Filename:       /etc/libvirt/hooks/set-hooks
