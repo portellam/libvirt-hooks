@@ -18,7 +18,7 @@
       hook_name="$( basename "${0}" )"
       this_service_name="libvirt-${hook_name}@${domain_name}.service"
       real_service_name="libvirt-${hook_name}@.service"
-      service_full_path="/etc/systemd/system/libvirt-${real_service_name}@.service"
+      service_full_path="/etc/systemd/system/libvirt-${real_service_name}"
       local -ar arguments=( "${this_service_name}" "${service_full_path}" "$@" )
     # </params>
 
