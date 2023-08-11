@@ -186,12 +186,12 @@
 
   function print_prompt_to_log
   {
-    echo -e "${PRINT_PROMPT} ${1}" >&1
+    echo -e "${PREFIX_PROMPT} ${1}" >&1
   }
 
   function print_error_to_log
   {
-    echo -e "${PRINT_PROMPT} ${PREFIX_ERROR} ${1}" >&2
+    echo -e "${PREFIX_PROMPT} ${PREFIX_ERROR} ${1}" >&2
   }
 
   function release_hex_mask
@@ -221,9 +221,9 @@
   {
     local cpu_set="${1}"
 
-    if ! systemctl set-property --runtime -- system.slice AllowedCPUs=${cpu_set} \
-      || ! systemctl set-property --runtime -- user.slice AllowedCPUs=${cpu_set} \
-      || ! systemctl set-property --runtime -- init.scope AllowedCPUs=${cpu_set}; then
+    if ! systemctl set-property --runtime -- system.slice AllowedCPUs="${cpu_set}" \
+      || ! systemctl set-property --runtime -- user.slice AllowedCPUs="${cpu_set}" \
+      || ! systemctl set-property --runtime -- init.scope AllowedCPUs="${cpu_set}"; then
       print_error_to_log "Failed to release CPU threads to Host."
       return 1
     fi

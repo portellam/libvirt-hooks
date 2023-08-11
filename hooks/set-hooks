@@ -91,12 +91,12 @@
 
   function print_prompt_to_log
   {
-    echo -e "${PRINT_PROMPT} ${1}" >&1
+    echo -e "${PREFIX_PROMPT} ${1}" >&1
   }
 
   function print_error_to_log
   {
-    echo -e "${PRINT_PROMPT} ${PREFIX_ERROR} ${1}" >&2
+    echo -e "${PREFIX_PROMPT} ${PREFIX_ERROR} ${1}" >&2
   }
 
   function set_start_hook_for_domain
