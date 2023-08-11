@@ -13,7 +13,16 @@
 # </params>
 
 # <functions>
-  function setup_this_service
+  # <summary>
+  # This source file will not execute by itself.
+  # Define "source /etc/libvirt/hooks/set-service",
+  #   follow with 'main "${my_array}"',
+  #   where "${my_array}" contains:
+  #     $1 == the name of the service (example: "libvirt-nosleep@DOMAIN_NAME")
+  #     $2 == the path to the original service file (example: "/etc/systemd/system/libvirt-nosleep@.service")
+  #     $@ == the remainder of arguments (note: pass "$@". The command 'shift' is used to decrement and parse input values.)
+  # </summary>
+  function main
   {
     local -r service_name="${1}"
 
