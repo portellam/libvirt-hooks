@@ -69,13 +69,13 @@
   function add_threads_to_lists
   {
     for core in ${host_cores_list[@]}; do
-      get_thread_by_core_and_smt "${thread}" "${core}"
+      get_thread_by_core_and_smt
       host_threads_list+=( "${thread}" )
       host_threads_delim_list+=( "${thread}" )
     done
 
     for core in ${guest_cores_list[@]}; do
-      get_thread_by_core_and_smt "${thread}" "${core}"
+      get_thread_by_core_and_smt
       guest_threads_list+=( "${thread}" )
       guest_threads_delim_list+=( "${thread}" )
     done
@@ -83,7 +83,7 @@
 
   function get_cpu
   {
-    are_values_not_empty && return 0
+    are_values_not_empty &> /dev/null && return 0
 
     local -i cores_allocated_to_host=0
     local -i total_cores_count=$( cat /proc/cpuinfo | grep "cpu cores" | uniq | grep -o "[0-9]\+" )
@@ -99,33 +99,31 @@
     local -a smt_factor_list=( $( seq 0 $(( "${smt_factor}" - 1 )) ) )
 
     get_thread_sets_for_host_and_libvirt || return 1
+    get_hex_mask_for_host_and_libvirt || return 1
     are_values_not_empty
   }
 
-  # function get_hex_mask_for_host_and_libvirt        # <note>To be implemented in a future release.</note>
-  # {
-  #   local -i host_threads_hex_mask=0
-  #   local -i total_threads_hex_mask=0
+  function get_hex_mask_for_host_and_libvirt
+  {
+    local -i host_threads_hex_mask=0
+    local -i total_threads_hex_mask=0
 
-  #   # <remarks>Add each decimal mask to sum.</remarks>
-  #   for thread in ${host_threads_list[@]}; do
-  #     local -i thread_decimal=$(( 2 ** ${thread} ))
-  #     local -i thread_hex_mask=$( echo "obase=16; ${thread_decimal}" | bc )
-  #     host_threads_hex_mask+="${thread_hex_mask}"
-  #   done
+    # <remarks>Add each decimal mask to sum.</remarks>
+    for thread in ${host_threads_list[@]}; do
+      local -i thread_decimal=$(( 2 ** ${thread} ))
+      local -i thread_hex_mask=$( echo "obase=16; ${thread_decimal}" | bc )
+      host_threads_hex_mask+="${thread_hex_mask}"
+    done
 
-  #   # <remarks>Convert hexadecimal mask into hexadecimal.</remarks>
-  #   HOST_THREADS_HEX=$( printf '%x\n' "${host_threads_hex_mask}" )
-  #   local -i total_threads_hex_mask=$(( ( 2 ** ${total_threads_count} ) - 1 ))
-  #   GUEST_THREADS_HEX=$( printf '%x\n' "${total_threads_hex_mask}" )
-  #   are_hex_masks_not_empty
-  # }
+    # <remarks>Convert hexadecimal mask into hexadecimal.</remarks>
+    HOST_THREADS_HEX=$( printf '%x\n' "${host_threads_hex_mask}" )
+    local -i total_threads_hex_mask=$(( ( 2 ** ${total_threads_count} ) - 1 ))
+    GUEST_THREADS_HEX=$( printf '%x\n' "${total_threads_hex_mask}" )
+  }
 
   function get_thread_by_core_and_smt
   {
-    local -n reference="${1}"
-    local -i core="${2}"
-    reference=$(( core + ( smt_factor * total_cores_count )))
+    thread=$(( core + ( smt_factor * total_cores_count )))
   }
 
   function get_thread_sets_for_host_and_libvirt
