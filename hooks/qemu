@@ -2,28 +2,27 @@
 
 #
 # Filename:       /etc/libvirt/hooks/qemu
+# Description:    List of Libvirt hooks to invoke.
 # Author(s):      Alex Portell <github.com/portellam>
 # Maintainer(s):  Alex Portell <github.com/portellam>
 #
 
 # <remarks>If a script exits with an error, exit Libvirt.</remarks>
-set -e
+# <sets>
+  set -e
+# </sets>
 
 # <params>
-  MASTER_HOOK="${0}"
-  DIR_NAME="$( dirname $( realpath "${0}" ) )/"
-  HOOKS_LIST_EXCLUDES_MASTER_HOOK+=( $( find -L "${DIR_NAME}" -maxdepth 1 ! -name "${MASTER_HOOK}" -type f ) )
+  DIR="$( dirname "$( realpath "${0}" )" )/"
 # </params>
 
-# <functions>
-  function execute_hooks
-  {
-    for hook in "${HOOKS_LIST_EXCLUDES_MASTER_HOOK[@]}"; do
-      source "${hook}"
-    done
-  }
-# </functions>
-
-# <code>
-  execute_hooks
-# </code>
+# <summary>
+# Update list here. Example:
+#   "source PATH_TO_FILE"
+# </summary>
+# <note>Do not add 'set-service'. This script file is called as a source file to other files (example: 'nosleep').</note>
+# <sources>
+  source "${DIR}isolcpu"
+  source "${DIR}nosleep"
+  source "${DIR}set-hooks"
+# </sources>
