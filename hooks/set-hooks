@@ -1,4 +1,4 @@
-#!/usr/bin/env bash
+#!/bin/false
 
 #
 # Filename:       /etc/libvirt/hooks/set-hooks
@@ -18,7 +18,7 @@
 
 # <params>
   DOMAIN_NAME="${1}"
-  # ARGUMENTS="$@"
+
 
   PREFIX_ERROR="An error occurred:"
   PREFIX_PROMPT="libvirt-qemu $( basename "${0}" ):"
