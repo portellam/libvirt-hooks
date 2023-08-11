@@ -9,7 +9,7 @@
 
 # <remarks>If a script exits with an error, exit Libvirt.</remarks>
 # <sets>
-  set -e
+  set -eo pipefail
 # </sets>
 
 # <params>
