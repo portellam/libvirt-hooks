@@ -1,8 +1,8 @@
 #!/usr/bin/env bash
 
 #
-# Filename:       /etc/libvirt/hooks/libvirt-dohibernate
-# Description:    Try to hibernate Libvirt domain before Host hibernation.
+# Filename:       /etc/libvirt/hooks/dohibernate
+# Description:    Hibernate Libvirt domain.
 # Author(s):      Alex Portell <github.com/portellam>
 # Maintainer(s):  Alex Portell <github.com/portellam>
 #

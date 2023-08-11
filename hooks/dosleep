@@ -1,8 +1,8 @@
 #!/usr/bin/env bash
 
 #
-# Filename:       /etc/libvirt/hooks/libvirt-dosleep
-# Description:    Try to suspend Libvirt domain before Host sleep.
+# Filename:       /etc/libvirt/hooks/dosleep
+# Description:    Sleep Libvirt domain.
 # Author(s):      Alex Portell <github.com/portellam>
 # Maintainer(s):  Alex Portell <github.com/portellam>
 #
