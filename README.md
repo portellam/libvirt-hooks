@@ -33,13 +33,13 @@ Install Libvirt hooks (scripts) which extend and enhance the functionality of Li
   * Set CPU thread priority in CPU scheduler. <sup>[1](#1)</sup>
 ### ddcutil *(to be implemented in a future release)*
   * Switch active monitor input at domain start. <sup>[1](#1)</sup>
-### beforeoff-dohibernate <sup>[4](#4)</sup>
+### beforeoff-dohibernate *(to be implemented in a future release)*
   * Hibernate domain at Host shutdown.
   * Stops *nosleep* service.
-### dohibernate <sup>[4](#4)</sup>
+### dohibernate *(to be implemented in a future release)*
   * Hibernate domain at Host sleep.
   * Stops *nosleep* service.
-### dosleep <sup>[4](#4)</sup>
+### dosleep *(to be implemented in a future release)*
   * Sleep domain at Host sleep.
   * Stops *nosleep* service.
 ### hugepages
