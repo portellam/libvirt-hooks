@@ -38,12 +38,10 @@
   readonly SERVICE_DEST_PATH="/etc/systemd/system/"
   readonly SERVICE_SOURCE_PATH="${WORKING_DIR}systemd/"
 
-  declare -a BIN_LIST=( $( find -L "${BIN_SOURCE_PATH}" -maxdepth 1 -type f ) )
-  declare -a SCRIPT_LIST=( $( find -L "${SCRIPT_SOURCE_RELATIVE_PATH}" -type f ) )
-  declare -a SCRIPT_SUBDIR_LIST=( $( find -L "${SCRIPT_SOURCE_RELATIVE_PATH}" -type d ) )
-  unset SCRIPT_SUBDIR_LIST[0]
-  readonly SCRIPT_SUBDIR_LIST
-  declare -a SERVICE_LIST=( $( find -L "${SERVICE_SOURCE_PATH}" -maxdepth 1 -type f ) )
+  declare -a BIN_LIST=( )
+  declare -a SCRIPT_LIST=( )
+  declare -a SCRIPT_SUBDIR_LIST=( )
+  declare -a SERVICE_LIST=( )
 
   DO_INSTALL_AUDIO_LOOPBACK=false
   AUDIO_LOOPBACK_HOOK_NAME="audio-loopback"
@@ -72,6 +70,7 @@
       exit 1
     fi
 
+    add_to_lists &> /dev/null
     get_option || exit 1
     is_pulseaudio_installed
     do_install_audio_loopback
@@ -85,6 +84,16 @@
 
     update_services
     exit "${?}"
+  }
+
+  function add_to_lists
+  {
+    BIN_LIST=( $( find -L "${BIN_SOURCE_PATH}" -maxdepth 1 -type f ) )
+    SCRIPT_LIST=( $( find -L "${SCRIPT_SOURCE_RELATIVE_PATH}" -type f ) )
+    SCRIPT_SUBDIR_LIST=( $( find -L "${SCRIPT_SOURCE_RELATIVE_PATH}" -type d ) )
+    unset SCRIPT_SUBDIR_LIST[0]
+    readonly SCRIPT_SUBDIR_LIST
+    SERVICE_LIST=( $( find -L "${SERVICE_SOURCE_PATH}" -maxdepth 1 -type f ) )
   }
 
   function are_dependencies_installed
