@@ -44,6 +44,9 @@
   unset SCRIPT_SUBDIR_LIST[0]
   readonly SCRIPT_SUBDIR_LIST
   declare -ar SERVICE_LIST=( $( find -L "${SERVICE_SOURCE_PATH}" -maxdepth 1 -type f ) )
+
+  DO_INSTALL_AUDIO_LOOPBACK=false
+  AUDIO_LOOPBACK_HOOK_NAME="audio-loopback"
 # </params>
 
 # <functions>
@@ -69,6 +72,7 @@
       exit 1
     fi
 
+    is_pulseaudio_installed
     get_option || exit 1
 
     if ! "${DO_INSTALL}"; then
@@ -145,6 +149,8 @@
     function copy_script_files_to_destination
     {
       for script in "${SCRIPT_LIST[@]}"; do
+        is_file_for_pulseaudio "${script}" && continue
+
         local script_source_file="${WORKING_DIR}${script}"
         local script_dest_file="${SCRIPT_DEST_PATH}${script:6}"
         local script_dest_dir="$( dirname "${script_dest_file}" )/"
@@ -162,6 +168,8 @@
       for service in "${SERVICE_LIST[@]}"; do
         local service_name="$( basename "${service}" )"
         local service_path="${SERVICE_DEST_PATH}/${service_name}"
+
+        is_file_for_pulseaudio "${service_name}" && continue
 
         if ! sudo cp --force "${service}" "${service_path}" &> /dev/null; then
           print_error "Failed to copy project service(s)."
@@ -394,6 +402,24 @@
   function unset_ifs
   {
     unset IFS
+  }
+
+  function is_pulseaudio_installed
+  {
+    if ! command -v "pulseaudio" &> /dev/null \
+      || ! command -v "pactl" &> /dev/null; then
+      DO_INSTALL_AUDIO_LOOPBACK=true
+    fi
+  }
+
+  function is_file_for_pulseaudio
+  {
+    case "${1}" in
+      *"${AUDIO_LOOPBACK_HOOK_NAME}"* )
+        return 0 ;;
+    esac
+
+    return 1
   }
 # </functions>
 

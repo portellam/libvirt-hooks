@@ -1,0 +1,28 @@
+#!/usr/bin/env bash
+
+#
+# Filename:       /etc/libvirt/hooks/audio-loopback
+# Description:    Linux systemd service to start/stop an audio loopback device. Connect an audio source to your main audio device's Line-In.
+# Author(s):      Alex Portell <github.com/portellam>
+# Maintainer(s):  Alex Portell <github.com/portellam>
+#
+
+# <params>
+  DIR="$( dirname "$( realpath "${0}" )" )/"
+  SOURCE="${DIR}set-service"
+  HOOK_NAME="$( basename "${0}" )"
+  SERVICE_NAME="libvirt-${HOOK_NAME}.service"
+  ARGUMENTS=( "${SERVICE_NAME}" "$@" )
+# </params>
+
+# <functions>
+  function main
+  {
+    source "${SOURCE}"
+    main "${ARGUMENTS[@]}"
+  }
+# </functions>
+
+# <code>
+  main "$@"
+# </code>
