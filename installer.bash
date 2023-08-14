@@ -38,12 +38,13 @@
   readonly SERVICE_DEST_PATH="/etc/systemd/system/"
   readonly SERVICE_SOURCE_PATH="${WORKING_DIR}systemd/"
 
-  declare -ar BIN_LIST=( $( find -L "${BIN_SOURCE_PATH}" -maxdepth 1 -type f ) )
-  declare -ar SCRIPT_LIST=( $( find -L "${SCRIPT_SOURCE_RELATIVE_PATH}" -type f ) )
-  declare -a SCRIPT_SUBDIR_LIST=( $( find -L "${SCRIPT_SOURCE_RELATIVE_PATH}" -type d ) )
-  unset SCRIPT_SUBDIR_LIST[0]
-  readonly SCRIPT_SUBDIR_LIST
-  declare -ar SERVICE_LIST=( $( find -L "${SERVICE_SOURCE_PATH}" -maxdepth 1 -type f ) )
+  declare -a BIN_LIST=( )
+  declare -a SCRIPT_LIST=( )
+  declare -a SCRIPT_SUBDIR_LIST=( )
+  declare -a SERVICE_LIST=( )
+
+  DO_INSTALL_AUDIO_LOOPBACK=false
+  AUDIO_LOOPBACK_HOOK_NAME="audio-loopback"
 # </params>
 
 # <functions>
@@ -69,7 +70,10 @@
       exit 1
     fi
 
+    add_to_lists &> /dev/null
     get_option || exit 1
+    is_pulseaudio_installed
+    do_install_audio_loopback
 
     if ! "${DO_INSTALL}"; then
       uninstall || exit 1
@@ -80,6 +84,16 @@
 
     update_services
     exit "${?}"
+  }
+
+  function add_to_lists
+  {
+    BIN_LIST=( $( find -L "${BIN_SOURCE_PATH}" -maxdepth 1 -type f ) )
+    SCRIPT_LIST=( $( find -L "${SCRIPT_SOURCE_RELATIVE_PATH}" -type f ) )
+    SCRIPT_SUBDIR_LIST=( $( find -L "${SCRIPT_SOURCE_RELATIVE_PATH}" -type d ) )
+    unset SCRIPT_SUBDIR_LIST[0]
+    readonly SCRIPT_SUBDIR_LIST
+    SERVICE_LIST=( $( find -L "${SERVICE_SOURCE_PATH}" -maxdepth 1 -type f ) )
   }
 
   function are_dependencies_installed
@@ -228,14 +242,10 @@
         return 0
       fi
 
-      for bin in "${BIN_LIST[@]}"; do
-        local bin_path="${BIN_DEST_PATH}${bin}"
-
-        if ! rm --force "${bin_path}" &> /dev/null; then
-          print_error "Failed to delete project binaries."
-          return 1
-        fi
-      done
+      if ! rm --force --recursive "${BIN_DEST_PATH}" &> /dev/null; then
+        print_error "Failed to delete project binaries."
+        return 1
+      fi
     }
 
     function delete_script_files
@@ -257,7 +267,8 @@
       fi
 
       for service in "${SERVICE_LIST[@]}"; do
-        local service_path="${SERVICE_DEST_PATH}${service}"
+        local service_name="$( basename "${service}" )"
+        local service_path="${SERVICE_DEST_PATH}${service_name}"
 
         if ! rm --force "${service_path}" &> /dev/null; then
           print_error "Failed to delete project service(s)."
@@ -394,6 +405,46 @@
   function unset_ifs
   {
     unset IFS
+  }
+
+  function do_install_audio_loopback
+  {
+    for key in "${!SCRIPT_LIST[@]}"; do
+      local script="${SCRIPT_LIST["${key}"]}"
+
+      if ! "${DO_INSTALL_AUDIO_LOOPBACK}" \
+        && is_file_for_pulseaudio "${script}"; then
+        unset SCRIPT_LIST["${key}"]
+      fi
+    done
+
+    for key in "${!SERVICE_LIST[@]}"; do
+      local service="${SERVICE_LIST["${key}"]}"
+      local service_name="$( basename "${service}" )"
+
+      if ! "${DO_INSTALL_AUDIO_LOOPBACK}" \
+        && is_file_for_pulseaudio "${service_name}"; then
+        unset SERVICE_LIST["${key}"]
+      fi
+    done
+  }
+
+  function is_pulseaudio_installed
+  {
+    if ! command -v "pulseaudio" &> /dev/null \
+      || ! command -v "pactl" &> /dev/null; then
+      DO_INSTALL_AUDIO_LOOPBACK=true
+    fi
+  }
+
+  function is_file_for_pulseaudio
+  {
+    case "${1}" in
+      *"${AUDIO_LOOPBACK_HOOK_NAME}"* )
+        return 0 ;;
+    esac
+
+    return 1
   }
 # </functions>
 

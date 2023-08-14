@@ -16,7 +16,7 @@ Install Libvirt hooks (scripts) which extend and enhance the functionality of Li
 * [About](https://libvirt.org/hooks.html)
 
 ## How-to
-#### To download, execute:
+### To download, execute:
 
         git clone https://github.com/portellam/libvirt-hooks
 
@@ -29,18 +29,21 @@ Install Libvirt hooks (scripts) which extend and enhance the functionality of Li
         sudo bash installer.bash -u
 
 ## Features
+### audio-loopback
+  * Setup audio loopback device, to listen on Host audio output.
+  * Connect any audio source (VFIO audio device output), to Host Line-In.
 ### cfscpu
   * Set CPU thread priority in CPU scheduler. <sup>[1](#1)</sup>
 ### ddcutil *(to be implemented in a future release)*
   * Switch active monitor input at domain start. <sup>[1](#1)</sup>
 ### beforeoff-dohibernate *(to be implemented in a future release)*
-  * Hibernate domain at Host shutdown.
+  * Hibernate domain at Host shutdown. <sup>[4](#4)</sup>
   * Stops *nosleep* service.
 ### dohibernate *(to be implemented in a future release)*
-  * Hibernate domain at Host sleep.
+  * Hibernate domain at Host sleep. <sup>[4](#4)</sup>
   * Stops *nosleep* service.
 ### dosleep *(to be implemented in a future release)*
-  * Sleep domain at Host sleep.
+  * Sleep domain at Host sleep. <sup>[4](#4)</sup>
   * Stops *nosleep* service.
 ### hugepages
   * Allocate Host RAM to pages for domain(s). <sup>[1](#1)</sup> <sup>[2](#2)</sup>
