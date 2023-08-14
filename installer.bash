@@ -233,14 +233,10 @@
         return 0
       fi
 
-      for bin in "${BIN_LIST[@]}"; do
-        local bin_path="${BIN_DEST_PATH}${bin}"
-
-        if ! rm --force "${bin_path}" &> /dev/null; then
-          print_error "Failed to delete project binaries."
-          return 1
-        fi
-      done
+      if ! rm --force --recursive "${BIN_DEST_PATH}" &> /dev/null; then
+        print_error "Failed to delete project binaries."
+        return 1
+      fi
     }
 
     function delete_script_files
@@ -262,7 +258,8 @@
       fi
 
       for service in "${SERVICE_LIST[@]}"; do
-        local service_path="${SERVICE_DEST_PATH}${service}"
+        local service_name="$( basename "${service}" )"
+        local service_path="${SERVICE_DEST_PATH}${service_name}"
 
         if ! rm --force "${service_path}" &> /dev/null; then
           print_error "Failed to delete project service(s)."
