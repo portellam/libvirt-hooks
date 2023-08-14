@@ -1,0 +1,29 @@
+#!/usr/bin/env bash
+
+#
+# Filename:       /etc/libvirt/hooks/beforeoff-dohibernate
+# Description:    Prevent Host shutdown while Libvirt domain is attempting to hibernate.
+# Author(s):      Alex Portell <github.com/portellam>
+# Maintainer(s):  Alex Portell <github.com/portellam>
+#
+
+# <params>
+  DIR="$( dirname "$( realpath "${0}" )" )/"
+  SOURCE="${DIR}set-service"
+  DOMAIN_NAME="${1}"
+  HOOK_NAME="$( basename "${0}" )"
+  SERVICE_NAME="libvirt-${HOOK_NAME}@${DOMAIN_NAME}.service"
+  ARGUMENTS=( "${SERVICE_NAME}" "$@" )
+# </params>
+
+# <functions>
+  function main
+  {
+    source "${SOURCE}"
+    main "${ARGUMENTS[@]}"
+  }
+# </functions>
+
+# <code>
+  main "$@"
+# </code>

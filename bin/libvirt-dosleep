@@ -1,0 +1,82 @@
+#!/usr/bin/env bash
+
+#
+# Filename:       /usr/local/bin/libvirt-dosleep
+# Description:    Sleep Libvirt domain.
+# Author(s):      Alex Portell <github.com/portellam>
+# Maintainer(s):  Alex Portell <github.com/portellam>
+#
+
+# <params>
+  DOMAIN_NAME="${1}"
+  HOOK_NAME="dosleep"
+  PREFIX_ERROR="An error occurred:"
+  PREFIX_PROMPT="libvirt-qemu ${HOOK_NAME}:"
+  HOOK_NOSLEEP_SERVICE="libvirt-nosleep@${DOMAIN_NAME}"
+# </params>
+
+# <functions>
+  function main
+  {
+    is_domain_suspended_or_offline && return 0
+    sleep_domain || return 1
+    stop_nosleep_service
+  }
+
+  function is_domain_suspended_or_offline
+  {
+    local -r domain_state="$( virsh domstate "${DOMAIN_NAME}" | tr -d '\n' )"
+
+    case "${domain_state}" in
+      *"pmsuspended"* )
+        print_prompt_to_log "Libvirt domain '${DOMAIN_NAME}' is suspended."
+        return 0 ;;
+
+      *"shut off"* )
+        print_prompt_to_log "Libvirt domain '${DOMAIN_NAME}' is offline."
+        return 0 ;;
+    esac
+
+    return 1
+  }
+
+  function print_prompt_to_log
+  {
+    echo -e "${PREFIX_PROMPT} ${1}" >&2
+  }
+
+  function print_error_to_log
+  {
+    echo -e "${PREFIX_PROMPT} ${PREFIX_ERROR} ${1}" >&2
+  }
+
+  function sleep_domain
+  {
+    if ! virsh dompmsuspend --target mem "${DOMAIN_NAME}"; then
+      print_error_to_log "Failed to sleep Libvirt domain '${DOMAIN_NAME}'."
+      return 1
+    fi
+
+    while ! is_domain_suspended_or_offline; do
+      sleep_for_one_cycle
+    done
+  }
+
+  function sleep_for_one_cycle
+  {
+    print_prompt_to_log "Waiting for Libvirt domain '${DOMAIN_NAME}' to sleep."
+    sleep 1
+  }
+
+  function stop_nosleep_service
+  {
+    if ! systemctl stop "${HOOK_NOSLEEP_SERVICE}" &> /dev/null; then
+      print_error_to_log "Failed to stop '${HOOK_NOSLEEP_SERVICE}' service."
+      return 1
+    fi
+  }
+# </functions>
+
+# <code>
+  main
+# </code>
