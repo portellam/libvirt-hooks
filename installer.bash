@@ -38,12 +38,12 @@
   readonly SERVICE_DEST_PATH="/etc/systemd/system/"
   readonly SERVICE_SOURCE_PATH="${WORKING_DIR}systemd/"
 
-  declare -ar BIN_LIST=( $( find -L "${BIN_SOURCE_PATH}" -maxdepth 1 -type f ) )
-  declare -ar SCRIPT_LIST=( $( find -L "${SCRIPT_SOURCE_RELATIVE_PATH}" -type f ) )
+  declare -a BIN_LIST=( $( find -L "${BIN_SOURCE_PATH}" -maxdepth 1 -type f ) )
+  declare -a SCRIPT_LIST=( $( find -L "${SCRIPT_SOURCE_RELATIVE_PATH}" -type f ) )
   declare -a SCRIPT_SUBDIR_LIST=( $( find -L "${SCRIPT_SOURCE_RELATIVE_PATH}" -type d ) )
   unset SCRIPT_SUBDIR_LIST[0]
   readonly SCRIPT_SUBDIR_LIST
-  declare -ar SERVICE_LIST=( $( find -L "${SERVICE_SOURCE_PATH}" -maxdepth 1 -type f ) )
+  declare -a SERVICE_LIST=( $( find -L "${SERVICE_SOURCE_PATH}" -maxdepth 1 -type f ) )
 
   DO_INSTALL_AUDIO_LOOPBACK=false
   AUDIO_LOOPBACK_HOOK_NAME="audio-loopback"
@@ -72,8 +72,9 @@
       exit 1
     fi
 
-    is_pulseaudio_installed
     get_option || exit 1
+    is_pulseaudio_installed
+    do_install_audio_loopback
 
     if ! "${DO_INSTALL}"; then
       uninstall || exit 1
@@ -149,8 +150,6 @@
     function copy_script_files_to_destination
     {
       for script in "${SCRIPT_LIST[@]}"; do
-        is_file_for_pulseaudio "${script}" && continue
-
         local script_source_file="${WORKING_DIR}${script}"
         local script_dest_file="${SCRIPT_DEST_PATH}${script:6}"
         local script_dest_dir="$( dirname "${script_dest_file}" )/"
@@ -168,8 +167,6 @@
       for service in "${SERVICE_LIST[@]}"; do
         local service_name="$( basename "${service}" )"
         local service_path="${SERVICE_DEST_PATH}/${service_name}"
-
-        is_file_for_pulseaudio "${service_name}" && continue
 
         if ! sudo cp --force "${service}" "${service_path}" &> /dev/null; then
           print_error "Failed to copy project service(s)."
@@ -402,6 +399,28 @@
   function unset_ifs
   {
     unset IFS
+  }
+
+  function do_install_audio_loopback
+  {
+    for key in "${!SCRIPT_LIST[@]}"; do
+      local script="${SCRIPT_LIST["${key}"]}"
+
+      if ! "${DO_INSTALL_AUDIO_LOOPBACK}" \
+        && is_file_for_pulseaudio "${script}"; then
+        unset SCRIPT_LIST["${key}"]
+      fi
+    done
+
+    for key in "${!SERVICE_LIST[@]}"; do
+      local service="${SERVICE_LIST["${key}"]}"
+      local service_name="$( basename "${service}" )"
+
+      if ! "${DO_INSTALL_AUDIO_LOOPBACK}" \
+        && is_file_for_pulseaudio "${service_name}"; then
+        unset SERVICE_LIST["${key}"]
+      fi
+    done
   }
 
   function is_pulseaudio_installed
