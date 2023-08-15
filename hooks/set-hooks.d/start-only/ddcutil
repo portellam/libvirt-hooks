@@ -88,7 +88,7 @@
 
 	function has_switched_video_input
 	{
-		if [[ "$( ddcutil -d "${DOMAIN_DISPLAY}" getvcp 60 --terse | awk '{print ${4}}' )" == "x${VIDEO_INPUT}" ]]; then
+		if [[ "$( ddcutil -d "${DOMAIN_DISPLAY}" getvcp 60 --terse | awk '{print $4}' )" == "x${VIDEO_INPUT}" ]]; then
 			print_prompt_to_log "Video input is already set."
 			return 0
 		fi
