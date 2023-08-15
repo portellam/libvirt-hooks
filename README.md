@@ -52,6 +52,11 @@ Install Libvirt hooks (scripts) which extend and enhance the functionality of Li
 ### nosleep
   * Prevent Host sleep if domain is running. <sup>[4](#4)</sup>
 
+## Developing Features
+### virtual-nas *(to be implemented in a future release)*
+  * Share Host storage to Libvirt domain, on a file server over a Libvirt network.
+  * Helpful for circumstances where a given domain (a legacy OS, example: Windows XP) cannot be trusted with direct access to storage (regaridng security or filesystem integrity).
+
 ## References
 #### 1.
 <sub>Libvirt hooks | **[VFIO-Tools source (GitHub)](https://github.com/PassthroughPOST/VFIO-Tools)**</sub>
