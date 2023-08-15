@@ -142,6 +142,14 @@
       IFS="${SAVEIFS}"
     }
 
+  # <summary>Data-type validation</summary>
+    function is_string
+    {
+      if [[ "${1}" == "" ]]; then
+        return 1
+      fi
+    }
+
   # <summary>Handlers</summary>
     function catch_error {
       exit 255
@@ -229,6 +237,9 @@
 
         "-i" | "--install" )
           DO_INSTALL=true ;;
+
+        "" )
+          return 0 ;;
 
         "-h" | "--help" | * )
           print_usage
