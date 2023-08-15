@@ -29,9 +29,6 @@ Install Libvirt hooks (scripts) which extend and enhance the functionality of Li
         sudo bash installer.bash -u
 
 ## Features
-### audio-loopback
-  * Setup audio loopback device, to listen on Host audio output.
-  * Connect any audio source (VFIO audio device output), to Host Line-In.
 ### cfscpu
   * Set CPU thread priority in CPU scheduler. <sup>[1](#1)</sup>
 ### ddcutil *(to be implemented in a future release)*
