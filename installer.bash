@@ -199,7 +199,7 @@
 
   function print_error
   {
-    echo -e "${PREFIX_ERROR} ${1}"
+    echo -e "${PREFIX_ERROR} ${1}" 
   }
 
   function print_fail
@@ -431,8 +431,8 @@
 
   function is_pulseaudio_installed
   {
-    if ! command -v "pulseaudio" &> /dev/null \
-      || ! command -v "pactl" &> /dev/null; then
+    if command -v "pulseaudio" &> /dev/null \
+      && command -v "pactl" &> /dev/null; then
       DO_INSTALL_AUDIO_LOOPBACK=true
     fi
   }
