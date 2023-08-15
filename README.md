@@ -29,9 +29,6 @@ Install Libvirt hooks (scripts) which extend and enhance the functionality of Li
         sudo bash installer.bash -u
 
 ## Features
-### audio-loopback
-  * Setup audio loopback device, to listen on Host audio output.
-  * Connect any audio source (VFIO audio device output), to Host Line-In.
 ### cfscpu
   * Set CPU thread priority in CPU scheduler. <sup>[1](#1)</sup>
 ### ddcutil *(to be implemented in a future release)*
@@ -51,6 +48,11 @@ Install Libvirt hooks (scripts) which extend and enhance the functionality of Li
   * Isolate CPU threads from Host, to allocate to domain(s). <sup>[1](#1)</sup> <sup>[3](#3)</sup>
 ### nosleep
   * Prevent Host sleep if domain is running. <sup>[4](#4)</sup>
+
+## Developing Features
+### virtual-nas *(to be implemented in a future release)*
+  * Share Host storage to Libvirt domain, on a file server over a Libvirt network.
+  * Helpful for circumstances where a given domain (a legacy OS, example: Windows XP) cannot be trusted with direct access to storage (regaridng security or filesystem integrity).
 
 ## References
 #### 1.

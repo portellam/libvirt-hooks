@@ -26,5 +26,5 @@
 # </functions>
 
 # <code>
-  main "$@"
+  main
 # </code>
