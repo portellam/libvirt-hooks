@@ -7,13 +7,26 @@
 # Maintainer(s):  Alex Portell <github.com/portellam>
 #
 
+# <traps>
+  trap 'catch_error' SIGINT SIGTERM ERR
+  trap 'catch_exit' EXIT
+# </traps>
+
 # <params>
   readonly REPO_NAME="libvirt-hooks"
   readonly WORKING_DIR="$( dirname $( realpath "${0}" ) )/"
   readonly OPTION="${1}"
 
+  SCRIPT_NAME="$( basename "${0}" )"
+  PREFIX_PROMPT="${SCRIPT_NAME}: "
+  PREFIX_ERROR="${PREFIX_PROMPT}An error occurred: "
+
+  SAVEIFS="${IFS}"
+  IFS=$'\n'
+
   # <summary>Execution Flags</summary>
-    DO_INSTALL=true
+    DO_INSTALL=false
+    DO_UNINSTALL=false
 
   # <summary>
   # Color coding
@@ -25,9 +38,9 @@
     readonly RESET_COLOR='\033[0m'
 
   # <summary>Append output</summary>
-    readonly PREFIX_ERROR="${SET_COLOR_YELLOW}An error occurred:${RESET_COLOR}"
-    readonly PREFIX_FAIL="${SET_COLOR_RED}Failure:${RESET_COLOR}"
-    readonly PREFIX_PASS="${SET_COLOR_GREEN}Success:${RESET_COLOR}"
+    readonly PREFIX_ERROR="${SET_COLOR_YELLOW}An error occurred:${RESET_COLOR} "
+    readonly PREFIX_FAIL="${SET_COLOR_RED}Failure:${RESET_COLOR} "
+    readonly PREFIX_PASS="${SET_COLOR_GREEN}Success:${RESET_COLOR} "
 
   readonly LIBVIRTD_SERVICE="libvirtd"
 
@@ -48,30 +61,12 @@
 # </params>
 
 # <functions>
-  function get_option
-  {
-    case "${OPTION}" in
-      "-u" | "--uninstall" )
-        DO_INSTALL=false ;;
-
-      "-i" | "--install" )
-        DO_INSTALL=true ;;
-
-      "-h" | "--help" | * )
-        print_usage
-        return 1 ;;
-    esac
-  }
-
   function main
   {
-    if [[ $( whoami ) != "root" ]]; then
-      print_error "User is not sudo/root."
-      exit 1
-    fi
-
+    is_user_superuser || exit 1
     add_to_lists &> /dev/null
     get_option || exit 1
+    prompt_install || exit 1
     is_pulseaudio_installed
     do_install_audio_loopback
 
@@ -96,44 +91,150 @@
     SERVICE_LIST=( $( find -L "${SERVICE_SOURCE_PATH}" -maxdepth 1 -type f ) )
   }
 
-  function are_dependencies_installed
-  {
-    local systemd_app="systemd"
+  # <summary>Business logic</summary>
+    function prompt_install
+    {
+      if "${DO_INSTALL}" ||
+        "${DO_UNINSTALL}"; then
+        return 0
+      fi
 
-    if ! command -v "${systemd_app}" &> /dev/null; then
-      print_error "Required dependency '${systemd_app}' is not installed."
+      yes_no_prompt "Install '${REPO_NAME}'?"
+
+      case "${?}" in
+        0 )
+          DO_INSTALL=true ;;
+
+        1 )
+          return 1 ;;
+
+        255 )
+          DO_UNINSTALL=true ;;
+      esac
+    }
+
+    function install
+    {
+      if ! do_source_files_exist \
+        || ! does_destination_path_exist \
+        || ! copy_source_files_to_destination \
+        || ! set_permissions_for_destination_files; then
+        print_fail "Could not install ${REPO_NAME}."
+        return 1
+      fi
+
+      print_pass "Installed ${REPO_NAME}."
+    }
+
+    function uninstall
+    {
+      if ! delete_destination_files; then
+        print_fail "Could not uninstall ${REPO_NAME}."
+        return 1
+      fi
+
+      print_pass "Uninstalled ${REPO_NAME}."
+    }
+
+  # <summary>Clean-up</summary>
+    function reset_ifs
+    {
+      IFS="${SAVEIFS}"
+    }
+
+  # <summary>Handlers</summary>
+    function catch_error {
+      exit 255
+    }
+
+    function catch_exit {
+      reset_ifs
+    }
+
+    function is_user_superuser
+    {
+      if [[ $( whoami ) != "root" ]]; then
+        print_to_error_log "User is not sudo or root."
+        return 1
+      fi
+    }
+
+    function yes_no_prompt
+    {
+      local output="${1}"
+      is_string "${output}" && output+=" "
+
+      for counter in $( seq 0 2 ); do
+        echo -en "${output}[Y/n]: "
+        read -r -p "" answer
+
+        case "${answer}" in
+          [Yy]* )
+            return 0 ;;
+
+          [Nn]* )
+            return 255 ;;
+
+          * )
+            echo "Please answer 'Y' or 'N'." ;;
+        esac
+      done
+
       return 1
-    fi
+    }
 
-    local -r output="$( systemctl status "${LIBVIRTD_SERVICE}" )"
+  # <summary>Loggers</summary>
+    function print_fail
+    {
+      print_to_output_log "${PREFIX_FAIL}${1}"
+    }
 
-    if [[ "${output}" == "Unit ${LIBVIRTD_SERVICE}.service could not be found." ]]; then
-      print_error "Required service '${LIBVIRTD_SERVICE}' is not installed."
-      return 1
-    fi
+    function print_pass
+    {
+      print_to_output_log "${PREFIX_PASS}${1}"
+    }
 
-    print_pass "Dependencies are installed."
-  }
+    function print_to_error_log
+    {
+      echo -e "${PREFIX_ERROR}${1}" >&2
+    }
 
-  function update_services
-  {
-    if ! systemctl daemon-reload &> /dev/null; then
-      print_error "Could not update services."
-      return 1
-    fi
+    function print_to_output_log
+    {
+      echo -e "${PREFIX_PROMPT}${1}" >&1
+    }
 
-    if ! systemctl enable "${LIBVIRTD_SERVICE}" &> /dev/null; then
-      print_error "Could not enable ${LIBVIRTD_SERVICE}."
-      return 1
-    fi
+    function print_usage
+    {
+      IFS=$'\n'
 
-    if ! systemctl restart "${LIBVIRTD_SERVICE}" &> /dev/null; then
-      print_error "Could not start ${LIBVIRTD_SERVICE}."
-      return 1
-    fi
+      local -a output=(
+        "Usage:\tbash libvirt-hooks [OPTION]"
+        "Manages ${REPO_NAME} binaries, scripts, and services.\n"
+        "  -h, --help\t\tPrint this help and exit."
+        "  -i, --install\t\tInstall ${REPO_NAME} to system."
+        "  -u, --uninstall\tUninstall ${REPO_NAME} from system."
+      )
 
-    print_pass "Updated services."
-  }
+      echo -e "${output[*]}"
+      unset IFS
+    }
+
+  # <summary>Options logic</summary>
+    function get_option
+    {
+      case "${OPTION}" in
+        "-u" | "--uninstall" )
+          DO_UNINSTALL=true ;;
+
+        "-i" | "--install" )
+          DO_INSTALL=true ;;
+
+        "-h" | "--help" | * )
+          print_usage
+          return 1 ;;
+      esac
+    }
 
   # <summary>Copy Source Files to Destination</summary>
     function copy_source_files_to_destination
@@ -183,50 +284,6 @@
         fi
       done
     }
-
-  function install
-  {
-    if ! do_source_files_exist \
-      || ! does_destination_path_exist \
-      || ! copy_source_files_to_destination \
-      || ! set_permissions_for_destination_files; then
-      print_fail "Could not install ${REPO_NAME}."
-      return 1
-    fi
-
-    print_pass "installed ${REPO_NAME}."
-  }
-
-  function print_error
-  {
-    echo -e "${PREFIX_ERROR} ${1}" 
-  }
-
-  function print_fail
-  {
-    echo -e "${PREFIX_FAIL} ${1}"
-  }
-
-  function print_pass
-  {
-    echo -e "${PREFIX_PASS} ${1}"
-  }
-
-  function print_usage
-  {
-    IFS=$'\n'
-
-    local -a output=(
-      "Usage:\tbash libvirt-hooks [OPTION]"
-      "Manages ${REPO_NAME} binaries, scripts, and services.\n"
-      "  -h, --help\t\tPrint this help and exit."
-      "  -i, --install\t\tInstall ${REPO_NAME} to system."
-      "  -u, --uninstall\tUninstall ${REPO_NAME} from system."
-    )
-
-    echo -e "${output[*]}"
-    unset IFS
-  }
 
   # <summary>Delete Destination Files</summary>
     function delete_destination_files
@@ -314,6 +371,66 @@
       done
     }
 
+  # <summary>Dependency validation</summary>
+    function are_dependencies_installed
+    {
+      local -r systemd_app="systemd"
+
+      if ! command -v "${systemd_app}" &> /dev/null; then
+        print_error "Required dependency '${systemd_app}' is not installed."
+        return 1
+      fi
+
+      local -r output="$( systemctl status "${LIBVIRTD_SERVICE}" )"
+
+      if [[ "${output}" == "Unit ${LIBVIRTD_SERVICE}.service could not be found." ]]; then
+        print_error "Required service '${LIBVIRTD_SERVICE}' is not installed."
+        return 1
+      fi
+
+      print_pass "Dependencies are installed."
+    }
+
+    function do_install_audio_loopback
+    {
+      for key in "${!SCRIPT_LIST[@]}"; do
+        local script="${SCRIPT_LIST["${key}"]}"
+
+        if ! "${DO_INSTALL_AUDIO_LOOPBACK}" \
+          && is_file_for_pulseaudio "${script}"; then
+          unset SCRIPT_LIST["${key}"]
+        fi
+      done
+
+      for key in "${!SERVICE_LIST[@]}"; do
+        local service="${SERVICE_LIST["${key}"]}"
+        local service_name="$( basename "${service}" )"
+
+        if ! "${DO_INSTALL_AUDIO_LOOPBACK}" \
+          && is_file_for_pulseaudio "${service_name}"; then
+          unset SERVICE_LIST["${key}"]
+        fi
+      done
+    }
+
+    function is_pulseaudio_installed
+    {
+      if command -v "pulseaudio" &> /dev/null \
+        && command -v "pactl" &> /dev/null; then
+        DO_INSTALL_AUDIO_LOOPBACK=true
+      fi
+    }
+
+    function is_file_for_pulseaudio
+    {
+      case "${1}" in
+        *"${AUDIO_LOOPBACK_HOOK_NAME}"* )
+          return 0 ;;
+      esac
+
+      return 1
+    }
+
   # <summary>Do Destination Paths Exist</summary>
     function does_destination_path_exist
     {
@@ -342,6 +459,27 @@
         script_subdir="${SCRIPT_DEST_PATH}${script_subdir}"
         does_path_exist "${script_subdir}" || return 1
       done
+    }
+
+  # <summary>Services logic</summary>
+    function update_services
+    {
+      if ! systemctl daemon-reload &> /dev/null; then
+        print_error "Could not update services."
+        return 1
+      fi
+
+      if ! systemctl enable "${LIBVIRTD_SERVICE}" &> /dev/null; then
+        print_error "Could not enable ${LIBVIRTD_SERVICE}."
+        return 1
+      fi
+
+      if ! systemctl restart "${LIBVIRTD_SERVICE}" &> /dev/null; then
+        print_error "Could not start ${LIBVIRTD_SERVICE}."
+        return 1
+      fi
+
+      print_pass "Updated services."
     }
 
   # <summary>Set Permissions For Destination Files</summary>
@@ -386,66 +524,6 @@
         fi
       done
     }
-
-  function uninstall
-  {
-    if ! delete_destination_files; then
-      echo -e "${PREFIX_FAIL} Could not uninstall ${REPO_NAME}."
-      return 1
-    fi
-
-    print_pass "Uninstalled ${REPO_NAME}."
-  }
-
-  function set_ifs_to_newline
-  {
-    IFS=$'\n'
-  }
-
-  function unset_ifs
-  {
-    unset IFS
-  }
-
-  function do_install_audio_loopback
-  {
-    for key in "${!SCRIPT_LIST[@]}"; do
-      local script="${SCRIPT_LIST["${key}"]}"
-
-      if ! "${DO_INSTALL_AUDIO_LOOPBACK}" \
-        && is_file_for_pulseaudio "${script}"; then
-        unset SCRIPT_LIST["${key}"]
-      fi
-    done
-
-    for key in "${!SERVICE_LIST[@]}"; do
-      local service="${SERVICE_LIST["${key}"]}"
-      local service_name="$( basename "${service}" )"
-
-      if ! "${DO_INSTALL_AUDIO_LOOPBACK}" \
-        && is_file_for_pulseaudio "${service_name}"; then
-        unset SERVICE_LIST["${key}"]
-      fi
-    done
-  }
-
-  function is_pulseaudio_installed
-  {
-    if command -v "pulseaudio" &> /dev/null \
-      && command -v "pactl" &> /dev/null; then
-      DO_INSTALL_AUDIO_LOOPBACK=true
-    fi
-  }
-
-  function is_file_for_pulseaudio
-  {
-    case "${1}" in
-      *"${AUDIO_LOOPBACK_HOOK_NAME}"* )
-        return 0 ;;
-    esac
-
-    return 1
-  }
 # </functions>
 
 # <code>
