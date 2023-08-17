@@ -17,10 +17,6 @@
   readonly WORKING_DIR="$( dirname $( realpath "${0}" ) )/"
   readonly OPTION="${1}"
 
-  SCRIPT_NAME="$( basename "${0}" )"
-  PREFIX_PROMPT="${SCRIPT_NAME}: "
-  PREFIX_ERROR="${PREFIX_PROMPT}An error occurred: "
-
   SAVEIFS="${IFS}"
   IFS=$'\n'
 
@@ -32,15 +28,16 @@
   # Color coding
   # Reference URL: 'https://www.shellhacks.com/bash-colors'
   # </summary>
-    readonly SET_COLOR_GREEN='\033[0;32m'
-    readonly SET_COLOR_RED='\033[0;31m'
-    readonly SET_COLOR_YELLOW='\033[0;33m'
-    readonly RESET_COLOR='\033[0m'
+    SET_COLOR_GREEN='\033[0;32m'
+    SET_COLOR_RED='\033[0;31m'
+    SET_COLOR_YELLOW='\033[0;33m'
+    RESET_COLOR='\033[0m'
 
   # <summary>Append output</summary>
-    readonly PREFIX_ERROR="${SET_COLOR_YELLOW}An error occurred:${RESET_COLOR} "
-    readonly PREFIX_FAIL="${SET_COLOR_RED}Failure:${RESET_COLOR} "
-    readonly PREFIX_PASS="${SET_COLOR_GREEN}Success:${RESET_COLOR} "
+    PREFIX_PROMPT="libvirt-qemu $( basename "${0}" ):"
+    PREFIX_ERROR="${PREFIX_PROMPT}${SET_COLOR_YELLOW}An error occurred:${RESET_COLOR} "
+    PREFIX_FAIL="${PREFIX_PROMPT}${SET_COLOR_RED}Failure:${RESET_COLOR} "
+    PREFIX_PASS="${PREFIX_PROMPT}${SET_COLOR_GREEN}Success:${RESET_COLOR} "
 
   readonly LIBVIRTD_SERVICE="libvirtd"
 
