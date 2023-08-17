@@ -76,7 +76,6 @@
       echo -e "${PREFIX_PASS}${1}" >&1
     }
 
-
   function write_host_memory_to_storage
   {
     if ! sync; then
