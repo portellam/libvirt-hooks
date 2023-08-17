@@ -24,56 +24,99 @@
   function main
   {
     local -r service_name="${1}"
+    local -r output="Set service"
 
-    if [[ -z "${service_name}" ]]; then
-      print_error_to_log "Service name is not valid."
-      return 0
+    if ! is_service_name_valid "${service_name}"; then
+      print_fail_to_log "${output}"
+      return 1
     fi
 
     shift
     local -r operation="${2}"
 
-    if [[ -z "${operation}" ]]; then
-      print_error_to_log "Operation argument is not valid."
-      return 0
-    fi
-
-    set_operation "${service_name}" "${operation}" || return 1
-  }
-
-  function disable_service
-  {
-    local -r service="${1}"
-
-    if ! systemctl disable "${service}" &> /dev/null; then
-      print_error_to_log "Failed to disable '${service}' service."
+    if ! is_argument_valid "${operation}" \
+      || ! set_operation "${service_name}" "${operation}"; then
+      print_fail_to_log "${output}"
       return 1
     fi
 
-    print_output_to_log "Disabled '${service}' service."
+    print_pass_to_log "${output}"
   }
 
-  function enable_service
-  {
-    local -r service="${1}"
+  # <summary>Loggers</summary>
+    function print_error_to_log
+    {
+      echo -e "${PREFIX_ERROR}${1}" >&2
+    }
 
-    if ! systemctl enable "${service}" &> /dev/null; then
-      print_error_to_log "Failed to enable '${service}' service."
-      return 1
-    fi
+    function print_fail_to_log
+    {
+      echo -e "${PREFIX_FAIL}${1}" >&2
+    }
 
-    print_output_to_log "Enabled '${service}' service."
-  }
+    function print_output_to_log
+    {
+      echo -e "${PREFIX_PROMPT}${1}" >&1
+    }
 
-  function print_output_to_log
-  {
-    echo -e "${PREFIX_PROMPT} ${1}" >&2
-  }
+    function print_pass_to_log
+    {
+      echo -e "${PREFIX_PASS}${1}" >&1
+    }
 
-  function print_error_to_log
-  {
-    echo -e "${PREFIX_PROMPT} ${PREFIX_ERROR} ${1}" >&2
-  }
+    function print_skip_to_log
+    {
+      echo -e "${PREFIX_SKIP}${1}" >&1
+    }
+
+  # <summary>Service logic</summary>
+    function disable_service
+    {
+      local -r service="${1}"
+
+      if ! systemctl disable "${service}" &> /dev/null; then
+        print_error_to_log "Failed to disable '${service}' service."
+        return 1
+      fi
+
+      print_output_to_log "Disabled '${service}' service."
+    }
+
+    function enable_service
+    {
+      local -r service="${1}"
+
+      if ! systemctl enable "${service}" &> /dev/null; then
+        print_error_to_log "Failed to enable '${service}' service."
+        return 1
+      fi
+
+      print_output_to_log "Enabled '${service}' service."
+    }
+
+    function start_service
+    {
+      local -r service="${1}"
+
+      if ! systemctl start "${service}" &> /dev/null; then
+        print_error_to_log "Failed to start '${service}' service."
+        return 1
+      fi
+
+      print_output_to_log "Started '${service}' service."
+    }
+
+    function stop_service
+    {
+      local -r service="${1}"
+
+      if ! systemctl stop "${service}" &> /dev/null; then
+        print_error_to_log "Failed to stop '${service}' service."
+        return 1
+      fi
+
+      print_output_to_log "Stopped '${service}' service."
+    }
 
   function set_operation
   {
@@ -90,27 +133,23 @@
     esac
   }
 
-  function start_service
+  function is_service_name_valid
   {
-    local -r service="${1}"
+    local -r service_name="${1}"
 
-    if ! systemctl start "${service}" &> /dev/null; then
-      print_error_to_log "Failed to start '${service}' service."
+    if [[ -z "${service_name}" ]]; then
+      print_error_to_log "Service name is not valid."
       return 1
     fi
-
-    print_output_to_log "Started '${service}' service."
   }
 
-  function stop_service
+  function is_argument_valid
   {
-    local -r service="${1}"
+    local -r operation="${1}"
 
-    if ! systemctl stop "${service}" &> /dev/null; then
-      print_error_to_log "Failed to stop '${service}' service."
+    if [[ -z "${operation}" ]]; then
+      print_error_to_log "Operation argument is not valid."
       return 1
     fi
-
-    print_output_to_log "Stopped '${service}' service."
   }
 # </functions>
