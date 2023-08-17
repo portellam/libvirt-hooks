@@ -19,8 +19,21 @@
 # <params>
   DOMAIN_NAME="${1}"
 
-  PREFIX_ERROR="An error occurred:"
-  PREFIX_PROMPT="libvirt-qemu $( basename "${0}" ):"
+  # <summary>
+  # Color coding
+  # Reference URL: 'https://www.shellhacks.com/bash-colors'
+  # </summary>
+    SET_COLOR_GREEN='\033[0;32m'
+    SET_COLOR_RED='\033[0;31m'
+    SET_COLOR_YELLOW='\033[0;33m'
+    RESET_COLOR='\033[0m'
+
+  # <summary>Append output</summary>
+    PREFIX_PROMPT="libvirt-qemu $( basename "${0}" ):"
+    PREFIX_ERROR="${PREFIX_PROMPT}${SET_COLOR_YELLOW}An error occurred:${RESET_COLOR} "
+    PREFIX_FAIL="${PREFIX_PROMPT}${SET_COLOR_RED}Failure:${RESET_COLOR} "
+    PREFIX_PASS="${PREFIX_PROMPT}${SET_COLOR_GREEN}Success:${RESET_COLOR} "
+    PREFIX_SKIP="${PREFIX_PROMPT}${SET_COLOR_YELLOW}Skipped:${RESET_COLOR} "
 
   HOOKS_BASE_DIR="$( dirname $( realpath "${0}" ) )/"
   DOMAIN_NAME_BASE_DIR="${HOOKS_BASE_DIR}qemu.d/${DOMAIN_NAME}/"
