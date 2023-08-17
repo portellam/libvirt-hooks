@@ -73,7 +73,7 @@
     print_pass_to_log "${output}"
   }
 
-  # <summary>Loggers/summary>
+  # <summary>Loggers</summary>
     function print_error_to_log
     {
       echo -e "${PREFIX_ERROR}${1}" >&2
