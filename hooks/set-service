@@ -22,7 +22,6 @@
     PREFIX_ERROR="${PREFIX_PROMPT}${SET_COLOR_YELLOW}An error occurred:${RESET_COLOR} "
     PREFIX_FAIL="${PREFIX_PROMPT}${SET_COLOR_RED}Failure:${RESET_COLOR} "
     PREFIX_PASS="${PREFIX_PROMPT}${SET_COLOR_GREEN}Success:${RESET_COLOR} "
-    PREFIX_SKIP="${PREFIX_PROMPT}${SET_COLOR_YELLOW}Skipped:${RESET_COLOR} "
 # </params>
 
 # <functions>
@@ -77,10 +76,6 @@
       echo -e "${PREFIX_PASS}${1}" >&1
     }
 
-    function print_skip_to_log
-    {
-      echo -e "${PREFIX_SKIP}${1}" >&1
-    }
 
   # <summary>Service logic</summary>
     function disable_service

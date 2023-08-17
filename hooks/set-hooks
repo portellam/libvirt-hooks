@@ -33,7 +33,6 @@
     PREFIX_ERROR="${PREFIX_PROMPT}${SET_COLOR_YELLOW}An error occurred:${RESET_COLOR} "
     PREFIX_FAIL="${PREFIX_PROMPT}${SET_COLOR_RED}Failure:${RESET_COLOR} "
     PREFIX_PASS="${PREFIX_PROMPT}${SET_COLOR_GREEN}Success:${RESET_COLOR} "
-    PREFIX_SKIP="${PREFIX_PROMPT}${SET_COLOR_YELLOW}Skipped:${RESET_COLOR} "
 
   HOOKS_BASE_DIR="$( dirname $( realpath "${0}" ) )/"
   DOMAIN_NAME_BASE_DIR="${HOOKS_BASE_DIR}qemu.d/${DOMAIN_NAME}/"
@@ -91,10 +90,6 @@
       echo -e "${PREFIX_PASS}${1}" >&1
     }
 
-    function print_skip_to_log
-    {
-      echo -e "${PREFIX_SKIP}${1}" >&1
-    }
 
   # <summary>Getters</summary>
     function get_paths_for_domain
