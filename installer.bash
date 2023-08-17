@@ -153,7 +153,6 @@
     }
 
     function catch_exit {
-      print_pass_or_fail_to_log
       reset_ifs
     }
 
@@ -208,18 +207,6 @@
     function print_pass_to_log
     {
       echo -e "${PREFIX_PASS}${1}" >&1
-    }
-
-    function print_pass_or_fail_to_log
-    {
-      local -ir exit_code="${?}"
-
-      if [[ "${exit_code}" -ne 0 ]]; then
-        print_fail_to_log "Setup incomplete."
-        return "${exit_code}"
-      fi
-
-      print_pass_to_log "Setup complete."
     }
 
     function print_usage
