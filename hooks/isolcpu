@@ -30,6 +30,21 @@
   PREFIX_ERROR="An error occurred:"
   PREFIX_PROMPT="libvirt-qemu $( basename "${0}" ):"
 
+  # <summary>
+  # Color coding
+  # Reference URL: 'https://www.shellhacks.com/bash-colors'
+  # </summary>
+    SET_COLOR_GREEN='\033[0;32m'
+    SET_COLOR_RED='\033[0;31m'
+    SET_COLOR_YELLOW='\033[0;33m'
+    RESET_COLOR='\033[0m'
+
+  # <summary>Append output</summary>
+    PREFIX_ERROR="${PREFIX_PROMPT}${SET_COLOR_YELLOW}An error occurred:${RESET_COLOR} "
+    PREFIX_FAIL="${PREFIX_PROMPT}${SET_COLOR_RED}Failure:${RESET_COLOR} "
+    PREFIX_PASS="${PREFIX_PROMPT}${SET_COLOR_GREEN}Success:${RESET_COLOR} "
+    PREFIX_SKIP="${PREFIX_PROMPT}${SET_COLOR_YELLOW}Skipped:${RESET_COLOR} "
+
   FLAG_USE_HEX_MASKS=true
   GUEST_THREADS_DELIM=""
   GUEST_THREADS_HEX=""
@@ -40,254 +55,299 @@
 # <functions>
   function main
   {
-    if ! get_cpu \
-      || ! release_or_reserve_cpu; then
-      return 1
-    fi
-  }
+    local -r output="Dynamic Isolcpu"
 
-  function are_values_not_empty
-  {
-    if ( "${FLAG_USE_HEX_MASKS}" && are_hex_masks_not_empty && are_thread_sets_not_empty ) \
-      || ( ! "${FLAG_USE_HEX_MASKS}" && are_thread_sets_not_empty ); then
+    print_output_to_log "${output}"
+
+    if does_grub_have_isolcpu_setting; then
+      print_skip_to_log "${output}"
       return 0
     fi
 
-    return 1
-  }
-
-  function are_hex_masks_not_empty
-  {
-    if [[ -z "${GUEST_THREADS_HEX}" ]] \
-      || [[ -z "${HOST_THREADS_HEX}" ]]; then
-      print_error_to_log "Failed to get CPU hexadecimal masks."
+    if ! get_cpu \
+      || ! release_or_reserve_cpu; then
+      print_fail_to_log "${output}"
       return 1
     fi
+
+    print_pass_to_log "${output}"
   }
 
-  function are_thread_sets_not_empty
-  {
-    if [[ -z "${GUEST_THREADS_DELIM}" ]] \
-      || [[ -z "${HOST_THREADS_DELIM}" ]]; then
-      print_error_to_log "Failed to get CPU thread sets."
-      return 1
-    fi
-  }
+  # <summary>Loggers/summary>
+    function print_error_to_log
+    {
+      echo -e "${PREFIX_ERROR}${1}" >&2
+    }
 
-  function add_threads_to_lists
-  {
-    add_threads_to_host_list
-    add_threads_to_guest_list
-  }
+    function print_fail_to_log
+    {
+      echo -e "${PREFIX_FAIL}${1}" >&2
+    }
 
-  function add_threads_to_guest_list
-  {
-    for core in ${guest_cores_list[@]}; do
-      get_thread_by_core_and_smt
-      guest_threads_list+=( "${thread}" )
-      guest_threads_delim_list+=( "${thread}" )
-    done
-  }
+    function print_output_to_log
+    {
+      echo -e "${PREFIX_PROMPT}${1}" >&1
+    }
 
-  function add_threads_to_host_list
-  {
-    for core in ${host_cores_list[@]}; do
-      get_thread_by_core_and_smt
-      host_threads_list+=( "${thread}" )
-      host_threads_delim_list+=( "${thread}" )
-    done
-  }
+    function print_pass_to_log
+    {
+      echo -e "${PREFIX_PASS}${1}" >&1
+    }
 
-  function get_cpu
-  {
-    are_values_not_empty &> /dev/null && return 0
+    function print_skip_to_log
+    {
+      echo -e "${PREFIX_SKIP}${1}" >&1
+    }
 
-    local -i cores_allocated_to_host=0
-    local -i total_cores_count=$( cat /proc/cpuinfo | grep "cpu cores" | uniq | grep -o "[0-9]\+" )
-    local -i total_threads_count=$( cat /proc/cpuinfo | grep "siblings" | uniq | grep -o "[0-9]\+" )
-
-    set_cores_allocated_to_host || return 1
-
-    local -a host_cores_list=( $( seq 0 $(( "${cores_allocated_to_host}" - 1 )) ) )
-    local -a guest_cores_list=( $( seq "${cores_allocated_to_host}" $(( "${total_cores_count}" - 1 )) ) )
-    local -i smt_factor=$(( "${total_threads_count}" / "${total_cores_count}" ))
-    local -a smt_factor_list=( $( seq 0 $(( "${smt_factor}" - 1 )) ) )
-
-    get_thread_sets_for_host_and_libvirt || return 1
-    get_hex_mask_for_host_and_libvirt || return 1
-    are_values_not_empty
-  }
-
-  function get_hex_mask_for_host_and_libvirt
-  {
-    local -i host_threads_hex_mask=0
-    local -i total_threads_hex_mask=0
-
-    # <remarks>Add each decimal mask to sum.</remarks>
-    for thread in ${host_threads_list[@]}; do
-      local -i thread_decimal=$(( 2 ** ${thread} ))
-      local -i thread_hex_mask=$( echo "obase=16; ${thread_decimal}" | bc )
-      host_threads_hex_mask+="${thread_hex_mask}"
-    done
-
-    # <remarks>Convert hexadecimal mask into hexadecimal.</remarks>
-    HOST_THREADS_HEX=$( printf '%x\n' "${host_threads_hex_mask}" )
-    local -i total_threads_hex_mask=$(( ( 2 ** ${total_threads_count} ) - 1 ))
-    GUEST_THREADS_HEX=$( printf '%x\n' "${total_threads_hex_mask}" )
-  }
-
-  function get_thread_by_core_and_smt
-  {
-    thread=$(( core + ( smt_factor * total_cores_count )))
-  }
-
-  function get_thread_sets_for_host_and_libvirt
-  {
-    for smt_factor in ${smt_factor_list[@]}; do
-      local -a guest_threads_delim_list=( )
-      local -a host_threads_delim_list=( )
-      local -i thread
-
-      add_threads_to_lists
-
-      local -i first_thread_set="${host_threads_delim_list[0]}"
-      local -i last_thread_set="${host_threads_delim_list[-1]}"
-
-      local thread_set="${first_thread_set}"
-
-      if [[ "${first_thread_set}" -ne "${last_thread_set}" ]]; then
-        local thread_set="${first_thread_set}-${last_thread_set}"
+  # <summary>Validation</summary>
+    function are_values_not_empty
+    {
+      if ( "${FLAG_USE_HEX_MASKS}" && are_hex_masks_not_empty && are_thread_sets_not_empty ) \
+        || ( ! "${FLAG_USE_HEX_MASKS}" && are_thread_sets_not_empty ); then
+        return 0
       fi
 
-      HOST_THREADS_DELIM+="${thread_set},"
+      return 1
+    }
 
-      local -i first_thread_set="${guest_threads_delim_list[0]}"
-      local -i last_thread_set="${guest_threads_delim_list[-1]}"
-      local thread_set="${first_thread_set}"
+    function are_hex_masks_not_empty
+    {
+      if [[ -z "${GUEST_THREADS_HEX}" ]] \
+        || [[ -z "${HOST_THREADS_HEX}" ]]; then
+        print_error_to_log "Failed to get CPU hexadecimal masks."
+        return 1
+      fi
+    }
 
-      if [[ "${first_thread_set}" -ne "${thread_set}" ]]; then
-        local thread_set="${first_thread_set}-${last_thread_set}"
+    function are_thread_sets_not_empty
+    {
+      if [[ -z "${GUEST_THREADS_DELIM}" ]] \
+        || [[ -z "${HOST_THREADS_DELIM}" ]]; then
+        print_error_to_log "Failed to get CPU thread sets."
+        return 1
+      fi
+    }
+
+    function does_grub_have_isolcpu_setting
+    {
+      local -r grub_cmdline="$( cat /etc/default/grub | grep GRUB_CMDLINE_LINUX_DEFAULT | cut --delimiter '"' --fields 2 )"
+
+      case "${grub_cmdline}" in
+        *"isolcpus="* | *"nohz_full="* | *"rcu_nocbs="* )
+          print_output_to_log "Static Isolcpu found in GRUB."
+          return 0 ;;
+      esac
+
+      return 1
+    }
+
+  # <summary>Getters</summary>
+    function get_cpu
+    {
+      are_values_not_empty &> /dev/null && return 0
+
+      local -i cores_allocated_to_host=0
+      local -i total_cores_count=$( cat /proc/cpuinfo | grep "cpu cores" | uniq | grep -o "[0-9]\+" )
+      local -i total_threads_count=$( cat /proc/cpuinfo | grep "siblings" | uniq | grep -o "[0-9]\+" )
+
+      set_cores_allocated_to_host || return 1
+
+      local -a host_cores_list=( $( seq 0 $(( "${cores_allocated_to_host}" - 1 )) ) )
+      local -a guest_cores_list=( $( seq "${cores_allocated_to_host}" $(( "${total_cores_count}" - 1 )) ) )
+      local -i smt_factor=$(( "${total_threads_count}" / "${total_cores_count}" ))
+      local -a smt_factor_list=( $( seq 0 $(( "${smt_factor}" - 1 )) ) )
+
+      get_thread_sets_for_host_and_libvirt || return 1
+      get_hex_mask_for_host_and_libvirt || return 1
+      are_values_not_empty
+    }
+
+    function get_hex_mask_for_host_and_libvirt
+    {
+      local -i host_threads_hex_mask=0
+      local -i total_threads_hex_mask=0
+
+      # <remarks>Add each decimal mask to sum.</remarks>
+      for thread in ${host_threads_list[@]}; do
+        local -i thread_decimal=$(( 2 ** ${thread} ))
+        local -i thread_hex_mask=$( echo "obase=16; ${thread_decimal}" | bc )
+        host_threads_hex_mask+="${thread_hex_mask}"
+      done
+
+      # <remarks>Convert hexadecimal mask into hexadecimal.</remarks>
+      HOST_THREADS_HEX=$( printf '%x\n' "${host_threads_hex_mask}" )
+      local -i total_threads_hex_mask=$(( ( 2 ** ${total_threads_count} ) - 1 ))
+      GUEST_THREADS_HEX=$( printf '%x\n' "${total_threads_hex_mask}" )
+    }
+
+    function get_thread_by_core_and_smt
+    {
+      thread=$(( core + ( smt_factor * total_cores_count )))
+    }
+
+    function get_thread_sets_for_host_and_libvirt
+    {
+      for smt_factor in ${smt_factor_list[@]}; do
+        local -a guest_threads_delim_list=( )
+        local -a host_threads_delim_list=( )
+        local -i thread
+
+        add_threads_to_lists
+
+        local -i first_thread_set="${host_threads_delim_list[0]}"
+        local -i last_thread_set="${host_threads_delim_list[-1]}"
+
+        local thread_set="${first_thread_set}"
+
+        if [[ "${first_thread_set}" -ne "${last_thread_set}" ]]; then
+          local thread_set="${first_thread_set}-${last_thread_set}"
+        fi
+
+        HOST_THREADS_DELIM+="${thread_set},"
+
+        local -i first_thread_set="${guest_threads_delim_list[0]}"
+        local -i last_thread_set="${guest_threads_delim_list[-1]}"
+        local thread_set="${first_thread_set}"
+
+        if [[ "${first_thread_set}" -ne "${thread_set}" ]]; then
+          local thread_set="${first_thread_set}-${last_thread_set}"
+        fi
+
+        GUEST_THREADS_DELIM+="${thread_set},"
+      done
+
+      are_thread_sets_not_empty || return 1
+
+      # <remarks>Truncate last delimiter.</remarks>
+      if [[ ${HOST_THREADS_DELIM: -1} == "," ]]; then
+        HOST_THREADS_DELIM="${HOST_THREADS_DELIM::-1}"
       fi
 
-      GUEST_THREADS_DELIM+="${thread_set},"
-    done
+      if [[ ${GUEST_THREADS_DELIM: -1} == "," ]]; then
+        GUEST_THREADS_DELIM="${GUEST_THREADS_DELIM::-1}"
+      fi
+    }
 
-    are_thread_sets_not_empty || return 1
+  # <summary>Release/Reserve</summary>
+    function release_hex_mask
+    {
+      if ! echo "${HOST_THREADS_HEX}" > /sys/bus/workqueue/devices/writeback/cpumask \
+        || ! echo 0 > /sys/bus/workqueue/devices/writeback/numa; then
+        print_error_to_log "Failed to release CPU mask to Host."
+        return 1
+      fi
 
-    # <remarks>Truncate last delimiter.</remarks>
-    if [[ ${HOST_THREADS_DELIM: -1} == "," ]]; then
-      HOST_THREADS_DELIM="${HOST_THREADS_DELIM::-1}"
-    fi
+      print_output_to_log "Releasing CPU mask to Host."
+    }
 
-    if [[ ${GUEST_THREADS_DELIM: -1} == "," ]]; then
-      GUEST_THREADS_DELIM="${GUEST_THREADS_DELIM::-1}"
-    fi
-  }
+    function release_operation
+    {
+      if "${FLAG_USE_HEX_MASKS}"; then
+        release_hex_mask || return 1
+      fi
 
-  function print_prompt_to_log
-  {
-    echo -e "${PREFIX_PROMPT} ${1}" >&2
-  }
+      local -i last_thread_id=$( cat /proc/cpuinfo | grep "siblings" | uniq | grep -o "[0-9]\+" )
+      (( last_thread_id-- ))
+      local release_cpu_set="0-${last_thread_id}"
+      release_thread_sets "${release_cpu_set}"
+    }
 
-  function print_error_to_log
-  {
-    echo -e "${PREFIX_PROMPT} ${PREFIX_ERROR} ${1}" >&2
-  }
+    function release_thread_sets
+    {
+      local cpu_set="${1}"
 
-  function release_hex_mask
-  {
-    if ! echo "${HOST_THREADS_HEX}" > /sys/bus/workqueue/devices/writeback/cpumask \
-      || ! echo 0 > /sys/bus/workqueue/devices/writeback/numa; then
-      print_error_to_log "Failed to release CPU mask to Host."
-      return 1
-    fi
+      if ! systemctl set-property --runtime -- system.slice AllowedCPUs="${cpu_set}" \
+        || ! systemctl set-property --runtime -- user.slice AllowedCPUs="${cpu_set}" \
+        || ! systemctl set-property --runtime -- init.scope AllowedCPUs="${cpu_set}"; then
+        print_error_to_log "Failed to release CPU threads to Host."
+        return 1
+      fi
 
-    print_prompt_to_log "Releasing CPU mask to Host."
-  }
+      print_output_to_log "Releasing CPU threads to Host."
+    }
 
-  function release_operation
-  {
-    if "${FLAG_USE_HEX_MASKS}"; then
-      release_hex_mask || return 1
-    fi
+    function reserve_hex_mask
+    {
+      if ! echo "${GUEST_THREADS_HEX}" > /sys/bus/workqueue/devices/writeback/cpumask \
+        || ! echo 1 > /sys/bus/workqueue/devices/writeback/numa; then
+        print_error_to_log "Failed to reserve CPU mask to Libvirt domain(s)."
+        return 1
+      fi
 
-    local -i last_thread_id=$( cat /proc/cpuinfo | grep "siblings" | uniq | grep -o "[0-9]\+" )
-    (( last_thread_id-- ))
-    local release_cpu_set="0-${last_thread_id}"
-    release_thread_sets "${release_cpu_set}"
-  }
+      print_output_to_log "Reserving CPU mask to Libvirt domain(s)."
+    }
 
-  function release_thread_sets
-  {
-    local cpu_set="${1}"
+    function reserve_operation
+    {
+      if "${FLAG_USE_HEX_MASKS}"; then
+        reserve_hex_mask || return 1
+      fi
 
-    if ! systemctl set-property --runtime -- system.slice AllowedCPUs="${cpu_set}" \
-      || ! systemctl set-property --runtime -- user.slice AllowedCPUs="${cpu_set}" \
-      || ! systemctl set-property --runtime -- init.scope AllowedCPUs="${cpu_set}"; then
-      print_error_to_log "Failed to release CPU threads to Host."
-      return 1
-    fi
+      reserve_thread_sets
+    }
 
-    print_prompt_to_log "Releasing CPU threads to Host."
-  }
+    function reserve_thread_sets
+    {
+      if ! systemctl set-property --runtime -- system.slice AllowedCPUs="${GUEST_THREADS_DELIM}" \
+        || ! systemctl set-property --runtime -- user.slice AllowedCPUs="${GUEST_THREADS_DELIM}" \
+        || ! systemctl set-property --runtime -- init.scope AllowedCPUs="${GUEST_THREADS_DELIM}"; then
+        print_error_to_log "Failed to reserve CPU threads to Libvirt domain(s)."
+        return 1
+      fi
 
-  function reserve_hex_mask
-  {
-    if ! echo "${GUEST_THREADS_HEX}" > /sys/bus/workqueue/devices/writeback/cpumask \
-      || ! echo 1 > /sys/bus/workqueue/devices/writeback/numa; then
-      print_error_to_log "Failed to reserve CPU mask to Libvirt domain(s)."
-      return 1
-    fi
+      print_output_to_log "Reserving CPU threads to Libvirt domain(s)."
+    }
 
-    print_prompt_to_log "Reserving CPU mask to Libvirt domain(s)."
-  }
+    function release_or_reserve_cpu
+    {
+      case "${OPERATION}" in
+        "started" )
+          reserve_operation || return 1 ;;
 
-  function reserve_operation
-  {
-    if "${FLAG_USE_HEX_MASKS}"; then
-      reserve_hex_mask || return 1
-    fi
+        "release" )
+          release_operation || return 1 ;;
+      esac
+    }
 
-    reserve_thread_sets
-  }
+  # <summary>Setters</summary>
+    function add_threads_to_lists
+    {
+      add_threads_to_host_list
+      add_threads_to_guest_list
+    }
 
-  function reserve_thread_sets
-  {
-    if ! systemctl set-property --runtime -- system.slice AllowedCPUs="${GUEST_THREADS_DELIM}" \
-      || ! systemctl set-property --runtime -- user.slice AllowedCPUs="${GUEST_THREADS_DELIM}" \
-      || ! systemctl set-property --runtime -- init.scope AllowedCPUs="${GUEST_THREADS_DELIM}"; then
-      print_error_to_log "Failed to reserve CPU threads to Libvirt domain(s)."
-      return 1
-    fi
+    function add_threads_to_guest_list
+    {
+      for core in ${guest_cores_list[@]}; do
+        get_thread_by_core_and_smt
+        guest_threads_list+=( "${thread}" )
+        guest_threads_delim_list+=( "${thread}" )
+      done
+    }
 
-    print_prompt_to_log "Reserving CPU threads to Libvirt domain(s)."
-  }
+    function add_threads_to_host_list
+    {
+      for core in ${host_cores_list[@]}; do
+        get_thread_by_core_and_smt
+        host_threads_list+=( "${thread}" )
+        host_threads_delim_list+=( "${thread}" )
+      done
+    }
 
-  function release_or_reserve_cpu
-  {
-    case "${OPERATION}" in
-      "started" )
-        reserve_operation || return 1 ;;
+    function set_cores_allocated_to_host
+    {
+      if [[ "${total_cores_count}" -ge 4 ]]; then
+        cores_allocated_to_host=2
 
-      "release" )
-        release_operation || return 1 ;;
-    esac
-  }
+      elif [[ "${total_cores_count}" -le 3 ]] \
+        && [[ "${total_cores_count}" -ge 2 ]]; then
+        cores_allocated_to_host=1
 
-  function set_cores_allocated_to_host
-  {
-    if [[ "${total_cores_count}" -ge 4 ]]; then
-      cores_allocated_to_host=2
-
-    elif [[ "${total_cores_count}" -le 3 ]] \
-      && [[ "${total_cores_count}" -ge 2 ]]; then
-      cores_allocated_to_host=1
-
-    else
-      print_error_to_log "Insufficient CPU cores. Minimum is two (2) cores."
-      return 1
-    fi
-  }
+      else
+        print_error_to_log "Insufficient CPU cores. Minimum is two (2) cores."
+        return 1
+      fi
+    }
 # </functions>
 
 # <code>
