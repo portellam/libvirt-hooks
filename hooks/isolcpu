@@ -37,7 +37,7 @@
     RESET_COLOR='\033[0m'
 
   # <summary>Append output</summary>
-    PREFIX_PROMPT="libvirt-qemu $( basename "${0}" ):"
+    PREFIX_PROMPT="libvirt-qemu $( basename "${0}" ): "
     PREFIX_ERROR="${PREFIX_PROMPT}${SET_COLOR_YELLOW}An error occurred:${RESET_COLOR} "
     PREFIX_FAIL="${PREFIX_PROMPT}${SET_COLOR_RED}Failure:${RESET_COLOR} "
     PREFIX_PASS="${PREFIX_PROMPT}${SET_COLOR_GREEN}Success:${RESET_COLOR} "
