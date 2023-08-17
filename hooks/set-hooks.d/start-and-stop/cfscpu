@@ -31,6 +31,7 @@
     PREFIX_ERROR="${PREFIX_PROMPT}An error occurred: "
     PREFIX_FAIL="${PREFIX_PROMPT}Failure: "
     PREFIX_PASS="${PREFIX_PROMPT}Success: "
+    PREFIX_SKIP="${PREFIX_PROMPT}Skipped: "
 
   # <remarks>Ranges from 20 (lowest priority) to -20 (highest priority).</remarks>
   TARGET_NICE="-1"
@@ -42,8 +43,12 @@
     local -r output="cfscpu"
     print_output_to_log "${output}"
 
-    if ! is_valid_domain \
-      || ! get_vcpu_path \
+    if is_valid_domain; then
+      print_skip_to_log "${output}"
+      return 0
+    fi
+
+    if ! get_vcpu_path \
       || ! prioritize_vcpu_for_domain; then
       print_fail_to_log "${output}"
       return 1
@@ -83,6 +88,10 @@
       echo -e "${PREFIX_PASS}${1}" >&1
     }
 
+    function print_skip_to_log
+    {
+      echo -e "${PREFIX_SKIP}${1}" >&1
+    }
 
   function get_vcpu_path
   {

@@ -24,6 +24,7 @@
     PREFIX_ERROR="${PREFIX_PROMPT}An error occurred: "
     PREFIX_FAIL="${PREFIX_PROMPT}Failure: "
     PREFIX_PASS="${PREFIX_PROMPT}Success: "
+    PREFIX_SKIP="${PREFIX_PROMPT}Skipped: "
 
   HOOKS_BASE_DIR="$( dirname $( realpath "${0}" ) )/"
   DOMAIN_NAME_BASE_DIR="${HOOKS_BASE_DIR}qemu.d/${DOMAIN_NAME}/"
@@ -50,8 +51,12 @@
     local -r output="Set hooks"
     print_output_to_log "${output}"
 
-    if ! is_valid_domain \
-      || ! get_paths_for_domain \
+    if is_valid_domain; then
+      print_skip_to_log "${output}"
+      return 0
+    fi
+
+    if ! get_paths_for_domain \
       || ! get_hooks; then
       print_fail_to_log "${output}"
       return 1
@@ -81,6 +86,10 @@
       echo -e "${PREFIX_PASS}${1}" >&1
     }
 
+    function print_skip_to_log
+    {
+      echo -e "${PREFIX_SKIP}${1}" >&1
+    }
 
   # <summary>Getters</summary>
     function get_paths_for_domain

@@ -13,6 +13,7 @@
     PREFIX_ERROR="${PREFIX_PROMPT}An error occurred: "
     PREFIX_FAIL="${PREFIX_PROMPT}Failure: "
     PREFIX_PASS="${PREFIX_PROMPT}Success: "
+    PREFIX_SKIP="${PREFIX_PROMPT}Skipped: "
 # </params>
 
 # <functions>
@@ -30,15 +31,19 @@
     local -r output="Set service"
 
     if ! is_service_name_valid "${service_name}"; then
-      print_fail_to_log "${output}"
-      return 1
+      print_skip_to_log "${output}"
+      return 0
     fi
 
     shift
     local -r operation="${2}"
 
-    if ! is_argument_valid "${operation}" \
-      || ! set_operation "${service_name}" "${operation}"; then
+    if ! is_argument_valid "${operation}"; then
+      print_skip_to_log "${output}"
+      return 1
+    fi
+
+    if ! set_operation "${service_name}" "${operation}"; then
       print_fail_to_log "${output}"
       return 1
     fi
@@ -67,6 +72,10 @@
       echo -e "${PREFIX_PASS}${1}" >&1
     }
 
+    function print_skip_to_log
+    {
+      echo -e "${PREFIX_SKIP}${1}" >&1
+    }
 
   # <summary>Service logic</summary>
     function disable_service
