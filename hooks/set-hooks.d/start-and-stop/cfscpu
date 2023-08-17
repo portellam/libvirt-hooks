@@ -75,7 +75,7 @@
     echo -e "${PREFIX_PROMPT} ${1}"
   }
 
-  function print_prompt_to_log
+  function print_output_to_log
   {
     echo -e "${PREFIX_PROMPT} ${1}" >&2
   }
@@ -92,7 +92,7 @@
       return 1
     fi
 
-    print_prompt_to_log "Prioritized vCPU threads of Libvirt domain '${DOMAIN_NAME}'" > /dev/kmsg
+    print_output_to_log "Prioritized vCPU threads of Libvirt domain '${DOMAIN_NAME}'" > /dev/kmsg
   }
 
   function set_nice_level_for_domain
@@ -111,13 +111,13 @@
       return 1
     fi
 
-    print_prompt_to_log "Set nice level for PID '${pid}'"
+    print_output_to_log "Set nice level for PID '${pid}'"
   }
 
   function set_nice_level_for_vcpu_group
   {
     local -r vcpu_group="${1}"
-    print_prompt_to_log "Setting nice level of ${TARGET_NICE} to vCPU group '$( basename ${vcpu_group} ).'" > /dev/kmsg
+    print_output_to_log "Setting nice level of ${TARGET_NICE} to vCPU group '$( basename ${vcpu_group} ).'" > /dev/kmsg
 
     for pid in $( cat ${vcpu_group}/tasks ); do
       set_nice_level_for_process_id "${pid}" || return 1

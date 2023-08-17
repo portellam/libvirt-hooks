@@ -50,7 +50,7 @@
       return 1
     fi
 
-    print_prompt_to_log "Disabled '${service}' service."
+    print_output_to_log "Disabled '${service}' service."
   }
 
   function enable_service
@@ -62,10 +62,10 @@
       return 1
     fi
 
-    print_prompt_to_log "Enabled '${service}' service."
+    print_output_to_log "Enabled '${service}' service."
   }
 
-  function print_prompt_to_log
+  function print_output_to_log
   {
     echo -e "${PREFIX_PROMPT} ${1}" >&2
   }
@@ -99,7 +99,7 @@
       return 1
     fi
 
-    print_prompt_to_log "Started '${service}' service."
+    print_output_to_log "Started '${service}' service."
   }
 
   function stop_service
@@ -111,6 +111,6 @@
       return 1
     fi
 
-    print_prompt_to_log "Stopped '${service}' service."
+    print_output_to_log "Stopped '${service}' service."
   }
 # </functions>

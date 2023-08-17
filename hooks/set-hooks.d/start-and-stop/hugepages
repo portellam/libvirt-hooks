@@ -42,7 +42,7 @@
       return 1
     fi
 
-    print_prompt_to_log "Wrote Host memory to storage."
+    print_output_to_log "Wrote Host memory to storage."
   }
 
   function drop_filesystem_caches
@@ -52,7 +52,7 @@
       return 1
     fi
 
-    print_prompt_to_log "Dropped filesystem caches."
+    print_output_to_log "Dropped filesystem caches."
   }
 
   function defragment_host_memory
@@ -62,10 +62,10 @@
       return 1
     fi
 
-    print_prompt_to_log "Defragmented Host memory."
+    print_output_to_log "Defragmented Host memory."
   }
 
-  function print_prompt_to_log
+  function print_output_to_log
   {
     echo -e "${PREFIX_PROMPT} ${1}" >&2
   }
