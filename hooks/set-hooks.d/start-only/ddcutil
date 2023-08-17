@@ -25,8 +25,20 @@
 	OPERATION="${2}"
 	SUBOPERATION="${3}"
 
-	PREFIX_ERROR="An error occurred:"
-  PREFIX_PROMPT="libvirt-qemu $( basename "${0}" ):"
+  # <summary>
+  # Color coding
+  # Reference URL: 'https://www.shellhacks.com/bash-colors'
+  # </summary>
+    SET_COLOR_GREEN='\033[0;32m'
+    SET_COLOR_RED='\033[0;31m'
+    SET_COLOR_YELLOW='\033[0;33m'
+    RESET_COLOR='\033[0m'
+
+  # <summary>Append output</summary>
+    PREFIX_PROMPT="libvirt-qemu $( basename "${0}" ):"
+    PREFIX_ERROR="${PREFIX_PROMPT}${SET_COLOR_YELLOW}An error occurred:${RESET_COLOR} "
+    PREFIX_FAIL="${PREFIX_PROMPT}${SET_COLOR_RED}Failure:${RESET_COLOR} "
+    PREFIX_PASS="${PREFIX_PROMPT}${SET_COLOR_GREEN}Success:${RESET_COLOR} "
 
 	# <remarks>The display shown in `ddcutil detect`</remarks>
 	DOMAIN_DISPLAY="0"
@@ -40,11 +52,38 @@
 # <functions>
 	function main
 	{
+		local -r output="ddcutil"
+		print_output_to_log "${output}"
+
 		if ! get_video_input \
 			|| ! set_video_input; then
+			print_fail_to_log "${output}"
 			return 1
 		fi
+
+		print_pass_to_log "${output}"
 	}
+
+	# <summary>Loggers</summary>
+    function print_error_to_log
+    {
+      echo -e "${PREFIX_ERROR}${1}" >&2
+    }
+
+    function print_fail_to_log
+    {
+      echo -e "${PREFIX_FAIL}${1}" >&2
+    }
+
+    function print_output_to_log
+    {
+      echo -e "${PREFIX_PROMPT}${1}" >&1
+    }
+
+    function print_pass_to_log
+    {
+      echo -e "${PREFIX_PASS}${1}" >&1
+    }
 
 	function get_video_input
 	{
@@ -60,21 +99,6 @@
 
 		return 1
 	}
-
-	function print_prompt
-  {
-    echo -e "${PREFIX_PROMPT} ${1}"
-  }
-
-  function print_output_to_log
-  {
-    echo -e "${PREFIX_PROMPT} ${1}" >&2
-  }
-
-  function print_error_to_log
-  {
-    echo -e "${PREFIX_PROMPT} ${PREFIX_ERROR} ${1}" >&2
-  }
 
 	function switch_video_input
 	{
