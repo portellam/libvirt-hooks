@@ -27,20 +27,11 @@
 # <params>
   OPERATION="${2}"
 
-  # <summary>
-  # Color coding
-  # Reference URL: 'https://www.shellhacks.com/bash-colors'
-  # </summary>
-    SET_COLOR_GREEN='\033[0;32m'
-    SET_COLOR_RED='\033[0;31m'
-    SET_COLOR_YELLOW='\033[0;33m'
-    RESET_COLOR='\033[0m'
-
   # <summary>Append output</summary>
-    PREFIX_PROMPT="libvirt-qemu $( basename "${0}" ): "
-    PREFIX_ERROR="${PREFIX_PROMPT}${SET_COLOR_YELLOW}An error occurred:${RESET_COLOR} "
-    PREFIX_FAIL="${PREFIX_PROMPT}${SET_COLOR_RED}Failure:${RESET_COLOR} "
-    PREFIX_PASS="${PREFIX_PROMPT}${SET_COLOR_GREEN}Success:${RESET_COLOR} "
+    PREFIX_PROMPT="libvirt-qemu $( basename "${0}" )"
+    PREFIX_ERROR="${PREFIX_PROMPT}An error occurred: "
+    PREFIX_FAIL="${PREFIX_PROMPT}Failure: "
+    PREFIX_PASS="${PREFIX_PROMPT}Success: "
     PREFIX_SKIP="${PREFIX_PROMPT}${SET_COLOR_YELLOW}Skipped:${RESET_COLOR} "
 
   FLAG_USE_HEX_MASKS=true
