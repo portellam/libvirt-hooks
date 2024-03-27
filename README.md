@@ -41,7 +41,7 @@ Install scripts (hooks) of which extend and enhance the functionality of Libvirt
 ## 2. Why?
 Libvirt is a tool which manages VMs (Guests) and the platforms which run those Guests (example: QEMU, KVM, etc). Libvirt includes logic to watch for specific events on the Host OS (ex: Linux) to allow for script execution.
 
-Scripts are not available out-of-the-box in Libvirt, but are possible if you understand Linux, `systemd`, and a scripting language (ex: Bash, Python). **This is not acceptable,** should we as a [community](https://old.reddit.com/r/VFIO) wish to attract newcomers to VMs, [VFIO](#85-vfio), and Linux as a whole.
+Scripts are not available out-of-the-box in Libvirt, but are possible if you understand Linux, `systemd`, and a scripting language (ex: Bash, Python). **This is not acceptable,** should we as a community [(the VFIO Reddit forum)](https://old.reddit.com/r/VFIO) wish to attract newcomers to VMs, [VFIO](#85-vfio), and Linux as a whole.
 
 To assist beginners (and others), included are some incredibly necessary scripts for Guests.
 To assist eager enthusiasts who wish to develop new Hooks, [see below](#7-how-to-develop-custom-features).
