@@ -162,7 +162,7 @@ Lorem ipsum.
 &ensp;<sub>**[VFIO-Tools source (GitHub)](https://github.com/PassthroughPOST/VFIO-Tools)**</sub>
 
 ## 9. Credits
-Some of what you see here is directly inspired by others' work, at the [Arch Wiki](https://wiki.archlinux.org/title/PCI_passthrough_via_OVMF) and at the [Reddit forum](https://old.reddit.com/r/VFIO).
+Some of what you see here is directly inspired by others' work, from either the [Arch Wiki](https://wiki.archlinux.org/title/PCI_passthrough_via_OVMF) or the [Reddit forum](https://old.reddit.com/r/VFIO).
 
 ## 10. Disclaimer
 Use at your own risk. As stated in [this article](#91-hook), avoid recursion in your Hooks. This can lead to at worst a deadlock or at best the failure of a single Guest to start.
