@@ -32,7 +32,7 @@
   - [8.5. VFIO](#85-vfio)
   - [8.6. VFIO-Tools](#86-vfio-tools)
 - [9. Credits](#9-credits)
-- [10. ](#10-disclaimer)
+- [10. Disclaimer](#10-disclaimer)
 - [11. Contact](#11-contact)
 
 ## 1. About
