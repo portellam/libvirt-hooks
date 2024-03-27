@@ -36,7 +36,7 @@
 - [11. Contact](#11-contact)
 
 ## 1. About
-Install scripts (hooks) of which extend and enhance the functionality of Libvirt Virtual Machines (VM). Hooks may run at either VM start or stop, and be VM-specific. Develop your own Hooks by reviewing the existing hooks as a reference guide. See [Features](#features) for more information.
+Install scripts (hooks) of which extend and enhance the functionality of Libvirt Virtual Machines (VM). Hooks may run at either VM start or stop, and be VM-specific. Develop your own!
 
 ## 2. Why?
 Libvirt is a tool which manages VMs (Guests) and the platforms which run those Guests (example: QEMU, KVM). Libvirt includes logic to watch for specific events on the Host OS (ex: Linux) to allow for script execution.
