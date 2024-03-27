@@ -162,10 +162,10 @@ Lorem ipsum.
 &ensp;<sub>**[VFIO-Tools source (GitHub)](https://github.com/PassthroughPOST/VFIO-Tools)**</sub>
 
 ## 9. Credits
-Some of what you see here is directly inspired by others' work, at the ArchWiki and at Reddit.
+Some of what you see here is directly inspired by others' work, at the [Arch Wiki](https://wiki.archlinux.org/title/PCI_passthrough_via_OVMF) and at the [Reddit forum](https://old.reddit.com/r/VFIO).
 
 ## 10. Disclaimer
-Use at your own risk. As stated in the [About: References](#12-references), avoid recursion in your Hooks. This can lead to at worst a deadlock or at best the failure of a single Guest to start.
+Use at your own risk. As stated in [this article](#91-hook), avoid recursion in your Hooks. This can lead to at worst a deadlock or at best the failure of a single Guest to start.
 
 ## 11. Contact
 Did you encounter a bug? Do you need help? Notice any dead links? Please contact by [raising an issue](https://github.com/portellam/libvirt-hooks/issues) with the project itself.
