@@ -165,7 +165,7 @@ Lorem ipsum.
 Some of what you see here is directly inspired by others' work, from either the [Arch Wiki](https://wiki.archlinux.org/title/PCI_passthrough_via_OVMF) or the [Reddit forum](https://old.reddit.com/r/VFIO).
 
 ## 10. Disclaimer
-Use at your own risk. As stated in [this article](#91-hook), avoid recursion in your Hooks. This can lead to at worst a deadlock or at best the failure of a single Guest to start.
+Use at your own risk. As stated in [this article](#91-hook), avoid recursion in your Hooks. This can lead to at worst a deadlock of all Guests or at best the failure of a single Guest to start.
 
 ## 11. Contact
 Did you encounter a bug? Do you need help? Notice any dead links? Please contact by [raising an issue](https://github.com/portellam/libvirt-hooks/issues) with the project itself.
