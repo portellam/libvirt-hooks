@@ -9,14 +9,12 @@
 - [3. Download](#3-download)
 - [4. Usage](#5-usage)
 - [5. Current Features](#5-current-features)
-  - [5.0. Description](#50-description)
   - [5.1. `cfscpu`](#51-cfscpu)
   - [5.2. `hugepages`](#52-hugepages)
   - [5.3. `isolcpu`](#53-isolcpu)
   - [5.4. `nosleep`](#54-nosleep)
   - [5.5. `dosleep`](#55-dosleep)
 - [6. Planned Features](#6-planned-features)
-  - [6.0. Description](#60-description)
   - [6.1. `ddcutil`](#61-ddcutil)
   - [6.2. `beforeoff-dohibernate`](#62-beforeoff-dohibernate)
   - [6.3. `dohibernate`](#63-dohibernate)
@@ -85,7 +83,6 @@ To assist eager enthusiasts who wish to develop new Hooks, [see below](#7-how-to
   - The installer will place all project script files in `/usr/local/bin/`.
 
 ## 5. Current Features
-### 5.0. Description
 References are either links to technical documentation or original sources.
 
 ### 5.1. `cfscpu`
@@ -105,7 +102,6 @@ References are either links to technical documentation or original sources.
 - Stops `nosleep` service.
 
 ## 6. Planned Features
-### 6.0. Description
 References are either links to technical documentation or original sources.
 
 ### 6.1. `ddcutil`
