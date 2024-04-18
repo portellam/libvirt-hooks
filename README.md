@@ -1,4 +1,4 @@
-# libvirt-hooks
+# Libvirt Hooks
 ### v1.0.0
 Install scripts (hooks) of which extend and enhance the functionality of Libvirt Virtual Machines (VM). Hooks may run at either VM start or stop, and be VM-specific. Develop your own!
 
