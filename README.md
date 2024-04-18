@@ -21,9 +21,6 @@ Install scripts (hooks) of which extend and enhance the functionality of Libvirt
   - [2. `beforeoff-dohibernate`](#2-beforeoff-dohibernate)
   - [3. `dohibernate`](#3-dohibernate)
   - [4. `virtual-nas`](#4-virtual-nas)
-- [How to Develop Custom Features](#how-to-develop-custom-features)
-  - [1. How a Hook Works](#1-how-a-hook-works)
-  - [2. How to Implement a New Hook within this Project](#2-how-to-implement-a-new-hook-within-this-project)
 - [References](#references)
   - [1. Hook](#1-hook)
   - [2. Hugepages](#2-hugepages)
@@ -121,22 +118,6 @@ References are either links to technical documentation or original sources.
     - For Read-Write permissions: ensure file system integrity.
     - For Read-only permissions: preventing malware transmission.
     - Virtualizing an untrusted or legacy OS (example: Windows XP).
-
-### How to Develop Custom Features
-#### 1. How a Hook Works
-Review [this article](#1-hook) before continuing.
-
-#### 2. How to Implement a New Hook within this Project
-Lorem ipsum.
-
-##### 2.a. `set-hooks`
-Lorem ipsum.
-
-##### 2.b. `set-service`
-Lorem ipsum.
-
-##### 2.c. Copying new Hook to some or all Guests
-Lorem ipsum.
 
 ### References
 #### 1. Hook
