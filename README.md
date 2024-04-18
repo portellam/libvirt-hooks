@@ -28,7 +28,7 @@ Install scripts (hooks) of which extend and enhance the functionality of Libvirt
     - [2.a. `set-hooks`](#2a-set-hooks)
     - [2.b. `set-service`](#2b-set-service)
     - [2.c. Copying a New Hook to Some or All Guests](#2c-copying-a-new-hook-to-some-or-all-guests)
-  - [References](#references)
+- [References](#references)
   - [Hook](#hook)
   - [Hugepages](#hugepages)
   - [`isolcpu`](#isolcpu)
