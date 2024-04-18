@@ -39,7 +39,6 @@ Libvirt is a tool which manages VMs (Guests) and the platforms which run those G
 Scripts are not available out-of-the-box in Libvirt, but are possible if you understand Linux, `systemd`, and a scripting language (ex: Bash, Python). **This is not acceptable,** should we as a [community](#9-credits) wish to attract newcomers to VMs, [VFIO](#vfio), and Linux as a whole.
 
 To assist beginners (and others), included are some incredibly necessary scripts for Guests.
-To assist eager enthusiasts who wish to develop new Hooks, [see below](#7-how-to-develop-custom-features).
 
 ### Download
 - To download this script, you may:
@@ -146,7 +145,3 @@ Use at your own risk. As stated in [this article](#hook), avoid recursion in you
 
 ### Contact
 Did you encounter a bug? Do you need help? Notice any dead links? Please contact by [raising an issue](https://github.com/portellam/libvirt-hooks/issues) with the project itself.
-
-## TODO:
-- [ ] what is the installer doing? Is `/usr/local/bin/` necessary? Maybe use it as an updater?
-- [ ] explain how to extend functionality using this project as a guide.
