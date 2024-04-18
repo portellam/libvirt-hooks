@@ -45,7 +45,7 @@ Libvirt is a tool which manages VMs (Guests) and the platforms which run those G
 Scripts are not available out-of-the-box in Libvirt, but are possible if you understand Linux, `systemd`, and a scripting language (ex: Bash, Python). **This is not acceptable,** should we as a [community](#9-credits) wish to attract newcomers to VMs, [VFIO](#vfio), and Linux as a whole.
 
 To assist beginners (and others), included are some incredibly necessary scripts for Guests.
-To assist eager enthusiasts who wish to develop new Hooks, [see below](#7-how-to-develop-custom-features).
+To assist eager enthusiasts who wish to develop new Hooks, [see below](#how-to-develop-custom-features).
 
 ### Download
 - To download this script, you may:
