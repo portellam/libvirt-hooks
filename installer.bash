@@ -17,10 +17,6 @@
   readonly WORKING_DIR="$( dirname $( realpath "${0}" ) )/"
   readonly OPTION="${1}"
 
-  SCRIPT_NAME="$( basename "${0}" )"
-  PREFIX_PROMPT="${SCRIPT_NAME}: "
-  PREFIX_ERROR="${PREFIX_PROMPT}An error occurred: "
-
   SAVEIFS="${IFS}"
   IFS=$'\n'
 
@@ -32,15 +28,16 @@
   # Color coding
   # Reference URL: 'https://www.shellhacks.com/bash-colors'
   # </summary>
-    readonly SET_COLOR_GREEN='\033[0;32m'
-    readonly SET_COLOR_RED='\033[0;31m'
-    readonly SET_COLOR_YELLOW='\033[0;33m'
-    readonly RESET_COLOR='\033[0m'
+    SET_COLOR_GREEN='\033[0;32m'
+    SET_COLOR_RED='\033[0;31m'
+    SET_COLOR_YELLOW='\033[0;33m'
+    RESET_COLOR='\033[0m'
 
   # <summary>Append output</summary>
-    readonly PREFIX_ERROR="${SET_COLOR_YELLOW}An error occurred:${RESET_COLOR} "
-    readonly PREFIX_FAIL="${SET_COLOR_RED}Failure:${RESET_COLOR} "
-    readonly PREFIX_PASS="${SET_COLOR_GREEN}Success:${RESET_COLOR} "
+    PREFIX_PROMPT="$( basename "${0}" ): "
+    PREFIX_ERROR="${PREFIX_PROMPT}${SET_COLOR_YELLOW}An error occurred:${RESET_COLOR} "
+    PREFIX_FAIL="${PREFIX_PROMPT}${SET_COLOR_RED}Failure:${RESET_COLOR} "
+    PREFIX_PASS="${PREFIX_PROMPT}${SET_COLOR_GREEN}Success:${RESET_COLOR} "
 
   readonly LIBVIRTD_SERVICE="libvirtd"
 
@@ -119,21 +116,21 @@
         || ! does_destination_path_exist \
         || ! copy_source_files_to_destination \
         || ! set_permissions_for_destination_files; then
-        print_fail "Could not install ${REPO_NAME}."
+        print_fail_to_log"Could not install ${REPO_NAME}."
         return 1
       fi
 
-      print_pass "Installed ${REPO_NAME}."
+      print_pass_to_log "Installed ${REPO_NAME}."
     }
 
     function uninstall
     {
       if ! delete_destination_files; then
-        print_fail "Could not uninstall ${REPO_NAME}."
+        print_fail_to_log"Could not uninstall ${REPO_NAME}."
         return 1
       fi
 
-      print_pass "Uninstalled ${REPO_NAME}."
+      print_pass_to_log "Uninstalled ${REPO_NAME}."
     }
 
   # <summary>Clean-up</summary>
@@ -152,7 +149,7 @@
 
   # <summary>Handlers</summary>
     function catch_error {
-      exit 255
+      exit 1
     }
 
     function catch_exit {
@@ -192,24 +189,24 @@
     }
 
   # <summary>Loggers</summary>
-    function print_fail
-    {
-      print_to_output_log "${PREFIX_FAIL}${1}"
-    }
-
-    function print_pass
-    {
-      print_to_output_log "${PREFIX_PASS}${1}"
-    }
-
-    function print_to_error_log
+    function print_error_to_log
     {
       echo -e "${PREFIX_ERROR}${1}" >&2
     }
 
-    function print_to_output_log
+    function print_fail_to_log
+    {
+      echo -e "${PREFIX_FAIL}${1}" >&2
+    }
+
+    function print_output_to_log
     {
       echo -e "${PREFIX_PROMPT}${1}" >&1
+    }
+
+    function print_pass_to_log
+    {
+      echo -e "${PREFIX_PASS}${1}" >&1
     }
 
     function print_usage
@@ -262,7 +259,7 @@
         local bin_path="${BIN_DEST_PATH}${bin_name}"
 
         if ! sudo cp --force "${bin}" "${bin_path}" &> /dev/null; then
-          print_error "Failed to copy project binaries."
+          print_error_to_log "Failed to copy project binaries."
           return 1
         fi
       done
@@ -277,7 +274,7 @@
 
         if ! does_path_exist "${script_dest_dir}" \
           || ! sudo rsync --archive --recursive --verbose "${script_source_file}" "${script_dest_dir}" &> /dev/null; then
-          print_error "Failed to copy project script(s)."
+          print_error_to_log "Failed to copy project script(s)."
           return 1
         fi
       done
@@ -290,7 +287,7 @@
         local service_path="${SERVICE_DEST_PATH}/${service_name}"
 
         if ! sudo cp --force "${service}" "${service_path}" &> /dev/null; then
-          print_error "Failed to copy project service(s)."
+          print_error_to_log "Failed to copy project service(s)."
           return 1
         fi
       done
@@ -311,7 +308,7 @@
       fi
 
       if ! rm --force --recursive "${BIN_DEST_PATH}" &> /dev/null; then
-        print_error "Failed to delete project binaries."
+        print_error_to_log "Failed to delete project binaries."
         return 1
       fi
     }
@@ -323,7 +320,7 @@
       fi
 
       if ! rm --force --recursive ${SCRIPT_DEST_PATH}* &> /dev/null; then
-        print_error "Failed to delete project script(s)."
+        print_error_to_log "Failed to delete project script(s)."
         return 1
       fi
     }
@@ -339,7 +336,7 @@
         local service_path="${SERVICE_DEST_PATH}${service_name}"
 
         if ! rm --force "${service_path}" &> /dev/null; then
-          print_error "Failed to delete project service(s)."
+          print_error_to_log "Failed to delete project service(s)."
           return 1
         fi
       done
@@ -356,7 +353,7 @@
     {
       for bin in "${BIN_LIST[@]}"; do
         if [[ ! -e "${bin}" ]]; then
-          print_error "Missing project binaries."
+          print_error_to_log "Missing project binaries."
           return 1
         fi
       done
@@ -366,7 +363,7 @@
     {
       for script in "${SCRIPT_LIST[@]}"; do
         if [[ ! -e "${script}" ]]; then
-          print_error "Missing project scripts."
+          print_error_to_log "Missing project scripts."
           return 1
         fi
       done
@@ -376,7 +373,7 @@
     {
       for service in "${SERVICE_LIST[@]}"; do
         if [[ ! -e "${service}" ]]; then
-          print_error "Missing project services."
+          print_error_to_log "Missing project services."
           return 1
         fi
       done
@@ -388,18 +385,18 @@
       local -r systemd_app="systemd"
 
       if ! command -v "${systemd_app}" &> /dev/null; then
-        print_error "Required dependency '${systemd_app}' is not installed."
+        print_error_to_log "Required dependency '${systemd_app}' is not installed."
         return 1
       fi
 
       local -r output="$( systemctl status "${LIBVIRTD_SERVICE}" )"
 
       if [[ "${output}" == "Unit ${LIBVIRTD_SERVICE}.service could not be found." ]]; then
-        print_error "Required service '${LIBVIRTD_SERVICE}' is not installed."
+        print_error_to_log "Required service '${LIBVIRTD_SERVICE}' is not installed."
         return 1
       fi
 
-      print_pass "Dependencies are installed."
+      print_pass_to_log "Dependencies are installed."
     }
 
     function do_install_audio_loopback
@@ -456,7 +453,7 @@
 
       if [[ ! -d "${path}" ]] \
         && ! sudo mkdir --parents "${path}" &> /dev/null; then
-        print_error "Could not create directory '${path}'."
+        print_error_to_log "Could not create directory '${path}'."
         return 1
       fi
     }
@@ -476,21 +473,21 @@
     function update_services
     {
       if ! systemctl daemon-reload &> /dev/null; then
-        print_error "Could not update services."
+        print_error_to_log "Could not update services."
         return 1
       fi
 
       if ! systemctl enable "${LIBVIRTD_SERVICE}" &> /dev/null; then
-        print_error "Could not enable ${LIBVIRTD_SERVICE}."
+        print_error_to_log "Could not enable ${LIBVIRTD_SERVICE}."
         return 1
       fi
 
       if ! systemctl restart "${LIBVIRTD_SERVICE}" &> /dev/null; then
-        print_error "Could not start ${LIBVIRTD_SERVICE}."
+        print_error_to_log "Could not start ${LIBVIRTD_SERVICE}."
         return 1
       fi
 
-      print_pass "Updated services."
+      print_pass_to_log "Updated services."
     }
 
   # <summary>Set Permissions For Destination Files</summary>
@@ -505,7 +502,7 @@
     {
       if ! sudo chown --recursive --silent root:root "${BIN_DEST_PATH}" \
         || ! sudo chmod --recursive --silent +x "${BIN_DEST_PATH}"; then
-        print_error "Failed to set file permissions for binaries."
+        print_error_to_log "Failed to set file permissions for binaries."
         return 1
       fi
     }
@@ -514,7 +511,7 @@
     {
       if ! sudo chown --recursive --silent root:root "${SCRIPT_DEST_PATH}" \
         || ! sudo chmod --recursive --silent +x "${SCRIPT_DEST_PATH}"; then
-        print_error "Failed to set file permissions for script(s)."
+        print_error_to_log "Failed to set file permissions for script(s)."
         return 1
       fi
     }
@@ -522,7 +519,7 @@
     function set_permissions_for_service_files
     {
       if ! sudo chown --recursive --silent root:root "${SERVICE_DEST_PATH}"; then
-        print_error "Failed to set file permissions for service(s)."
+        print_error_to_log "Failed to set file permissions for service(s)."
         return 1
       fi
 
@@ -530,7 +527,7 @@
         local this_service_path="${SERVICE_DEST_PATH}$( basename "${service}" )"
 
         if ! sudo chmod --recursive --silent +x "${this_service_path}"; then
-          print_error "Failed to set file permissions for service '${service}'."
+          print_error_to_log "Failed to set file permissions for service '${service}'."
           return 1
         fi
       done

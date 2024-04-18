@@ -25,8 +25,11 @@
 	OPERATION="${2}"
 	SUBOPERATION="${3}"
 
-	PREFIX_ERROR="An error occurred:"
-  PREFIX_PROMPT="libvirt-qemu $( basename "${0}" ):"
+  # <summary>Append output</summary>
+    PREFIX_PROMPT="libvirt-qemu $( basename "${0}" )"
+    PREFIX_ERROR="${PREFIX_PROMPT}An error occurred: "
+    PREFIX_FAIL="${PREFIX_PROMPT}Failure: "
+    PREFIX_PASS="${PREFIX_PROMPT}Success: "
 
 	# <remarks>The display shown in `ddcutil detect`</remarks>
 	DOMAIN_DISPLAY="0"
@@ -40,11 +43,38 @@
 # <functions>
 	function main
 	{
+		local -r output="ddcutil"
+		print_output_to_log "${output}"
+
 		if ! get_video_input \
 			|| ! set_video_input; then
+			print_fail_to_log "${output}"
 			return 1
 		fi
+
+		print_pass_to_log "${output}"
 	}
+
+	# <summary>Loggers</summary>
+    function print_error_to_log
+    {
+      echo -e "${PREFIX_ERROR}${1}" >&2
+    }
+
+    function print_fail_to_log
+    {
+      echo -e "${PREFIX_FAIL}${1}" >&2
+    }
+
+    function print_output_to_log
+    {
+      echo -e "${PREFIX_PROMPT}${1}" >&1
+    }
+
+    function print_pass_to_log
+    {
+      echo -e "${PREFIX_PASS}${1}" >&1
+    }
 
 	function get_video_input
 	{
@@ -61,21 +91,6 @@
 		return 1
 	}
 
-	function print_prompt
-  {
-    echo -e "${PREFIX_PROMPT} ${1}"
-  }
-
-  function print_prompt_to_log
-  {
-    echo -e "${PREFIX_PROMPT} ${1}" >&2
-  }
-
-  function print_error_to_log
-  {
-    echo -e "${PREFIX_PROMPT} ${PREFIX_ERROR} ${1}" >&2
-  }
-
 	function switch_video_input
 	{
 		if ! ddcutil -d "${DOMAIN_DISPLAY}" setvcp 60 "0x${VIDEO_INPUT}"; then
@@ -83,13 +98,13 @@
 			return 1
 		fi
 
-		print_prompt_to_log "Switched video input."
+		print_output_to_log "Switched video input."
 	}
 
 	function has_switched_video_input
 	{
 		if [[ "$( ddcutil -d "${DOMAIN_DISPLAY}" getvcp 60 --terse | awk '{print $4}' )" == "x${VIDEO_INPUT}" ]]; then
-			print_prompt_to_log "Video input is already set."
+			print_output_to_log "Video input is already set."
 			return 0
 		fi
 	}
