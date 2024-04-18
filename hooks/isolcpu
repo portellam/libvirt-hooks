@@ -6,6 +6,7 @@
 # URL(s):         https://wiki.archlinux.org/title/PCI_passthrough_via_OVMF#IO\_threads
 # Author(s):      Alex Portell <github.com/portellam>
 # Maintainer(s):  Alex Portell <github.com/portellam>
+# Version:        1.0.0
 #
 
 # <remarks>
