@@ -21,7 +21,13 @@ Install scripts (hooks) of which extend and enhance the functionality of Libvirt
   - [2. `beforeoff-dohibernate`](#2-beforeoff-dohibernate)
   - [3. `dohibernate`](#3-dohibernate)
   - [4. `virtual-nas`](#4-virtual-nas)
-- [References](#references)
+- [How to Develop Custom Features](#how-to-develop-custom-features)
+  - [1. How a Hook Works](#how-a-hook-works)
+  - [2. How to Implement a New Hook](#how-to-implement-a-new-hook)
+    - [2.a. `set-hooks`](#2a-set-hooks)
+    - [2.b. `set-service`](#2b-set-service)
+    - [2.c. Copying a New Hook to Some or All Guests](#2c-copying-a-new-hook-to-some-or-all-guests)
+  - [References](#references)
   - [Hook](#hook)
   - [Hugepages](#hugepages)
   - [`isolcpu`](#isolcpu)
@@ -118,6 +124,22 @@ References are either links to technical documentation or original sources.
     - For Read-Write permissions: ensure file system integrity.
     - For Read-only permissions: preventing malware transmission.
     - Virtualizing an untrusted or legacy OS (example: Windows XP).
+
+### How to Develop Custom Features
+#### 1. How a Hook Works
+Review [this article](#91-hook) before continuing.
+
+#### 2. How to Implement a New Hook
+Lorem ipsum.
+
+##### 2.a. `set-hooks`
+Lorem ipsum.
+
+##### 2.b. `set-service`
+Lorem ipsum.
+
+##### 2.c. Copying a New Hook to Some or All Guests
+Lorem ipsum.
 
 ### References
 #### Hook
