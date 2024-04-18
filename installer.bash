@@ -14,10 +14,10 @@
 # </traps>
 
 # <params>
-  readonly SCRIPT_VERSION="1.0.0"
-  readonly REPO_NAME="libvirt-hooks"
-  readonly WORKING_DIR="$( dirname $( realpath "${0}" ) )/"
-  readonly OPTION="${1}"
+  declare -r SCRIPT_VERSION="1.0.0"
+  declare -r REPO_NAME="libvirt-hooks"
+  declare -r WORKING_DIR="$( dirname $( realpath "${0}" ) )/"
+  declare -r OPTION="${1}"
 
   SAVEIFS="${IFS}"
   IFS=$'\n'
@@ -41,14 +41,14 @@
     PREFIX_FAIL="${PREFIX_PROMPT}${SET_COLOR_RED}Failure:${RESET_COLOR} "
     PREFIX_PASS="${PREFIX_PROMPT}${SET_COLOR_GREEN}Success:${RESET_COLOR} "
 
-  readonly LIBVIRTD_SERVICE="libvirtd"
+  declare -r LIBVIRTD_SERVICE="libvirtd"
 
-  readonly BIN_DEST_PATH="/usr/local/bin/libvirt-hooks/"
-  readonly BIN_SOURCE_PATH="${WORKING_DIR}bin/"
-  readonly SCRIPT_DEST_PATH="/etc/libvirt/hooks/"
-  readonly SCRIPT_SOURCE_RELATIVE_PATH="hooks/"
-  readonly SERVICE_DEST_PATH="/etc/systemd/system/"
-  readonly SERVICE_SOURCE_PATH="${WORKING_DIR}systemd/"
+  declare -r BIN_DEST_PATH="/usr/local/bin/libvirt-hooks/"
+  declare -r BIN_SOURCE_PATH="${WORKING_DIR}bin/"
+  declare -r SCRIPT_DEST_PATH="/etc/libvirt/hooks/"
+  declare -r SCRIPT_SOURCE_RELATIVE_PATH="hooks/"
+  declare -r SERVICE_DEST_PATH="/etc/systemd/system/"
+  declare -r SERVICE_SOURCE_PATH="${WORKING_DIR}systemd/"
 
   declare -a BIN_LIST=( )
   declare -a SCRIPT_LIST=( )
@@ -217,8 +217,8 @@
 
       local -a output=(
         "Usage:\tbash libvirt-hooks [OPTION]"
-        "Manages ${REPO_NAME} binaries, scripts, and services.\n"
-        "Version ${SCRIPT_VERSION}."
+        "Manages ${REPO_NAME} binaries, scripts, and services."
+        "Version ${SCRIPT_VERSION}.\n"
         "  -h, --help\t\tPrint this help and exit."
         "  -i, --install\t\tInstall ${REPO_NAME} to system."
         "  -u, --uninstall\tUninstall ${REPO_NAME} from system."
