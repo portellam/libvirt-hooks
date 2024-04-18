@@ -22,7 +22,7 @@ Install scripts (hooks) of which extend and enhance the functionality of Libvirt
   - [2. `beforeoff-dohibernate`](#2-beforeoff-dohibernate)
   - [3. `dohibernate`](#3-dohibernate)
   - [4. `virtual-nas`](#4-virtual-nas)
-  - [References](#references)
+- [References](#references)
   - [Hook](#hook)
   - [Hugepages](#hugepages)
   - [`isolcpu`](#isolcpu)
