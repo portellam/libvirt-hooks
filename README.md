@@ -39,7 +39,7 @@ Install scripts (hooks) of which extend and enhance the functionality of Libvirt
 ### Why?
 Libvirt is a tool which manages VMs (Guests) and the platforms which run those Guests (example: QEMU, KVM). Libvirt includes logic to watch for specific events on the Host OS (ex: Linux) to allow for script execution.
 
-Scripts are not available out-of-the-box in Libvirt, but are possible if you understand Linux, `systemd`, and a scripting language (ex: Bash, Python). **This is not acceptable,** should we as a [community](#9-credits) wish to attract newcomers to VMs, [VFIO](#85-vfio), and Linux as a whole.
+Scripts are not available out-of-the-box in Libvirt, but are possible if you understand Linux, `systemd`, and a scripting language (ex: Bash, Python). **This is not acceptable,** should we as a [community](#9-credits) wish to attract newcomers to VMs, [VFIO](#5-vfio), and Linux as a whole.
 
 To assist beginners (and others), included are some incredibly necessary scripts for Guests.
 To assist eager enthusiasts who wish to develop new Hooks, [see below](#7-how-to-develop-custom-features).
@@ -86,26 +86,26 @@ To assist eager enthusiasts who wish to develop new Hooks, [see below](#7-how-to
 References are either links to technical documentation or original sources.
 
 #### 1. `cfscpu`
-- Set CPU thread priority in CPU scheduler.<sup>[6](#96-vfio-tools)</sup>
+- Set CPU thread priority in CPU scheduler.<sup>[6](#6-vfio-tools)</sup>
 
 #### 2. `hugepages`
-- Allocate Host RAM to pages for Guest(s).<sup>[2](#92-hugepages)</sup> <sup>[6](#96-vfio-tools)</sup>
+- Allocate Host RAM to pages for Guest(s).<sup>[2](#2-hugepages)</sup> <sup>[6](#6-vfio-tools)</sup>
 
 #### 3. `isolcpu`
-- Isolate CPU threads from Host, to allocate to Guest(s).<sup>[3](#93-isolcpu)</sup> <sup>[6](#96-vfio-tools)</sup>
+- Isolate CPU threads from Host, to allocate to Guest(s).<sup>[3](#3-isolcpu)</sup> <sup>[6](#6-vfio-tools)</sup>
 
 #### 4. `nosleep`
-- Prevent Host sleep if Guest is running.<sup>[4](#94-nosleep)</sup>
+- Prevent Host sleep if Guest is running.<sup>[4](#4-nosleep)</sup>
 
 #### 5. `dosleep`
-- Sleep Guest at Host sleep.<sup>[4](#94-nosleep)</sup>
+- Sleep Guest at Host sleep.<sup>[4](#4-nosleep)</sup>
 - Stops `nosleep` service.
 
 ### Planned Features
 References are either links to technical documentation or original sources.
 
 #### 1. `ddcutil`
-- Switch active monitor input at VM start.<sup>[6](#96-vfio-tools)</sup>
+- Switch active monitor input at VM start.<sup>[6](#6-vfio-tools)</sup>
 
 #### 2. `beforeoff-dohibernate`
 - Hibernate Guest at Host shutdown.
@@ -124,7 +124,7 @@ References are either links to technical documentation or original sources.
 
 ### How to Develop Custom Features
 #### 1. How a Hook Works
-Review [this article](#91-hook) before continuing.
+Review [this article](#1-hook) before continuing.
 
 #### 2. How to Implement a New Hook within this Project
 Lorem ipsum.
@@ -161,7 +161,7 @@ Lorem ipsum.
 Some of what you see here is directly inspired by others' work, from either the [Arch Wiki](https://wiki.archlinux.org/title/PCI_passthrough_via_OVMF) or the [Reddit forum](https://old.reddit.com/r/VFIO).
 
 ### Disclaimer
-Use at your own risk. As stated in [this article](#91-hook), avoid recursion in your Hooks. This can lead to at worst a deadlock of all Guests or at best the failure of a single Guest to start.
+Use at your own risk. As stated in [this article](#1-hook), avoid recursion in your Hooks. This can lead to at worst a deadlock of all Guests or at best the failure of a single Guest to start.
 
 ### Contact
 Did you encounter a bug? Do you need help? Notice any dead links? Please contact by [raising an issue](https://github.com/portellam/libvirt-hooks/issues) with the project itself.
