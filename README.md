@@ -21,16 +21,13 @@ Install scripts (hooks) of which extend and enhance the functionality of Libvirt
   - [2. `beforeoff-dohibernate`](#2-beforeoff-dohibernate)
   - [3. `dohibernate`](#3-dohibernate)
   - [4. `virtual-nas`](#4-virtual-nas)
-- [How to Develop Custom Features](#how-to-develop-custom-features)
-  - [1. How a Hook Works](#1-how-a-hook-works)
-  - [2. How to Implement a New Hook within this Project](#2-how-to-implement-a-new-hook-within-this-project)
 - [References](#references)
-  - [1. Hook](#1-hook)
-  - [2. Hugepages](#2-hugepages)
-  - [3. `isolcpu`](#3-isolcpu)
-  - [4. `nosleep`](#4-nosleep)
-  - [5. VFIO](#5-vfio)
-  - [6. VFIO-Tools](#6-vfio-tools)
+  - [Hook](#hook)
+  - [Hugepages](#hugepages)
+  - [`isolcpu`](#isolcpu)
+  - [`nosleep`](#nosleep)
+  - [VFIO](#vfio)
+  - [VFIO-Tools](#vfio-tools)
 - [Credits](#credits)
 - [Disclaimer](#disclaimer)
 - [Contact](#contact)
@@ -39,7 +36,7 @@ Install scripts (hooks) of which extend and enhance the functionality of Libvirt
 ### Why?
 Libvirt is a tool which manages VMs (Guests) and the platforms which run those Guests (example: QEMU, KVM). Libvirt includes logic to watch for specific events on the Host OS (ex: Linux) to allow for script execution.
 
-Scripts are not available out-of-the-box in Libvirt, but are possible if you understand Linux, `systemd`, and a scripting language (ex: Bash, Python). **This is not acceptable,** should we as a [community](#9-credits) wish to attract newcomers to VMs, [VFIO](#5-vfio), and Linux as a whole.
+Scripts are not available out-of-the-box in Libvirt, but are possible if you understand Linux, `systemd`, and a scripting language (ex: Bash, Python). **This is not acceptable,** should we as a [community](#9-credits) wish to attract newcomers to VMs, [VFIO](#vfio), and Linux as a whole.
 
 To assist beginners (and others), included are some incredibly necessary scripts for Guests.
 To assist eager enthusiasts who wish to develop new Hooks, [see below](#7-how-to-develop-custom-features).
@@ -86,26 +83,26 @@ To assist eager enthusiasts who wish to develop new Hooks, [see below](#7-how-to
 References are either links to technical documentation or original sources.
 
 #### 1. `cfscpu`
-- Set CPU thread priority in CPU scheduler.<sup>[6](#6-vfio-tools)</sup>
+- Set CPU thread priority in CPU scheduler.<sup>[6](#vfio-tools)</sup>
 
 #### 2. `hugepages`
-- Allocate Host RAM to pages for Guest(s).<sup>[2](#2-hugepages)</sup> <sup>[6](#6-vfio-tools)</sup>
+- Allocate Host RAM to pages for Guest(s).<sup>[2](#hugepages)</sup> <sup>[6](#vfio-tools)</sup>
 
 #### 3. `isolcpu`
-- Isolate CPU threads from Host, to allocate to Guest(s).<sup>[3](#3-isolcpu)</sup> <sup>[6](#6-vfio-tools)</sup>
+- Isolate CPU threads from Host, to allocate to Guest(s).<sup>[3](#isolcpu)</sup> <sup>[6](#vfio-tools)</sup>
 
 #### 4. `nosleep`
-- Prevent Host sleep if Guest is running.<sup>[4](#4-nosleep)</sup>
+- Prevent Host sleep if Guest is running.<sup>[4](#nosleep)</sup>
 
 #### 5. `dosleep`
-- Sleep Guest at Host sleep.<sup>[4](#4-nosleep)</sup>
+- Sleep Guest at Host sleep.<sup>[4](#nosleep)</sup>
 - Stops `nosleep` service.
 
 ### Planned Features
 References are either links to technical documentation or original sources.
 
 #### 1. `ddcutil`
-- Switch active monitor input at VM start.<sup>[6](#6-vfio-tools)</sup>
+- Switch active monitor input at VM start.<sup>[6](#vfio-tools)</sup>
 
 #### 2. `beforeoff-dohibernate`
 - Hibernate Guest at Host shutdown.
@@ -122,46 +119,30 @@ References are either links to technical documentation or original sources.
     - For Read-only permissions: preventing malware transmission.
     - Virtualizing an untrusted or legacy OS (example: Windows XP).
 
-### How to Develop Custom Features
-#### 1. How a Hook Works
-Review [this article](#1-hook) before continuing.
-
-#### 2. How to Implement a New Hook within this Project
-Lorem ipsum.
-
-##### 2.a. `set-hooks`
-Lorem ipsum.
-
-##### 2.b. `set-service`
-Lorem ipsum.
-
-##### 2.c. Copying new Hook to some or all Guests
-Lorem ipsum.
-
 ### References
-#### 1. Hook
+#### Hook
 &ensp;<sub>**[Hooks article (Libvirt.org)](https://libvirt.org/hooks.html)**</sub>
 
-#### 2. Hugepages
+#### Hugepages
 &ensp;<sub>**[Arch Wiki article](https://wiki.archlinux.org/title/PCI_passthrough_via_OVMF#Huge_memory_pages)**</sub>
 
-#### 3. `isolcpu`
+#### `isolcpu`
 &ensp;<sub>**[Arch Wiki article](https://wiki.archlinux.org/title/PCI_passthrough_via_OVMF#CPU_pinning)**</sub>
 
-#### 4. `nosleep`
+#### `nosleep`
 &ensp;<sub>**[libvirt-nosleep (Arch Wiki article)](https://wiki.archlinux.org/title/PCI_passthrough_via_OVMF#Host_lockup_if_Guest_is_left_running_during_sleep)**</sub>
 
-#### 5. VFIO
+#### VFIO
 &ensp;<sub>**[VFIO article (Linux kernel documentation)](https://www.kernel.org/doc/html/latest/driver-api/vfio.html)**</sub>
 
-#### 6. VFIO-Tools
+#### VFIO-Tools
 &ensp;<sub>**[VFIO-Tools source (GitHub)](https://github.com/PassthroughPOST/VFIO-Tools)**</sub>
 
 ### Credits
 Some of what you see here is directly inspired by others' work, from either the [Arch Wiki](https://wiki.archlinux.org/title/PCI_passthrough_via_OVMF) or the [Reddit forum](https://old.reddit.com/r/VFIO).
 
 ### Disclaimer
-Use at your own risk. As stated in [this article](#1-hook), avoid recursion in your Hooks. This can lead to at worst a deadlock of all Guests or at best the failure of a single Guest to start.
+Use at your own risk. As stated in [this article](#hook), avoid recursion in your Hooks. This can lead to at worst a deadlock of all Guests or at best the failure of a single Guest to start.
 
 ### Contact
 Did you encounter a bug? Do you need help? Notice any dead links? Please contact by [raising an issue](https://github.com/portellam/libvirt-hooks/issues) with the project itself.
