@@ -5,6 +5,7 @@
 # Description:    List of Libvirt hooks to invoke.
 # Author(s):      Alex Portell <github.com/portellam>
 # Maintainer(s):  Alex Portell <github.com/portellam>
+# Version:        1.0.0
 #
 
 # <remarks>If a script exits with an error, exit Libvirt.</remarks>

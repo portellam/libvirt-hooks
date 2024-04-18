@@ -5,6 +5,7 @@
 # Description:    Manages libvirt-hooks binaries, scripts and services.
 # Author(s):      Alex Portell <github.com/portellam>
 # Maintainer(s):  Alex Portell <github.com/portellam>
+# Version:        1.0.0
 #
 
 # <traps>
@@ -13,6 +14,7 @@
 # </traps>
 
 # <params>
+  readonly SCRIPT_VERSION="1.0.0"
   readonly REPO_NAME="libvirt-hooks"
   readonly WORKING_DIR="$( dirname $( realpath "${0}" ) )/"
   readonly OPTION="${1}"
@@ -216,6 +218,7 @@
       local -a output=(
         "Usage:\tbash libvirt-hooks [OPTION]"
         "Manages ${REPO_NAME} binaries, scripts, and services.\n"
+        "Version ${SCRIPT_VERSION}."
         "  -h, --help\t\tPrint this help and exit."
         "  -i, --install\t\tInstall ${REPO_NAME} to system."
         "  -u, --uninstall\tUninstall ${REPO_NAME} from system."
