@@ -13,7 +13,7 @@ Install scripts (hooks) of which extend and enhance the functionality of Libvirt
 - [Why?](#why)
 - [Download](#download)
 - [Usage](#usage)
-- <details><summary>[Current Features](#current-features)</summary>
+- [<details><summary>Current Features</summary>](#current-features)
 
   - [1. `cfscpu`](#1-cfscpu)
   - [2. `hugepages`](#2-hugepages)
