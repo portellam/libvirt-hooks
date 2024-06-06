@@ -13,7 +13,7 @@ Install scripts (hooks) of which extend and enhance the functionality of Libvirt
 - [Why?](#why)
 - [Download](#download)
 - [Usage](#usage)
-- [<details><summary>Current Features</summary>](#current-features)
+<details><summary></summary>
 
   - [1. `cfscpu`](#1-cfscpu)
   - [2. `hugepages`](#2-hugepages)
@@ -21,16 +21,17 @@ Install scripts (hooks) of which extend and enhance the functionality of Libvirt
   - [4. `nosleep`](#4-nosleep)
   - [5. `dosleep`](#5-dosleep)
 
-</details>
-- <details><summary>[Planned Features](#planned-features)</summary>
+</details> [Current Features](#current-features)
+
+<details><summary></summary>
 
   - [1. `ddcutil`](#1-ddcutil)
   - [2. `beforeoff-dohibernate`](#2-beforeoff-dohibernate)
   - [3. `dohibernate`](#3-dohibernate)
   - [4. `virtual-nas`](#4-virtual-nas)
 
-</details>
-- <details><summary>[How to Develop Custom Features](#how-to-develop-custom-features)</summary>
+</details> [Planned Features](#planned-features)
+<details><summary></summary>
 
   - [1. How a Hook Works](#how-a-hook-works)
   - [2. How to Implement a New Hook](#how-to-implement-a-new-hook)
@@ -38,8 +39,8 @@ Install scripts (hooks) of which extend and enhance the functionality of Libvirt
     - [2.b. `set-service`](#2b-set-service)
     - [2.c. Copying a New Hook to Some or All Guests](#2c-copying-a-new-hook-to-some-or-all-guests)
 
-</details>
-- <details><summary>[References](#references)</summary>
+</details> [How to Develop Custom Features](#how-to-develop-custom-features)
+- <details><summary></summary>
 
   - [Hook](#hook)
   - [Hugepages](#hugepages)
@@ -48,7 +49,7 @@ Install scripts (hooks) of which extend and enhance the functionality of Libvirt
   - [VFIO](#vfio)
   - [VFIO-Tools](#vfio-tools)
 
-</details>
+</details> [References](#references)
 - [Credits](#credits)
 - [Disclaimer](#disclaimer)
 - [Contact](#contact)
