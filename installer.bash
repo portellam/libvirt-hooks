@@ -3,8 +3,8 @@
 #
 # Filename:       installer.bash
 # Description:    Manages libvirt-hooks binaries, scripts and services.
-# Author(s):      Alex Portell <github.com/portellam>
-# Maintainer(s):  Alex Portell <github.com/portellam>
+# Author(s):      Alex Portell <codeberg.org/portellam> <github.com/portellam>
+# Maintainer(s):  Alex Portell <codeberg.org/portellam> <github.com/portellam>
 # Version:        1.0.0
 #
 

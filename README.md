@@ -2,10 +2,10 @@
 ### v1.0.0
 Install scripts (hooks) of which extend and enhance the functionality of Libvirt Virtual Machines (VM). Hooks may run at either VM start or stop, and be VM-specific. Develop your own!
 
-**[Latest release](https://github.com/portellam/libvirt-hooks/releases/latest) | [View master branch...](https://github.com/portellam/libvirt-hooks/tree/master)**
+**Latest release <sup>[Codeberg](https://codeberg.org/portellam/libvirt-hooks/releases/latest) [GitHub](https://github.com/portellam/libvirt-hooks/releases/latest)</sup> |View master branch... <sup>[Codeberg](https://codeberg.org/portellam/libvirt-hooks/tree/master) [GitHub](https://github.com/portellam/libvirt-hooks/tree/master)</sup>**
 
 #### Related Projects:
-**[Auto X.Org](https://github.com/portellam/auto-xorg) | [Deploy VFIO](https://github.com/portellam/deploy-vfio) | [Generate Evdev](https://github.com/portellam/generate-evdev) | [Guest Machine Guide](https://github.com/portellam/guest-machine-guide) | [Power State Virtual Machine Manager](https://github.com/portellam/powerstate-virtmanager)**
+- **Auto X.Org<sup>[Codeberg](https://codeberg.org/portellam/auto-xorg) [GitHub](https://github.com/portellam/auto-xorg)</sup> | Deploy VFIO<sup>[Codeberg](https://codeberg.org/portellam/deploy-VFIO) [GitHub](https://github.com/portellam/deploy-VFIO)</sup> | Generate Evdev<sup>[Codeberg](https://codeberg.org/portellam/generate-evdev) [GitHub](https://github.com/portellam/generate-evdev)</sup> | Guest Machine Guide<sup>[Codeberg](https://codeberg.org/portellam/guest-machine-guide) [GitHub](https://github.com/portellam/guest-machine-guide)</sup> | [Power State Virtual Machine Manager<sup>[Codeberg](https://codeberg.org/portellam/powerstate-virtmanager) [GitHub](https://github.com/portellam/powerstate-virtmanager)</sup>**
 
 ## Table of Contents
 - [Why?](#why)
@@ -50,8 +50,11 @@ To assist eager enthusiasts who wish to develop new Hooks, [see below](#how-to-d
 
 ### Download
 - To download this script, you may:
+  - Download the latest release [here](https://github.com/portellam/deploy-vfio/releases/latest).
   - Download the ZIP file:
-    1. Viewing from the top of the repository's (current) webpage, click the green `<> Code ` drop-down icon.
+    1. Viewing from the top of the repository's (current) webpage:
+      - Codeberg: click the icon `···` drop-down icon.
+      - GitHub: click the green `<> Code ` drop-down icon.
     2. Click `Download ZIP`. Save this file.
     3. Open the `.zip` file, then extract its contents.
 
@@ -65,7 +68,9 @@ To assist eager enthusiasts who wish to develop new Hooks, [see below](#how-to-d
         - `F8` and above are unused.
 
     2. Change your directory to your home folder or anywhere safe: `cd ~`
-    3. Clone the repository: `git clone https://www.github.com/portellam/libvirt-hooks`
+    3. Clone the repository:
+      - `git clone https://www.codeberg.org/portellam/libvirt-hooks`
+      - `git clone https://www.github.com/portellam/libvirt-hooks`
 
 - To make this script executable, you must:
   1. Open the CLI (see above).
@@ -168,7 +173,7 @@ Some of what you see here is directly inspired by others' work, from either the 
 Use at your own risk. As stated in [this article](#hook), avoid recursion in your Hooks. This can lead to at worst a deadlock of all Guests or at best the failure of a single Guest to start.
 
 ### Contact
-Did you encounter a bug? Do you need help? Notice any dead links? Please contact by [raising an issue](https://github.com/portellam/libvirt-hooks/issues) with the project itself.
+Did you encounter a bug? Do you need help? Notice any dead links? Please contact by **raising an issue**[Codeberg](https://codeberg.org/portellam/libvirt-hooks/issues) [GitHub](https://github.com/portellam/libvirt-hooks/issues) with the project itself.
 
 ## TODO:
 - [ ] what is the installer doing? Is `/usr/local/bin/` necessary? Maybe use it as an updater?
