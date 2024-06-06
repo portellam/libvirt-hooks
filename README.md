@@ -5,7 +5,8 @@ Install scripts (hooks) of which extend and enhance the functionality of Libvirt
 **[Latest release](/../../../releases/latest) | [View develop branch...](/../../../tree/develop)**
 
 #### Related Projects:
-**[Auto X.Org](/../../../auto-xorg) | [Deploy VFIO](/../../../deploy-vfio) | [Generate Evdev](/../../../generate-evdev) | [Guest Machine Guide](/../../../guest-machine-guide) | [Libvirt Hooks](/../../../) | [Power State Virtual Machine Manager](/../../../powerstate-virtmanager)**
+**[Auto X.Org](/../../../auto-xorg) | [Deploy VFIO](/../../../deploy-vfio) | [Generate Evdev](/../../../generate-evdev)**
+**[Guest Machine Guide](/../../../guest-machine-guide) | [Libvirt Hooks](/../../../) | [Power State Virtual Machine Manager](/../../../powerstate-virtmanager)**
 
 ## Table of Contents
 - [Why?](#why)
