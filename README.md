@@ -2,8 +2,10 @@
 ### v1.0.0
 Install scripts (hooks) of which extend and enhance the functionality of Libvirt Virtual Machines (VM). Hooks may run at either VM start or stop, and be VM-specific. Develop your own!
 
-- **Latest release [on Codeberg](https://codeberg.org/portellam/libvirt-hooks/releases/latest) [on GitHub](https://github.com/portellam/libvirt-hooks/releases/latest)**
-- **View master branch... [on Codeberg](https://codeberg.org/portellam/libvirt-hooks/tree/master), [GitHub](https://github.com/portellam/libvirt-hooks/tree/master)**
+|                                                                                           |                                                                      |
+|----------------|--------------------------------------------------------------------------|----------------------------------------------------------------------|
+| Latest release | [Codeberg](https://codeberg.org/portellam/libvirt-hooks/releases/latest) | [GitHub](https://github.com/portellam/libvirt-hooks/releases/latest) |
+| Master branch  | [Codeberg](https://codeberg.org/portellam/libvirt-hooks/tree/master)     | [GitHub](https://github.com/portellam/libvirt-hooks/tree/master)     |
 
 #### Related Projects:
 - **Auto X.Org<sup>[Codeberg](https://codeberg.org/portellam/auto-xorg) [GitHub](https://github.com/portellam/auto-xorg)</sup>**
@@ -178,7 +180,7 @@ Some of what you see here is directly inspired by others' work, from either the 
 Use at your own risk. As stated in [this article](#hook), avoid recursion in your Hooks. This can lead to at worst a deadlock of all Guests or at best the failure of a single Guest to start.
 
 ### Contact
-Did you encounter a bug? Do you need help? Notice any dead links? Please contact by **raising an issue**<sup>[Codeberg](https://codeberg.org/portellam/libvirt-hooks/issues) [GitHub](https://github.com/portellam/libvirt-hooks/issues)</sup> with the project itself.
+Did you encounter a bug? Do you need help? Notice any dead links? Please contact by **raising an issue** (on [Codeberg](https://codeberg.org/portellam/libvirt-hooks/issues), or [GitHub](https://github.com/portellam/libvirt-hooks/issues)) with the project itself.
 
 ## TODO:
 - [ ] what is the installer doing? Is `/usr/local/bin/` necessary? Maybe use it as an updater?
