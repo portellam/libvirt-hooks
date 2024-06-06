@@ -2,6 +2,8 @@
 ### v1.0.0
 Install scripts (hooks) of which extend and enhance the functionality of Libvirt Virtual Machines (VM). Hooks may run at either VM start or stop, and be VM-specific. Develop your own!
 
+**[Latest release](releases/latest)**
+
 <details><summary>**Latest release**</summary>
 
 [Codeberg](https://codeberg.org/portellam/libvirt-hooks/releases/latest) | [GitHub](https://github.com/portellam/libvirt-hooks/releases/latest)
