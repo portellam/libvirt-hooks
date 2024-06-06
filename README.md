@@ -55,7 +55,9 @@ To assist eager enthusiasts who wish to develop new Hooks, [see below](#how-to-d
   - Download the latest release [here](/../../../deploy-vfio/releases/latest).
   - Download the ZIP file:
     1. Viewing from the top of the repository's (current) webpage:
+
       &ensp;- **Codeberg:** click the `···` drop-down icon.
+
       &ensp;- **GitHub:** click the green `<> Code ` drop-down icon.
 
     2. Click `Download ZIP`. Save this file.
@@ -63,7 +65,9 @@ To assist eager enthusiasts who wish to develop new Hooks, [see below](#how-to-d
 
   - Clone the repository:
     1. Open a Command Line Interface (CLI).
+
       &ensp;- Open a console emulator (for Debian systems: Konsole).
+
       &ensp;- Open a existing console: press `CTRL` + `ALT` + `F2`, `F3`, `F4`, `F5`, or `F6`.
         - **To return to the desktop,** press `CTRL` + `ALT` + `F7`.
         - `F1` is reserved for debug output of the Linux kernel.
@@ -72,14 +76,18 @@ To assist eager enthusiasts who wish to develop new Hooks, [see below](#how-to-d
 
     2. Change your directory to your home folder or anywhere safe: `cd ~`
     3. Clone the repository:
+
       &ensp;- `git clone https://www.codeberg.org/portellam/libvirt-hooks`
+
       &ensp;- `git clone https://www.github.com/portellam/libvirt-hooks`
 
 - To make this script executable, you must:
   1. Open the CLI (see above).
   2. Go to the directory of where the cloned/extracted repository folder is: `cd name_of_parent_folder/libvirt-hooks/`
   3. Make the installer script file executable: `chmod +x installer.bash`
+
     &ensp;- Do **not** make any other script files executable. The installer will perform this action.
+
     &ensp;- Do **not** make any non-script file executable. This is not necessary and potentially dangerous.
 
 ### Usage
