@@ -55,8 +55,9 @@ To assist eager enthusiasts who wish to develop new Hooks, [see below](#how-to-d
   - Download the latest release [here](/../../../deploy-vfio/releases/latest).
   - Download the ZIP file:
     1. Viewing from the top of the repository's (current) webpage:
-      - **Codeberg:** click the icon `···` drop-down icon.
-      - **GitHub:** click the green `<> Code ` drop-down icon.
+      a. **Codeberg:** click the icon `···` drop-down icon.
+
+      b. **GitHub:** click the green `<> Code ` drop-down icon.
 
     2. Click `Download ZIP`. Save this file.
     3. Open the `.zip` file, then extract its contents.
