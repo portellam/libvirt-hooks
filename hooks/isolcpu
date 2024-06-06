@@ -4,8 +4,8 @@
 # Filename:       /etc/libvirt/hooks/isolcpu
 # Description:    Reserve/release CPU threads at start of Libvirt domain(s).
 # URL(s):         https://wiki.archlinux.org/title/PCI_passthrough_via_OVMF#IO\_threads
-# Author(s):      Alex Portell <github.com/portellam>
-# Maintainer(s):  Alex Portell <github.com/portellam>
+# Author(s):      Alex Portell <codeberg.org/portellam> <github.com/portellam>
+# Maintainer(s):  Alex Portell <codeberg.org/portellam> <github.com/portellam>
 # Version:        1.0.0
 #
 

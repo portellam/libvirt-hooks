@@ -3,8 +3,8 @@
 #
 # Filename:       /etc/libvirt/hooks/qemu
 # Description:    List of Libvirt hooks to invoke.
-# Author(s):      Alex Portell <github.com/portellam>
-# Maintainer(s):  Alex Portell <github.com/portellam>
+# Author(s):      Alex Portell <codeberg.org/portellam> <github.com/portellam>
+# Maintainer(s):  Alex Portell <codeberg.org/portellam> <github.com/portellam>
 # Version:        1.0.0
 #
 
