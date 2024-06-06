@@ -1,5 +1,5 @@
 # Libvirt Hooks
-### v1.0.0
+### v1.0.1
 Install scripts (hooks) of which extend and enhance the functionality of Libvirt Virtual Machines (VM). Hooks may run at either VM start or stop, and be VM-specific. Develop your own!
 
 **[Latest release](/../../../releases/latest) | [View develop branch...](/../../../tree/develop)**
@@ -13,30 +13,42 @@ Install scripts (hooks) of which extend and enhance the functionality of Libvirt
 - [Why?](#why)
 - [Download](#download)
 - [Usage](#usage)
-- [Current Features](#current-features)
+- <details><summary>[Current Features](#current-features)</summary>
+
   - [1. `cfscpu`](#1-cfscpu)
   - [2. `hugepages`](#2-hugepages)
   - [3. `isolcpu`](#3-isolcpu)
   - [4. `nosleep`](#4-nosleep)
   - [5. `dosleep`](#5-dosleep)
-- [Planned Features](#planned-features)
+
+</details>
+- <details><summary>[Planned Features](#planned-features)</summary>
+
   - [1. `ddcutil`](#1-ddcutil)
   - [2. `beforeoff-dohibernate`](#2-beforeoff-dohibernate)
   - [3. `dohibernate`](#3-dohibernate)
   - [4. `virtual-nas`](#4-virtual-nas)
-- [How to Develop Custom Features](#how-to-develop-custom-features)
+
+</details>
+- <details><summary>[How to Develop Custom Features](#how-to-develop-custom-features)</summary>
+
   - [1. How a Hook Works](#how-a-hook-works)
   - [2. How to Implement a New Hook](#how-to-implement-a-new-hook)
     - [2.a. `set-hooks`](#2a-set-hooks)
     - [2.b. `set-service`](#2b-set-service)
     - [2.c. Copying a New Hook to Some or All Guests](#2c-copying-a-new-hook-to-some-or-all-guests)
-- [References](#references)
+
+</details>
+- <details><summary>[References](#references)</summary>
+
   - [Hook](#hook)
   - [Hugepages](#hugepages)
   - [`isolcpu`](#isolcpu)
   - [`nosleep`](#nosleep)
   - [VFIO](#vfio)
   - [VFIO-Tools](#vfio-tools)
+
+</details>
 - [Credits](#credits)
 - [Disclaimer](#disclaimer)
 - [Contact](#contact)
