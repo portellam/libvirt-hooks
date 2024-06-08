@@ -9,94 +9,142 @@
 # Version:        1.0.0
 #
 
-# <remarks>
+#
 # This hook only needs to run on `prepare/begin`, not on stop.
 #
-# This hook will help free and compact memory to ease Transparent HugePages
+# This hook will help free and compact memory to ease Transparent Hugepages
 # allocation (THP). QEMU VMs will use THP  by default if enough unfragmented memory
 # can be found on startup. If your memory is very fragmented, this may cause a slow VM
 # startup (like a slowly responding VM start button/command), and may cause QEMU to
 # fall back to regular memory pages, slowing down VM performance. If you suspect you
 # suffer from this, this hook will help ease THP allocation so you don't need to
 # resort to less understood or placebo scripts.
-# </remarks>
+#
 
-# <params>
-  # <summary>Append output</summary>
+#
+# params
+#
+  #
+  # DESC: append output
+  #
     PREFIX_PROMPT="libvirt-qemu $( basename "${0}" )"
     PREFIX_ERROR="${PREFIX_PROMPT}An error occurred: "
     PREFIX_FAIL="${PREFIX_PROMPT}Failure: "
     PREFIX_PASS="${PREFIX_PROMPT}Success: "
-# </params>
 
-# <functions>
+#
+# logic
+#
   function main
   {
-    local -r output="Hugepages"
+    local -r str_output="Hugepages"
 
     if ! write_host_memory_to_storage \
       || ! drop_filesystem_caches \
       || ! write_host_memory_to_storage \
       || ! defragment_host_memory; then
-      print_fail_to_log "${output}"
+      log_fail "${str_output}"
       return 1
     fi
 
-    print_pass_to_log "${output}"
+    log_pass "${str_output}"
   }
 
-  # <summary>Loggers</summary>
-    function print_error_to_log
+  #
+  # DESC: loggers
+  #
+    #
+    # DESC:   Log the output as an error.
+    # $1:     the output as a string.
+    # RETURN: Always return 0.
+    #
+      function log_error
+      {
+        echo -e "${PREFIX_ERROR}${1}" >&2
+        return 0
+      }
+
+    #
+    # DESC:   Log the output as a fail.
+    # $1:     the output as a string.
+    # RETURN: Always return 0.
+    #
+      function log_fail
+      {
+        echo -e "${PREFIX_FAIL}${1}" >&2
+        return 0
+      }
+
+    #
+    # DESC:   Log the output as a fail.
+    # $1:     the output as a string.
+    # RETURN: Always return 0.
+    #
+      function log_output
+      {
+        echo -e "${PREFIX_PROMPT}${1}" >&1
+        return 0
+      }
+
+    #
+    # DESC:   Log the output as a pass.
+    # $1:     the output as a string.
+    # RETURN: Always return 0.
+    #
+      function log_pass
+      {
+        echo -e "${PREFIX_PASS}${1}" >&1
+        return 0
+      }
+
+  #
+  # DESC:   Defragment Host memory.
+  # RETURN: If successful, return 0.
+  #         If not, return 1.
+  #
+    function defragment_host_memory
     {
-      echo -e "${PREFIX_ERROR}${1}" >&2
+      if ! echo 1 > /proc/sys/vm/compact_memory; then
+        log_error "Failed to defragment Host memory."
+        return 1
+      fi
+
+      log_pass "Defragmented Host memory."
     }
 
-    function print_fail_to_log
+
+  #
+  # DESC:   Drop filesystem caches.
+  # RETURN: If successful, return 0.
+  #         If not, return 1.
+  #
+    function drop_filesystem_caches
     {
-      echo -e "${PREFIX_FAIL}${1}" >&2
+      if ! echo 3 > /proc/sys/vm/drop_caches; then
+        log_error "Failed to drop filesystem caches."
+        return 1
+      fi
+
+      log_pass "Dropped filesystem caches."
     }
 
-    function print_output_to_log
+  #
+  # DESC:   Write Host memory to storage.
+  # RETURN: If successful, return 0.
+  #         If not, return 1.
+  #
+    function write_host_memory_to_storage
     {
-      echo -e "${PREFIX_PROMPT}${1}" >&1
+      if ! sync; then
+        log_error "Failed to write Host memory to storage."
+        return 1
+      fi
+
+      log_pass "Wrote Host memory to storage."
+      return 0
     }
 
-    function print_pass_to_log
-    {
-      echo -e "${PREFIX_PASS}${1}" >&1
-    }
-
-  function write_host_memory_to_storage
-  {
-    if ! sync; then
-      print_error_to_log "Failed to write Host memory to storage."
-      return 1
-    fi
-
-    print_pass_to_log "Wrote Host memory to storage."
-  }
-
-  function drop_filesystem_caches
-  {
-    if ! echo 3 > /proc/sys/vm/drop_caches; then
-      print_error_to_log "Failed to drop filesystem caches."
-      return 1
-    fi
-
-    print_pass_to_log "Dropped filesystem caches."
-  }
-
-  function defragment_host_memory
-  {
-    if ! echo 1 > /proc/sys/vm/compact_memory; then
-      print_error_to_log "Failed to defragment Host memory."
-      return 1
-    fi
-
-    print_pass_to_log "Defragmented Host memory."
-  }
-# </functions>
-
-# <code>
+#
+# main
+#
   main
-# </code>

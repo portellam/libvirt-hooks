@@ -8,29 +8,36 @@
 # Version:        1.0.0
 #
 
-# <remarks>If a script exits with an error, exit Libvirt.</remarks>
-# <sets>
-  set -eo pipefail
-# </sets>
-
-# <params>
+#
+# params
+#
   DIR="$( dirname "$( realpath "${0}" )" )/"
-# </params>
 
-# <functions>
-  # <summary>
-  # Update list here. Example:
-  #   "PATH_TO_FILE" "$@"
-  # </summary>
-  # <note>Do not add 'set-service'. This script file is called as a source file to other files (example: 'nosleep').</note>
-  function main
-  {
-    "${DIR}isolcpu" "$@" || return 1
-    "${DIR}nosleep" "$@" || return 1
-    "${DIR}set-hooks" "$@" || return 1
-  }
-# </functions>
+#
+# logic
+#
+  #
+  # DESC:   main execution.
+  # $@:     the arguments as an array.
+  # RETURN: If successful, return 0.
+  #         If not, return 1.
+  #
+  #
+    function main
+    {
+      # NOTE:     add new scripts to invoke here ( "PATH_TO_FILE" "$@" ).
+      # WARNING:  do not add 'set-service'. This may cause infinite recursion.
+      if ! "${DIR}isolcpu" "$@" \
+        || "${DIR}nosleep" "$@" \
+        || "${DIR}set-hooks" "$@"; then
+        return 1
+      fi
 
-# <code>
+      return 0
+    }
+
+#
+# main
+#
+  set -eo pipefail  # exit Libvirt on script error.
   main "$@"
-# </code>
