@@ -8,157 +8,257 @@
 # Version:        1.0.0
 #
 
-# <params>
-  # <summary>Append output</summary>
+#
+# params
+#
+  #
+  # DESC: append output
+  #
     PREFIX_PROMPT="libvirt-qemu $( basename "${0}" )"
     PREFIX_ERROR="${PREFIX_PROMPT}An error occurred: "
     PREFIX_FAIL="${PREFIX_PROMPT}Failure: "
     PREFIX_PASS="${PREFIX_PROMPT}Success: "
     PREFIX_SKIP="${PREFIX_PROMPT}Skipped: "
-# </params>
 
-# <functions>
-  # <summary>
-  # This source file will not execute by itself.
-  # Define "source /etc/libvirt/hooks/set-service",
-  #   follow with 'main "${my_array}"',
-  #   where "${my_array}" contains:
-  #     $1 == the name of the service (example: "libvirt-nosleep@DOMAIN_NAME")
-  #     $@ == the remainder of arguments (note: pass "$@". The command 'shift' is used to decrement and parse input values.)
-  # </summary>
-  function main
-  {
-    local -r service_name="${1}"
-    local -r output="Set service"
+#
+# logic
+#
+  #
+  # DESC:   This source file will not execute by itself.
+  #         Define "source /etc/libvirt/hooks/set-service" with arguments.
+  #         "source /etc/libvirt/hooks/set-service".
+  # $1:     the name of the service as a string.
+  # $@:     the arguments as a string.
+  # RETURN: If execution is successful, return 0.
+  #         If not, return 1.
+  #
+    function main
+    {
+      local -r service_name="${1}"
+      local -r str_output="Set service"
 
-    if ! is_service_name_valid "${service_name}"; then
-      print_skip_to_log "${output}"
+      if ! is_service_name_valid "${service_name}"; then
+        log_skip "${str_output}"
+        return 0
+      fi
+
+      shift
+      local -r operation="${2}"
+
+      if ! is_argument_valid "${operation}"; then
+        log_skip "${str_output}"
+        return 1
+      fi
+
+      if ! set_operation "${service_name}" "${operation}"; then
+        log_fail "${str_output}"
+        return 1
+      fi
+
+      log_pass "${str_output}"
       return 0
-    fi
-
-    shift
-    local -r operation="${2}"
-
-    if ! is_argument_valid "${operation}"; then
-      print_skip_to_log "${output}"
-      return 1
-    fi
-
-    if ! set_operation "${service_name}" "${operation}"; then
-      print_fail_to_log "${output}"
-      return 1
-    fi
-
-    print_pass_to_log "${output}"
-  }
-
-  # <summary>Loggers</summary>
-    function print_error_to_log
-    {
-      echo -e "${PREFIX_ERROR}${1}" >&2
     }
 
-    function print_fail_to_log
-    {
-      echo -e "${PREFIX_FAIL}${1}" >&2
-    }
+  #
+  # DESC: loggers
+  #
+    #
+    # DESC:   Log the output as an error.
+    # $1:     the output as a string.
+    # RETURN: Always return 0.
+    #
+      function log_error
+      {
+        echo -e "${PREFIX_ERROR}${1}" >&2
+        return 0
+      }
 
-    function print_output_to_log
-    {
-      echo -e "${PREFIX_PROMPT}${1}" >&1
-    }
+    #
+    # DESC:   Log the output as a fail.
+    # $1:     the output as a string.
+    # RETURN: Always return 0.
+    #
+      function log_fail
+      {
+        echo -e "${PREFIX_FAIL}${1}" >&2
+        return 0
+      }
 
-    function print_pass_to_log
-    {
-      echo -e "${PREFIX_PASS}${1}" >&1
-    }
+    #
+    # DESC:   Log the output as a fail.
+    # $1:     the output as a string.
+    # RETURN: Always return 0.
+    #
+      function log_output
+      {
+        echo -e "${PREFIX_PROMPT}${1}" >&1
+        return 0
+      }
 
-    function print_skip_to_log
-    {
-      echo -e "${PREFIX_SKIP}${1}" >&1
-    }
+    #
+    # DESC:   Log the output as a pass.
+    # $1:     the output as a string.
+    # RETURN: Always return 0.
+    #
+      function log_pass
+      {
+        echo -e "${PREFIX_PASS}${1}" >&1
+        return 0
+      }
 
-  # <summary>Service logic</summary>
-    function disable_service
-    {
-      local -r service="${1}"
+    #
+    # DESC:   Log the output as a skip.
+    # $1:     the output as a string.
+    # RETURN: Always return 0.
+    #
+      function log_skip
+      {
+        echo -e "${PREFIX_SKIP}${1}" >&1
+        return 0
+      }
 
-      if ! systemctl disable "${service}" &> /dev/null; then
-        print_error_to_log "Failed to disable '${service}' service."
-        return 1
-      fi
+  #
+  # DESC: service logic
+  #
+  #
+    # DESC:   Disable the service.
+    # $1:     the service name as a string.
+    # RETURN: If service is disabled, return 0.
+    #         If not, return 1.
+    #
+      function disable_service
+      {
+        local -r service="${1}"
 
-      print_output_to_log "Disabled '${service}' service."
-    }
+        if ! systemctl disable "${service}" &> /dev/null; then
+          log_error "Failed to disable '${service}' service."
+          return 1
+        fi
 
-    function enable_service
-    {
-      local -r service="${1}"
+        log_output "Disabled '${service}' service."
+        return 0
+      }
 
-      if ! systemctl enable "${service}" &> /dev/null; then
-        print_error_to_log "Failed to enable '${service}' service."
-        return 1
-      fi
+    # DESC:   Enable the service.
+    # $1:     the service name as a string.
+    # RETURN: If service is enabled, return 0.
+    #         If not, return 1.
+    #
+      function enable_service
+      {
+        local -r service="${1}"
 
-      print_output_to_log "Enabled '${service}' service."
-    }
+        if ! systemctl enable "${service}" &> /dev/null; then
+          log_error "Failed to enable '${service}' service."
+          return 1
+        fi
 
-    function start_service
-    {
-      local -r service="${1}"
+        log_output "Enabled '${service}' service."
+        return 0
+      }
 
-      if ! systemctl start "${service}" &> /dev/null; then
-        print_error_to_log "Failed to start '${service}' service."
-        return 1
-      fi
+    #
+    # DESC:   Stop the service.
+    # $1:     the service name as a string.
+    # RETURN: If service is stopped, return 0.
+    #         If not, return 1.
+    #
+      function start_service
+      {
+        local -r service="${1}"
 
-      print_output_to_log "Started '${service}' service."
-    }
+        if ! systemctl start "${service}" &> /dev/null; then
+          log_error "Failed to start '${service}' service."
+          return 1
+        fi
 
-    function stop_service
-    {
-      local -r service="${1}"
+        log_output "Started '${service}' service."
+        return 0
+      }
 
-      if ! systemctl stop "${service}" &> /dev/null; then
-        print_error_to_log "Failed to stop '${service}' service."
-        return 1
-      fi
+    #
+    # DESC:   Stop the service.
+    # $1:     the service name as a string.
+    # RETURN: If service is stopped, return 0.
+    #         If not, return 1.
+    #
+      function stop_service
+      {
+        local -r service="${1}"
 
-      print_output_to_log "Stopped '${service}' service."
-    }
+        if ! systemctl stop "${service}" &> /dev/null; then
+          log_error "Failed to stop '${service}' service."
+          return 1
+        fi
 
-  function set_operation
-  {
-    local -r service_name="${1}"
-    local -r operation="${2}"
+        log_output "Stopped '${service}' service."
+        return 0
+      }
 
-    case "${operation}" in
-      "prepare")
-        enable_service "${service_name}" || return 1
-        start_service "${service_name}" || return 1 ;;
-      "release")
-        stop_service "${service_name}" || return 1
-        disable_service "${service_name}" || return 1 ;;
-    esac
-  }
+    #
+    # DESC:   Set the operation of a service.
+    # $1:     the service name as a string.
+    # $2:     the operation argument as a string.
+    # RETURN: If service's operation is set, or the operation status is not
+    #         recognized, return 0.
+    #         If service's operation is not set, return 1.
+    #
+      function set_operation
+      {
+        local -r service_name="${1}"
+        local -r operation="${2}"
 
-  function is_service_name_valid
-  {
-    local -r service_name="${1}"
+        case "${operation}" in
+          "prepare")
+            if ! enable_service "${service_name}" \
+              || start_service "${service_name}"; then
+              return 1
+            fi
+            ;;
+          "release")
 
-    if [[ -z "${service_name}" ]]; then
-      print_error_to_log "Service name is not valid."
-      return 1
-    fi
-  }
+            if ! stop_service "${service_name}" \
+              || disable_service "${service_name}"; then
+              return 1
+            fi
+            ;;
+        esac
 
-  function is_argument_valid
-  {
-    local -r operation="${1}"
+        return 0
+      }
 
-    if [[ -z "${operation}" ]]; then
-      print_error_to_log "Operation argument is not valid."
-      return 1
-    fi
-  }
-# </functions>
+    #
+    # DESC:   Is the service name valid.
+    # $1:     the service name as a string.
+    # RETURN: If valid, return 0.
+    #         If not valid, return 1.
+    #
+      function is_service_name_valid
+      {
+        local -r service_name="${1}"
+
+        if [[ -z "${service_name}" ]]; then
+          log_error "Service name is not valid."
+          return 1
+        fi
+
+        return 0
+      }
+
+    #
+    # DESC:   Is the operation argument valid.
+    # $1:     the operation argument as a string.
+    # RETURN: If valid, return 0.
+    #         If not valid, return 1.
+    #
+      function is_argument_valid
+      {
+        local -r operation="${1}"
+
+        if [[ -z "${operation}" ]]; then
+          log_error "Operation argument is not valid."
+          return 1
+        fi
+
+        return 0
+      }
