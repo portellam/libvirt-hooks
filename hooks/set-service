@@ -34,23 +34,23 @@
   #
     function main
     {
-      local -r service_name="${1}"
+      local -r str_service_name="${1}"
       local -r str_output="Set service"
 
-      if ! is_service_name_valid "${service_name}"; then
+      if ! is_service_name_valid "${str_service_name}"; then
         log_skip "${str_output}"
         return 0
       fi
 
       shift
-      local -r operation="${2}"
+      local -r str_operation="${2}"
 
-      if ! is_argument_valid "${operation}"; then
+      if ! is_argument_valid "${str_operation}"; then
         log_skip "${str_output}"
         return 1
       fi
 
-      if ! set_operation "${service_name}" "${operation}"; then
+      if ! set_operation "${str_service_name}" "${str_operation}"; then
         log_fail "${str_output}"
         return 1
       fi
@@ -128,14 +128,14 @@
     #
       function disable_service
       {
-        local -r service="${1}"
+        local -r str_service_name="${1}"
 
-        if ! systemctl disable "${service}" &> /dev/null; then
-          log_error "Failed to disable '${service}' service."
+        if ! systemctl disable "${str_service_name}" &> /dev/null; then
+          log_error "Failed to disable '${str_service_name}' service."
           return 1
         fi
 
-        log_output "Disabled '${service}' service."
+        log_output "Disabled '${str_service_name}' service."
         return 0
       }
 
@@ -146,14 +146,14 @@
     #
       function enable_service
       {
-        local -r service="${1}"
+        local -r str_service_name="${1}"
 
-        if ! systemctl enable "${service}" &> /dev/null; then
-          log_error "Failed to enable '${service}' service."
+        if ! systemctl enable "${str_service_name}" &> /dev/null; then
+          log_error "Failed to enable '${str_service_name}' service."
           return 1
         fi
 
-        log_output "Enabled '${service}' service."
+        log_output "Enabled '${str_service_name}' service."
         return 0
       }
 
@@ -165,14 +165,14 @@
     #
       function start_service
       {
-        local -r service="${1}"
+        local -r str_service_name="${1}"
 
-        if ! systemctl start "${service}" &> /dev/null; then
-          log_error "Failed to start '${service}' service."
+        if ! systemctl start "${str_service_name}" &> /dev/null; then
+          log_error "Failed to start '${str_service_name}' service."
           return 1
         fi
 
-        log_output "Started '${service}' service."
+        log_output "Started '${str_service_name}' service."
         return 0
       }
 
@@ -184,14 +184,14 @@
     #
       function stop_service
       {
-        local -r service="${1}"
+        local -r str_service_name="${1}"
 
-        if ! systemctl stop "${service}" &> /dev/null; then
-          log_error "Failed to stop '${service}' service."
+        if ! systemctl stop "${str_service_name}" &> /dev/null; then
+          log_error "Failed to stop '${str_service_name}' service."
           return 1
         fi
 
-        log_output "Stopped '${service}' service."
+        log_output "Stopped '${str_service_name}' service."
         return 0
       }
 
@@ -205,20 +205,20 @@
     #
       function set_operation
       {
-        local -r service_name="${1}"
-        local -r operation="${2}"
+        local -r str_service_name="${1}"
+        local -r str_operation="${2}"
 
-        case "${operation}" in
+        case "${str_operation}" in
           "prepare")
-            if ! enable_service "${service_name}" \
-              || start_service "${service_name}"; then
+            if ! enable_service "${str_service_name}" \
+              || start_service "${str_service_name}"; then
               return 1
             fi
             ;;
           "release")
 
-            if ! stop_service "${service_name}" \
-              || disable_service "${service_name}"; then
+            if ! stop_service "${str_service_name}" \
+              || disable_service "${str_service_name}"; then
               return 1
             fi
             ;;
@@ -235,9 +235,9 @@
     #
       function is_service_name_valid
       {
-        local -r service_name="${1}"
+        local -r str_service_name="${1}"
 
-        if [[ -z "${service_name}" ]]; then
+        if [[ -z "${str_service_name}" ]]; then
           log_error "Service name is not valid."
           return 1
         fi
@@ -253,9 +253,9 @@
     #
       function is_argument_valid
       {
-        local -r operation="${1}"
+        local -r str_operation="${1}"
 
-        if [[ -z "${operation}" ]]; then
+        if [[ -z "${str_operation}" ]]; then
           log_error "Operation argument is not valid."
           return 1
         fi

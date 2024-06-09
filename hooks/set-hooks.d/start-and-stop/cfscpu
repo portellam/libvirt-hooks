@@ -211,8 +211,8 @@
   #
     function set_nice_level_for_domain
     {
-      for vcpu_group in ${VCPU_PATH}; do
-        if ! set_nice_level_for_vcpu_group "${vcpu_group}"; then
+      for str_vcpu_group in ${VCPU_PATH}; do
+        if ! set_nice_level_for_vcpu_group "${str_vcpu_group}"; then
           return 1
         fi
       done
@@ -228,14 +228,14 @@
   #
     function set_nice_level_for_process_id
     {
-      local -r pid="${1}"
+      local -r str_pid="${1}"
 
-      if ! renice -n "${TARGET_NICE}" -p "${pid}" 2> /dev/null; then
-        log_error "Failed to set nice level for PID '${pid}'."
+      if ! renice -n "${TARGET_NICE}" -p "${str_pid}" 2> /dev/null; then
+        log_error "Failed to set nice level for PID '${str_pid}'."
         return 1
       fi
 
-      log_output "Set nice level for PID '${pid}'."
+      log_output "Set nice level for PID '${str_pid}'."
       return 0
     }
 
@@ -247,12 +247,12 @@
   #
     function set_nice_level_for_vcpu_group
     {
-      local -r vcpu_group="${1}"
+      local -r str_cpu_group="${1}"
 
       print_output "Setting nice level of ${TARGET_NICE} to vCPU group "\
-        "'$( basename ${vcpu_group} ).'" > /dev/kmsg
+        "'$( basename ${str_cpu_group} ).'" > /dev/kmsg
 
-      for pid in $( cat ${vcpu_group}/tasks ); do
+      for pid in $( cat ${str_cpu_group}/tasks ); do
         if ! set_nice_level_for_process_id "${pid}"; then
           return 1
         fi
