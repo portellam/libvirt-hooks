@@ -68,7 +68,6 @@
   #
     function main
     {
-      saveifs="${IFS}"
       IFS=$'\n'
       local -r str_output="Set hooks"
       log_output "${str_output}"
@@ -173,8 +172,8 @@
     #
       function get_hooks
       {
-        for hook_name in "${HOOKS_LIST[@]}"; do
-          if [[ ! -e "${HOOK_BASE_DIR}${hook_name}" ]]; then
+        for str_hook_name in "${HOOKS_LIST[@]}"; do
+          if [[ ! -e "${HOOK_BASE_DIR}${str_hook_name}" ]]; then
             log_error "Failed to find hook(s) for Libvirt domain '${DOMAIN}'."
             return 1
           fi
@@ -194,11 +193,11 @@
     #
       function create_directory
       {
-        local -r dir="${1}"
+        local -r str_dir="${1}"
 
-        if [[ -d "${dir}" ]] \
-          && ! mkdir --parents "${dir}" &> /dev/null; then
-          log_error "Failed to create directory '${dir}'."
+        if [[ -d "${str_dir}" ]] \
+          && ! mkdir --parents "${str_dir}" &> /dev/null; then
+          log_error "Failed to create directory '${str_dir}'."
           return 1
         fi
 
@@ -213,19 +212,21 @@
     #
       function set_start_hook_for_domain
       {
-        if [[ -z "${1}" ]] \
-          || [[ ! -e "${DOMAIN_NAME_START_DIR}${1}" ]]; then
+        local -r str_domain="${str_domain}"
+
+        if [[ -z "${str_domain}" ]] \
+          || [[ ! -e "${DOMAIN_NAME_START_DIR}${str_domain}" ]]; then
           return 0
         fi
 
-        if ! ln -s "${DOMAIN_NAME_START_DIR}${1}" "${HOOK_BASE_DIR}${1}" \
-          &> /dev/null; then
-          log_error "Failed to set symlinks for start hook '${1}'."
+        if ! ln -s "${DOMAIN_NAME_START_DIR}${str_domain}" \
+          "${HOOK_BASE_DIR}${str_domain}" &> /dev/null; then
+          log_error "Failed to set symlinks for start hook '${str_domain}'."
           return 1
         fi
 
-        if ! chmod +x "${DOMAIN_NAME_START_DIR}${1}" &> /dev/null; then
-          log_error "Failed to set file permissions for start hook '${1}'."
+        if ! chmod +x "${DOMAIN_NAME_START_DIR}${str_domain}" &> /dev/null; then
+          log_error "Failed to set file permissions for start hook '${str_domain}'."
           return 1
         fi
 
@@ -240,19 +241,21 @@
     #
       function set_stop_hook_for_domain
       {
+        local -r str_domain="${1}"
+
         if [[ -z "${1}" ]] \
-          || [[ ! -e "${DOMAIN_NAME_STOP_DIR}${1}" ]]; then
+          || [[ ! -e "${DOMAIN_NAME_STOP_DIR}${str_domain}" ]]; then
           return 0
         fi
 
-        if ! ln -s "${DOMAIN_NAME_STOP_DIR}${1}" "${HOOK_BASE_DIR}${1}" \
-          &> /dev/null; then
-          log_error "Failed to set symlinks for stop hook '${1}'."
+        if ! ln -s "${DOMAIN_NAME_STOP_DIR}${str_domain}" \
+          "${HOOK_BASE_DIR}${str_domain}" &> /dev/null; then
+          log_error "Failed to set symlinks for stop hook '${str_domain}'."
           return 1
         fi
 
-        if ! chmod +x "${DOMAIN_NAME_STOP_DIR}${1}" &> /dev/null; then
-          log_error "Failed to set file permissions for stop hook '${1}'."
+        if ! chmod +x "${DOMAIN_NAME_STOP_DIR}${str_domain}" &> /dev/null; then
+          log_error "Failed to set file permissions for stop hook '${str_domain}'."
           return 1
         fi
 
@@ -265,15 +268,15 @@
     #
       function setup_stateful_hooks
       {
-        for hook in "${STATEFUL_HOOKS_START_LIST[@]}"; do
-          if ! set_start_hook_for_domain "${hook}"; then
-            unset_hook_for_domain "${hook}"
+        for str_hook in "${STATEFUL_HOOKS_START_LIST[@]}"; do
+          if ! set_start_hook_for_domain "${str_hook}"; then
+            unset_hook_for_domain "${str_hook}"
           fi
         done
 
-        for hook in "${STATEFUL_HOOKS_STOP_LIST[@]}"; do
-          if ! set_stop_hook_for_domain "${hook}"; then
-            unset_hook_for_domain "${hook}"
+        for str_hook in "${STATEFUL_HOOKS_STOP_LIST[@]}"; do
+          if ! set_stop_hook_for_domain "${str_hook}"; then
+            unset_hook_for_domain "${str_hook}"
           fi
         done
 
@@ -288,19 +291,21 @@
     #
       function unset_hook_for_domain
       {
-        if [[ -z "${1}" ]]; then
+        local -r str_domain="${1}"
+
+        if [[ -z "${str_domain}" ]]; then
           return 0
         fi
 
-        if [[ ! -e "${DOMAIN_NAME_START_DIR}${1}" ]] \
-          && ! rm -rf "${DOMAIN_NAME_START_DIR}${1}" &> /dev/null; then
-          log_error "Failed to unset symlinks for start hook '${1}'."
+        if [[ ! -e "${DOMAIN_NAME_START_DIR}${str_domain}" ]] \
+          && ! rm -rf "${DOMAIN_NAME_START_DIR}${str_domain}" &> /dev/null; then
+          log_error "Failed to unset symlinks for start hook '${str_domain}'."
           return 1
         fi
 
-        if [[ ! -z "${DOMAIN_NAME_STOP_DIR}${1}" ]] \
-          && ! rm -rf "${DOMAIN_NAME_STOP_DIR}${1}" &> /dev/null; then
-          log_error "Failed to unset symlinks for stop hook '${1}'."
+        if [[ ! -z "${DOMAIN_NAME_STOP_DIR}${str_domain}" ]] \
+          && ! rm -rf "${DOMAIN_NAME_STOP_DIR}${str_domain}" &> /dev/null; then
+          log_error "Failed to unset symlinks for stop hook '${str_domain}'."
           return 1
         fi
 
