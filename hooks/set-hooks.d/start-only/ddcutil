@@ -24,25 +24,25 @@
 #
 # params
 #
-	OPERATION="${2}"
-	SUBOPERATION="${3}"
+	STR_OPERATION="${2}"
+	STR_SUBOPERATION="${3}"
 
   #
   # DESC: append output
   #
-    PREFIX_PROMPT="libvirt-qemu $( basename "${0}" )"
-    PREFIX_ERROR="${PREFIX_PROMPT}An error occurred: "
-    PREFIX_FAIL="${PREFIX_PROMPT}Failure: "
-    PREFIX_PASS="${PREFIX_PROMPT}Success: "
+    STR_PREFIX_PROMPT="libvirt-qemu $( basename "${0}" )"
+    STR_PREFIX_ERROR="${STR_PREFIX_PROMPT}An error occurred: "
+    STR_PREFIX_FAIL="${STR_PREFIX_PROMPT}Failure: "
+    STR_PREFIX_PASS="${STR_PREFIX_PROMPT}Success: "
 
 	# The display shown in `ddcutil detect'.
-    DOMAIN_DISPLAY="0"
+    STR_DOMAIN_DISPLAY="0"
 
 	# Video input values (without 0x, but with leading zeroes, if any.
   # See `ddcutil capabilities`.
-    DOMAIN_VIDEO_INPUT="12"
-    HOST_VIDEO_INPUT="0f"
-    VIDEO_INPUT=""
+    STR_DOMAIN_VIDEO_INPUT="12"
+    STR_HOST_VIDEO_INPUT="0f"
+    STR_VIDEO_INPUT=""
 
 #
 # logic
@@ -77,7 +77,7 @@
     #
       function log_error
       {
-        echo -e "${PREFIX_ERROR}${1}" >&2
+        echo -e "${STR_PREFIX_ERROR}${1}" >&2
         return 0
       }
 
@@ -88,7 +88,7 @@
     #
       function log_fail
       {
-        echo -e "${PREFIX_FAIL}${1}" >&2
+        echo -e "${STR_PREFIX_FAIL}${1}" >&2
         return 0
       }
 
@@ -99,7 +99,7 @@
     #
       function log_output
       {
-        echo -e "${PREFIX_PROMPT}${1}" >&1
+        echo -e "${STR_PREFIX_PROMPT}${1}" >&1
         return 0
       }
 
@@ -110,24 +110,24 @@
     #
       function log_pass
       {
-        echo -e "${PREFIX_PASS}${1}" >&1
+        echo -e "${STR_PREFIX_PASS}${1}" >&1
         return 0
       }
 
   #
-  # DESC:   Log the output as a pass.
-  # $1:     the output as a string.
-  # RETURN: Always return 0.
+  # DESC:   Get the video input.
+  # RETURN: If video input is retrieved, return 0.
+  #         If not, return 1.
   #
     function get_video_input
     {
-      case "${OPERATION}/${SUBOPERATION}" in
+      case "${STR_OPERATION}/${STR_SUBOPERATION}" in
         "started/begin" )
-          VIDEO_INPUT="${DOMAIN_VIDEO_INPUT}"
+          STR_VIDEO_INPUT="${STR_DOMAIN_VIDEO_INPUT}"
           return 0 ;;
 
         "stopped/end" )
-          VIDEO_INPUT="${HOST_VIDEO_INPUT}"
+          STR_VIDEO_INPUT="${STR_HOST_VIDEO_INPUT}"
           return 0 ;;
       esac
 
@@ -135,14 +135,15 @@
     }
 
   #
-  # DESC:   Log the output as a pass.
-  # RETURN: Always return 0.
+  # DESC:   Validate the video input has switched.
+  # RETURN: If video input has switched, return 0.
+  #         If not, return 1.
   #
     function has_switched_video_input
     {
       if [[ \
-          "$( ddcutil -d "${DOMAIN_DISPLAY}" getvcp 60 --terse | awk '{print $4}' )" \
-            == "x${VIDEO_INPUT}" \
+          "$( ddcutil -d "${STR_DOMAIN_DISPLAY}" getvcp 60 --terse \
+            | awk '{print $4}' )" == "x${STR_VIDEO_INPUT}" \
         ]]; then
         log_output "Video input is already set."
       fi
@@ -151,8 +152,9 @@
     }
 
   #
-  # DESC:   Log the output as a pass.
-  # RETURN: Always return 0.
+  # DESC:   Set the video input.
+  # RETURN: If video input is set, return 0.
+  #         If not, return 1.
   #
     function set_video_input
     {
@@ -165,13 +167,13 @@
     }
 
   #
-  # DESC:   Log the output as a pass.
-  # $1:     the output as a string.
-  # RETURN: Always return 0.
+  # DESC:   Switch the video input.
+  # RETURN: If video input is switched, return 0.
+  #         If not, return 1.
   #
     function switch_video_input
     {
-      if ! ddcutil -d "${DOMAIN_DISPLAY}" setvcp 60 "0x${VIDEO_INPUT}"; then
+      if ! ddcutil -d "${STR_DOMAIN_DISPLAY}" setvcp 60 "0x${STR_VIDEO_INPUT}"; then
         log_error "Failed to switch video input."
         return 1
       fi
