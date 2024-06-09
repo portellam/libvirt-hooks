@@ -8,19 +8,24 @@
 # Version:        1.0.0
 #
 
-# <remarks>
+#
 # Stateful hooks:
-#   Execute hooks that change given different Libvirt domain state input (example: start or stop).
+#   Execute hooks that change given different Libvirt domain state input
+#   (example: start or stop).
 #   Place hooks in subdirectories found in '/etc/libvirt/hooks/set-hooks':
 #     * start-only
 #     * stop-only
 #     * start-and-stop
-# </remarks>
+#
 
-# <params>
+#
+# params
+#
   DOMAIN_NAME="${1}"
 
-  # <summary>Append output</summary>
+  #
+  # DESC: append output
+  #
     PREFIX_PROMPT="libvirt-qemu $( basename "${0}" )"
     PREFIX_ERROR="${PREFIX_PROMPT}An error occurred: "
     PREFIX_FAIL="${PREFIX_PROMPT}Failure: "
@@ -37,169 +42,287 @@
   STATEFUL_HOOKS_STOP_ONLY_DIR="${STATEFUL_HOOKS_DIR}stop-only/"
   STATEFUL_HOOKS_BOTH_DIR="${STATEFUL_HOOKS_DIR}start-and-stop/"
 
-  STATEFUL_HOOKS_START_LIST=( $( find -L "${STATEFUL_HOOKS_START_ONLY_DIR}" -maxdepth 1 -type f ) )
-  STATEFUL_HOOKS_START_LIST+=( $( find -L "${STATEFUL_HOOKS_BOTH_DIR}" -maxdepth 1 -type f ) )
+  STATEFUL_HOOKS_START_LIST=( \
+    $( find -L "${STATEFUL_HOOKS_START_ONLY_DIR}" -maxdepth 1 -type f ) \
+  )
 
-  STATEFUL_HOOKS_STOP_LIST=( $( find -L "${STATEFUL_HOOKS_STOP_ONLY_DIR}" -maxdepth 1 -type f ) )
-  STATEFUL_HOOKS_STOP_LIST+=( $( find -L "${STATEFUL_HOOKS_BOTH_DIR}" -maxdepth 1 -type f ) )
-# </params>
+  STATEFUL_HOOKS_START_LIST+=( \
+    $( find -L "${STATEFUL_HOOKS_BOTH_DIR}" -maxdepth 1 -type f ) \
+  )
 
-# <functions>
-  function main
-  {
-    saveifs="${IFS}"
-    IFS=$'\n'
-    local -r output="Set hooks"
-    print_output_to_log "${output}"
+  STATEFUL_HOOKS_STOP_LIST=( \
+    $( find -L "${STATEFUL_HOOKS_STOP_ONLY_DIR}" -maxdepth 1 -type f ) \
+  )
 
-    if is_valid_domain; then
-      print_skip_to_log "${output}"
-      return 0
-    fi
+  STATEFUL_HOOKS_STOP_LIST+=( \
+    $( find -L "${STATEFUL_HOOKS_BOTH_DIR}" -maxdepth 1 -type f ) \
+  )
 
-    if ! get_paths_for_domain \
-      || ! get_hooks; then
-      print_fail_to_log "${output}"
-      return 1
-    fi
-
-    setup_stateful_hooks
-  }
-
-  # <summary>Loggers</summary>
-    function print_error_to_log
+#
+# logic
+#
+  #
+  # DESC:     Setup hooks for given domain.
+  # RETURN:   If domain is not valid or domain hooks are setup, return 0.
+  #           If domain hooks are not setup, return 1.
+  #
+    function main
     {
-      echo -e "${PREFIX_ERROR}${1}" >&2
-    }
+      saveifs="${IFS}"
+      IFS=$'\n'
+      local -r str_output="Set hooks"
+      log_output "${str_output}"
 
-    function print_fail_to_log
-    {
-      echo -e "${PREFIX_FAIL}${1}" >&2
-    }
+      if ! is_valid_domain; then
+        log_skip "${str_output}"
+        return 0
+      fi
 
-    function print_output_to_log
-    {
-      echo -e "${PREFIX_PROMPT}${1}" >&1
-    }
-
-    function print_pass_to_log
-    {
-      echo -e "${PREFIX_PASS}${1}" >&1
-    }
-
-    function print_skip_to_log
-    {
-      echo -e "${PREFIX_SKIP}${1}" >&1
-    }
-
-  # <summary>Getters</summary>
-    function get_paths_for_domain
-    {
-      if ! create_directory "${DOMAIN_NAME_BASE_DIR}" \
-        || ! create_directory "${DOMAIN_NAME_START_DIR}" \
-        || ! create_directory "${DOMAIN_NAME_STOP_DIR}"; then
-        print_error_to_log "Failed to create directories for Libvirt domain '${DOMAIN}'."
+      if ! get_paths_for_domain \
+        || ! get_hooks; then
+        log_fail "${str_output}"
         return 1
       fi
+
+      setup_stateful_hooks
+      return 0
     }
 
-    function get_hooks
-    {
-      for hook_name in "${HOOKS_LIST[@]}"; do
-        if [[ ! -e "${HOOK_BASE_DIR}${hook_name}" ]]; then
-          print_error_to_log "Failed to find hook(s) for Libvirt domain '${DOMAIN}'."
+  #
+  # DESC: loggers
+  #
+    #
+    # DESC:   Log the output as an error.
+    # $1:     the output as a string.
+    # RETURN: Always return 0.
+    #
+      function log_error
+      {
+        echo -e "${PREFIX_ERROR}${1}" >&2
+        return 0
+      }
+
+    #
+    # DESC:   Log the output as a fail.
+    # $1:     the output as a string.
+    # RETURN: Always return 0.
+    #
+      function log_fail
+      {
+        echo -e "${PREFIX_FAIL}${1}" >&2
+        return 0
+      }
+
+    #
+    # DESC:   Log the output as a fail.
+    # $1:     the output as a string.
+    # RETURN: Always return 0.
+    #
+      function log_output
+      {
+        echo -e "${PREFIX_PROMPT}${1}" >&1
+        return 0
+      }
+
+    #
+    # DESC:   Log the output as a pass.
+    # $1:     the output as a string.
+    # RETURN: Always return 0.
+    #
+      function log_pass
+      {
+        echo -e "${PREFIX_PASS}${1}" >&1
+        return 0
+      }
+
+    #
+    # DESC:   Log the output as a skip.
+    # $1:     the output as a string.
+    # RETURN: Always return 0.
+    #
+      function log_skip
+      {
+        echo -e "${PREFIX_SKIP}${1}" >&1
+        return 0
+      }
+
+  #
+  # DESC: getters
+  #
+    #
+    # DESC:     Get paths for the domain.
+    # RETURN:   If paths are created, return 0.
+    #           If paths are not created, return 1.
+    #
+      function get_paths_for_domain
+      {
+        if ! create_directory "${DOMAIN_NAME_BASE_DIR}" \
+          || ! create_directory "${DOMAIN_NAME_START_DIR}" \
+          || ! create_directory "${DOMAIN_NAME_STOP_DIR}"; then
+          log_error "Failed to create directories for Libvirt domain '${DOMAIN}'."
           return 1
         fi
-      done
-    }
 
-  # <summary>Validation</summary>
+        return 0
+      }
+
+    #
+    # DESC:     Get hooks for the domain.
+    # RETURN:   If hooks are found, return 0.
+    #           If hooks are not found, return 1.
+    #
+      function get_hooks
+      {
+        for hook_name in "${HOOKS_LIST[@]}"; do
+          if [[ ! -e "${HOOK_BASE_DIR}${hook_name}" ]]; then
+            log_error "Failed to find hook(s) for Libvirt domain '${DOMAIN}'."
+            return 1
+          fi
+        done
+
+        return 0
+      }
+
+  #
+  # DESC: setters
+  #
+    #
+    # DESC:     Create the directory.
+    # $1:       the directory name as a string.
+    # RETURN:   If the directory is created, return 0.
+    #           If not, return 1.
+    #
+      function create_directory
+      {
+        local -r dir="${1}"
+
+        if [[ -d "${dir}" ]] \
+          && ! mkdir --parents "${dir}" &> /dev/null; then
+          log_error "Failed to create directory '${dir}'."
+          return 1
+        fi
+
+        return 0
+      }
+
+    #
+    # DESC:     Set start hook for given domain.
+    # $1:       the domain name as a string.
+    # RETURN:   If the start hook is set, return 0.
+    #           If not, return 1.
+    #
+      function set_start_hook_for_domain
+      {
+        if [[ -z "${1}" ]] \
+          || [[ ! -e "${DOMAIN_NAME_START_DIR}${1}" ]]; then
+          return 0
+        fi
+
+        if ! ln -s "${DOMAIN_NAME_START_DIR}${1}" "${HOOK_BASE_DIR}${1}" \
+          &> /dev/null; then
+          log_error "Failed to set symlinks for start hook '${1}'."
+          return 1
+        fi
+
+        if ! chmod +x "${DOMAIN_NAME_START_DIR}${1}" &> /dev/null; then
+          log_error "Failed to set file permissions for start hook '${1}'."
+          return 1
+        fi
+
+        return 0
+      }
+
+    #
+    # DESC:     Set stop hook for given domain.
+    # $1:       the domain name as a string.
+    # RETURN:   If the stop hook is set, return 0.
+    #           If not, return 1.
+    #
+      function set_stop_hook_for_domain
+      {
+        if [[ -z "${1}" ]] \
+          || [[ ! -e "${DOMAIN_NAME_STOP_DIR}${1}" ]]; then
+          return 0
+        fi
+
+        if ! ln -s "${DOMAIN_NAME_STOP_DIR}${1}" "${HOOK_BASE_DIR}${1}" \
+          &> /dev/null; then
+          log_error "Failed to set symlinks for stop hook '${1}'."
+          return 1
+        fi
+
+        if ! chmod +x "${DOMAIN_NAME_STOP_DIR}${1}" &> /dev/null; then
+          log_error "Failed to set file permissions for stop hook '${1}'."
+          return 1
+        fi
+
+        return 0
+      }
+
+    #
+    # DESC:     Setup hooks for the domain.
+    # RETURN:   Always return 0.
+    #
+      function setup_stateful_hooks
+      {
+        for hook in "${STATEFUL_HOOKS_START_LIST[@]}"; do
+          if ! set_start_hook_for_domain "${hook}"; then
+            unset_hook_for_domain "${hook}"
+          fi
+        done
+
+        for hook in "${STATEFUL_HOOKS_STOP_LIST[@]}"; do
+          if ! set_stop_hook_for_domain "${hook}"; then
+            unset_hook_for_domain "${hook}"
+          fi
+        done
+
+        return 0
+      }
+
+    #
+    # DESC:     Unset hook for given domain.
+    # $1:       the domain name as a string.
+    # RETURN:   If the hook is unset, return 0.
+    #           If not, return 1.
+    #
+      function unset_hook_for_domain
+      {
+        if [[ -z "${1}" ]]; then
+          return 0
+        fi
+
+        if [[ ! -e "${DOMAIN_NAME_START_DIR}${1}" ]] \
+          && ! rm -rf "${DOMAIN_NAME_START_DIR}${1}" &> /dev/null; then
+          log_error "Failed to unset symlinks for start hook '${1}'."
+          return 1
+        fi
+
+        if [[ ! -z "${DOMAIN_NAME_STOP_DIR}${1}" ]] \
+          && ! rm -rf "${DOMAIN_NAME_STOP_DIR}${1}" &> /dev/null; then
+          log_error "Failed to unset symlinks for stop hook '${1}'."
+          return 1
+        fi
+
+        return 0
+      }
+
+  #
+  # DESC:   validation
+  # RETURN: If the domain is valid, return 0.
+  #         If not, return 1.
+  #
     function is_valid_domain
     {
       if [[ ! -z "${DOMAIN_NAME}" ]]; then
-        print_error_to_log "Stateful hook requires a Libvirt domain '${DOMAIN}'."
+        log_error "Stateful hook requires a Libvirt domain '${DOMAIN}'."
         return 1
       fi
+
+      return 0
     }
 
-  # <summary>Setters</summary>
-    function set_start_hook_for_domain
-    {
-      if [[ -z "${1}" ]] \
-        || [[ ! -e "${DOMAIN_NAME_START_DIR}${1}" ]]; then
-        return 0
-      fi
-
-      if ! ln -s "${DOMAIN_NAME_START_DIR}${1}" "${HOOK_BASE_DIR}${1}" &> /dev/null; then
-        print_error_to_log "Failed to set symlinks for start hook '${1}'."
-        return 1
-      fi
-
-      if ! chmod +x "${DOMAIN_NAME_START_DIR}${1}" &> /dev/null; then
-        print_error_to_log "Failed to set file permissions for start hook '${1}'."
-        return 1
-      fi
-    }
-
-    function set_stop_hook_for_domain
-    {
-      if [[ -z "${1}" ]] \
-        || [[ ! -e "${DOMAIN_NAME_STOP_DIR}${1}" ]]; then
-        return 0
-      fi
-
-      if ! ln -s "${DOMAIN_NAME_STOP_DIR}${1}" "${HOOK_BASE_DIR}${1}" &> /dev/null; then
-        print_error_to_log "Failed to set symlinks for stop hook '${1}'."
-        return 1
-      fi
-
-      if ! chmod +x "${DOMAIN_NAME_STOP_DIR}${1}" &> /dev/null; then
-        print_error_to_log "Failed to set file permissions for stop hook '${1}'."
-        return 1
-      fi
-    }
-
-    function unset_hook_for_domain
-    {
-      if [[ -z "${1}" ]]; then
-        return 0
-      fi
-
-      if [[ ! -e "${DOMAIN_NAME_START_DIR}${1}" ]] \
-        && ! rm -rf "${DOMAIN_NAME_START_DIR}${1}" &> /dev/null; then
-        print_error_to_log "Failed to unset symlinks for start hook '${1}'."
-        return 1
-      fi
-
-      if [[ ! -z "${DOMAIN_NAME_STOP_DIR}${1}" ]] \
-        && ! rm -rf "${DOMAIN_NAME_STOP_DIR}${1}" &> /dev/null; then
-        print_error_to_log "Failed to unset symlinks for stop hook '${1}'."
-        return 1
-      fi
-    }
-
-  function create_directory
-  {
-    local -r dir="${1}"
-
-    if [[ -d "${dir}" ]] \
-      && ! mkdir --parents "${dir}" &> /dev/null; then
-      print_error_to_log "Failed to create directory '${dir}'."
-    fi
-  }
-
-  function setup_stateful_hooks
-  {
-    for hook in "${STATEFUL_HOOKS_START_LIST[@]}"; do
-      set_start_hook_for_domain "${hook}" || unset_hook_for_domain "${hook}"
-    done
-
-    for hook in "${STATEFUL_HOOKS_STOP_LIST[@]}"; do
-      set_stop_hook_for_domain "${hook}" || unset_hook_for_domain "${hook}"
-    done
-  }
-# </functions>
-
-# <code>
+#
+# main
+#
   main "$@"
-# </code>

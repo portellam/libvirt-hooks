@@ -8,12 +8,9 @@
 # Version:        1.0.0
 #
 
-# <traps>
-  trap 'catch_error' SIGINT SIGTERM ERR
-  trap 'catch_exit' EXIT
-# </traps>
-
-# <params>
+#
+# params
+#
   declare -r SCRIPT_VERSION="1.0.0"
   declare -r REPO_NAME="libvirt-hooks"
   declare -r WORKING_DIR="$( dirname $( realpath "${0}" ) )/"
@@ -22,22 +19,29 @@
   SAVEIFS="${IFS}"
   IFS=$'\n'
 
-  # <summary>Execution Flags</summary>
+  #
+  # DESC: Execution Flags
+  #
     DO_INSTALL=false
     DO_UNINSTALL=false
 
-  # <summary>
-  # Color coding
+  #
+  # DESC: Color coding
   # Reference URL: 'https://www.shellhacks.com/bash-colors'
-  # </summary>
+  #
     SET_COLOR_GREEN='\033[0;32m'
     SET_COLOR_RED='\033[0;31m'
     SET_COLOR_YELLOW='\033[0;33m'
     RESET_COLOR='\033[0m'
 
-  # <summary>Append output</summary>
+  #
+  # DESC: append output
+  #
     PREFIX_PROMPT="$( basename "${0}" ): "
-    PREFIX_ERROR="${PREFIX_PROMPT}${SET_COLOR_YELLOW}An error occurred:${RESET_COLOR} "
+
+    PREFIX_ERROR="${PREFIX_PROMPT}${SET_COLOR_YELLOW}An error occurred:"\
+      "${RESET_COLOR} "
+
     PREFIX_FAIL="${PREFIX_PROMPT}${SET_COLOR_RED}Failure:${RESET_COLOR} "
     PREFIX_PASS="${PREFIX_PROMPT}${SET_COLOR_GREEN}Success:${RESET_COLOR} "
 
@@ -57,27 +61,41 @@
 
   DO_INSTALL_AUDIO_LOOPBACK=false
   AUDIO_LOOPBACK_HOOK_NAME="audio-loopback"
-# </params>
 
-# <functions>
+#
+# logic
+#
   function main
   {
     is_user_superuser || exit 1
+
+    if ! is_user_superuser; then
+      exit 1
+    fi
+
     add_to_lists &> /dev/null
-    get_option || exit 1
-    prompt_install || exit 1
+
+    if ! get_option \
+      || ! prompt_install; then
+      exit 1
+    fi
+
     is_pulseaudio_installed
     do_install_audio_loopback
 
     if ! "${DO_INSTALL}"; then
-      uninstall || exit 1
-    else
-      are_dependencies_installed || exit 1
-      install || exit 1
+      if ! uninstall; then
+        exit 1
+      fi
     fi
 
-    update_services
-    exit "${?}"
+    if ! are_dependencies_installed \
+      || ! install \
+      || ! update_services; then
+      exit 1
+    fi
+
+    exit 0
   }
 
   function add_to_lists
@@ -90,7 +108,9 @@
     SERVICE_LIST=( $( find -L "${SERVICE_SOURCE_PATH}" -maxdepth 1 -type f ) )
   }
 
-  # <summary>Business logic</summary>
+  #
+  # DESC: business logic
+  #
     function prompt_install
     {
       if "${DO_INSTALL}" ||
@@ -118,30 +138,34 @@
         || ! does_destination_path_exist \
         || ! copy_source_files_to_destination \
         || ! set_permissions_for_destination_files; then
-        print_fail_to_log"Could not install ${REPO_NAME}."
+        log_fail"Could not install ${REPO_NAME}."
         return 1
       fi
 
-      print_pass_to_log "Installed ${REPO_NAME}."
+      log_pass "Installed ${REPO_NAME}."
     }
 
     function uninstall
     {
       if ! delete_destination_files; then
-        print_fail_to_log"Could not uninstall ${REPO_NAME}."
+        log_fail"Could not uninstall ${REPO_NAME}."
         return 1
       fi
 
-      print_pass_to_log "Uninstalled ${REPO_NAME}."
+      log_pass "Uninstalled ${REPO_NAME}."
     }
 
-  # <summary>Clean-up</summary>
+  #
+  # DESC: clean up
+  #
     function reset_ifs
     {
       IFS="${SAVEIFS}"
     }
 
-  # <summary>Data-type validation</summary>
+  #
+  # DESC: data-type validation
+  #
     function is_string
     {
       if [[ "${1}" == "" ]]; then
@@ -149,7 +173,9 @@
       fi
     }
 
-  # <summary>Handlers</summary>
+  #
+  # DESC: handlers
+  #
     function catch_error {
       exit 1
     }
@@ -158,64 +184,92 @@
       reset_ifs
     }
 
-    function is_user_superuser
-    {
-      if [[ $( whoami ) != "root" ]]; then
-        print_to_error_log "User is not sudo or root."
-        return 1
-      fi
-    }
-
-    function yes_no_prompt
-    {
-      local output="${1}"
-      is_string "${output}" && output+=" "
-
-      for counter in $( seq 0 2 ); do
-        echo -en "${output}[Y/n]: "
-        read -r -p "" answer
-
-        case "${answer}" in
-          [Yy]* )
-            return 0 ;;
-
-          [Nn]* )
-            return 255 ;;
-
-          * )
-            echo "Please answer 'Y' or 'N'." ;;
-        esac
-      done
-
+  function is_user_superuser
+  {
+    if [[ $( whoami ) != "root" ]]; then
+      print_to_error_log "User is not sudo or root."
       return 1
-    }
+    fi
 
-  # <summary>Loggers</summary>
-    function print_error_to_log
-    {
-      echo -e "${PREFIX_ERROR}${1}" >&2
-    }
+    return 0
+  }
 
-    function print_fail_to_log
-    {
-      echo -e "${PREFIX_FAIL}${1}" >&2
-    }
+  function yes_no_prompt
+  {
+    local str_output="${1}"
+    is_string "${str_output}" && output+=" "
 
-    function print_output_to_log
-    {
-      echo -e "${PREFIX_PROMPT}${1}" >&1
-    }
+    for counter in $( seq 0 2 ); do
+      echo -en "${output}[Y/n]: "
+      read -r -p "" answer
 
-    function print_pass_to_log
-    {
-      echo -e "${PREFIX_PASS}${1}" >&1
-    }
+      case "${answer}" in
+        [Yy]* )
+          return 0 ;;
+
+        [Nn]* )
+          return 255 ;;
+
+        * )
+          echo "Please answer 'Y' or 'N'." ;;
+      esac
+    done
+
+    return 1
+  }
+
+  #
+  # DESC: loggers
+  #
+    #
+    # DESC:   Log the output as an error.
+    # $1:     the output as a string.
+    # RETURN: Always return 0.
+    #
+      function log_error
+      {
+        echo -e "${PREFIX_ERROR}${1}" >&2
+        return 0
+      }
+
+    #
+    # DESC:   Log the output as a fail.
+    # $1:     the output as a string.
+    # RETURN: Always return 0.
+    #
+      function log_fail
+      {
+        echo -e "${PREFIX_FAIL}${1}" >&2
+        return 0
+      }
+
+    #
+    # DESC:   Log the output as a fail.
+    # $1:     the output as a string.
+    # RETURN: Always return 0.
+    #
+      function log_output
+      {
+        echo -e "${PREFIX_PROMPT}${1}" >&1
+        return 0
+      }
+
+    #
+    # DESC:   Log the output as a pass.
+    # $1:     the output as a string.
+    # RETURN: Always return 0.
+    #
+      function log_pass
+      {
+        echo -e "${PREFIX_PASS}${1}" >&1
+        return 0
+      }
 
     function print_usage
     {
       IFS=$'\n'
 
-      local -a output=(
+      local -a str_output=(
         "Usage:\tbash libvirt-hooks [OPTION]"
         "Manages ${REPO_NAME} binaries, scripts, and services."
         "Version ${SCRIPT_VERSION}.\n"
@@ -228,7 +282,9 @@
       unset IFS
     }
 
-  # <summary>Options logic</summary>
+  #
+  # DESC: Options logic
+  #
     function get_option
     {
       case "${OPTION}" in
@@ -247,12 +303,22 @@
       esac
     }
 
-  # <summary>Copy Source Files to Destination</summary>
+  #
+  # DESC: Copy Source Files to Destination
+  #
     function copy_source_files_to_destination
     {
       copy_binary_files_to_destination || return 1
       copy_script_files_to_destination || return 1
       copy_service_files_to_destination
+
+      if ! copy_binary_files_to_destination \
+        || ! copy_script_files_to_destination \
+        || ! copy_service_files_to_destination; then
+        return 1
+      fi
+
+      return 0
     }
 
     function copy_binary_files_to_destination
@@ -262,10 +328,12 @@
         local bin_path="${BIN_DEST_PATH}${bin_name}"
 
         if ! sudo cp --force "${bin}" "${bin_path}" &> /dev/null; then
-          print_error_to_log "Failed to copy project binaries."
+          log_error "Failed to copy project binaries."
           return 1
         fi
       done
+
+      return 0
     }
 
     function copy_script_files_to_destination
@@ -276,11 +344,14 @@
         local script_dest_dir="$( dirname "${script_dest_file}" )/"
 
         if ! does_path_exist "${script_dest_dir}" \
-          || ! sudo rsync --archive --recursive --verbose "${script_source_file}" "${script_dest_dir}" &> /dev/null; then
-          print_error_to_log "Failed to copy project script(s)."
+          || ! sudo rsync --archive --recursive --verbose "${script_source_file}" \
+            "${script_dest_dir}" &> /dev/null; then
+          log_error "Failed to copy project script(s)."
           return 1
         fi
       done
+
+      return 0
     }
 
     function copy_service_files_to_destination
@@ -290,13 +361,15 @@
         local service_path="${SERVICE_DEST_PATH}/${service_name}"
 
         if ! sudo cp --force "${service}" "${service_path}" &> /dev/null; then
-          print_error_to_log "Failed to copy project service(s)."
+          log_error "Failed to copy project service(s)."
           return 1
         fi
       done
     }
 
-  # <summary>Delete Destination Files</summary>
+  #
+  # DESC: Delete Destination Files
+  #
     function delete_destination_files
     {
       delete_binary_files || return 1
@@ -311,7 +384,7 @@
       fi
 
       if ! rm --force --recursive "${BIN_DEST_PATH}" &> /dev/null; then
-        print_error_to_log "Failed to delete project binaries."
+        log_error "Failed to delete project binaries."
         return 1
       fi
     }
@@ -323,7 +396,7 @@
       fi
 
       if ! rm --force --recursive ${SCRIPT_DEST_PATH}* &> /dev/null; then
-        print_error_to_log "Failed to delete project script(s)."
+        log_error "Failed to delete project script(s)."
         return 1
       fi
     }
@@ -339,67 +412,85 @@
         local service_path="${SERVICE_DEST_PATH}${service_name}"
 
         if ! rm --force "${service_path}" &> /dev/null; then
-          print_error_to_log "Failed to delete project service(s)."
+          log_error "Failed to delete project service(s)."
           return 1
         fi
       done
     }
 
+  #
+  # DESC: Do source files exist
+  #
     function do_source_files_exist
     {
-      do_binary_files_exist || return 1
-      do_script_files_exist || return 1
-      do_service_files_exist
+      if ! do_binary_files_exist \
+        || ! do_script_files_exist \
+        || ! do_service_files_exist; then
+        return 1
+      fi
+
+      return 0
     }
 
     function do_binary_files_exist
     {
       for bin in "${BIN_LIST[@]}"; do
         if [[ ! -e "${bin}" ]]; then
-          print_error_to_log "Missing project binaries."
+          log_error "Missing project binaries."
           return 1
         fi
       done
+
+      return 0
     }
 
     function do_script_files_exist
     {
       for script in "${SCRIPT_LIST[@]}"; do
         if [[ ! -e "${script}" ]]; then
-          print_error_to_log "Missing project scripts."
+          log_error "Missing project scripts."
           return 1
         fi
       done
+
+      return 0
     }
 
     function do_service_files_exist
     {
       for service in "${SERVICE_LIST[@]}"; do
         if [[ ! -e "${service}" ]]; then
-          print_error_to_log "Missing project services."
+          log_error "Missing project services."
           return 1
         fi
       done
+
+      return 0
     }
 
-  # <summary>Dependency validation</summary>
+  #
+  # DESC: Dependency validation
+  #
     function are_dependencies_installed
     {
       local -r systemd_app="systemd"
 
       if ! command -v "${systemd_app}" &> /dev/null; then
-        print_error_to_log "Required dependency '${systemd_app}' is not installed."
+        log_error "Required dependency '${systemd_app}' is not installed."
         return 1
       fi
 
-      local -r output="$( systemctl status "${LIBVIRTD_SERVICE}" )"
+      local -r str_output="$( systemctl status "${LIBVIRTD_SERVICE}" )"
 
-      if [[ "${output}" == "Unit ${LIBVIRTD_SERVICE}.service could not be found." ]]; then
-        print_error_to_log "Required service '${LIBVIRTD_SERVICE}' is not installed."
+      if [[ \
+        "${str_output}" == "Unit ${LIBVIRTD_SERVICE}.service could not be found." \
+        ]]; then
+        log_error "Required service '${LIBVIRTD_SERVICE}' is not installed."
         return 1
       fi
 
-      print_pass_to_log "Dependencies are installed."
+      log_pass "Dependencies are installed."
+      return 0
     }
 
     function do_install_audio_loopback
@@ -422,6 +513,8 @@
           unset SERVICE_LIST["${key}"]
         fi
       done
+
+      return 0
     }
 
     function is_pulseaudio_installed
@@ -430,6 +523,8 @@
         && command -v "pactl" &> /dev/null; then
         DO_INSTALL_AUDIO_LOOPBACK=true
       fi
+
+      return 0
     }
 
     function is_file_for_pulseaudio
@@ -442,12 +537,18 @@
       return 1
     }
 
-  # <summary>Do Destination Paths Exist</summary>
+  #
+  # DESC: Do Destination Paths Exist
+  #
     function does_destination_path_exist
     {
-      does_path_exist "${BIN_DEST_PATH}" || return 1
-      does_script_path_exist || return 1
-      does_path_exist "${SERVICE_DEST_PATH}" || return 1
+      if ! does_path_exist "${BIN_DEST_PATH}" \
+        || ! does_script_path_exist \
+        || ! does_path_exist "${SERVICE_DEST_PATH}"; then
+        return 1
+      fi
+
+      return 0
     }
 
     function does_path_exist
@@ -456,9 +557,11 @@
 
       if [[ ! -d "${path}" ]] \
         && ! sudo mkdir --parents "${path}" &> /dev/null; then
-        print_error_to_log "Could not create directory '${path}'."
+        log_error "Could not create directory '${path}'."
         return 1
       fi
+
+      return 0
     }
 
     function does_script_path_exist
@@ -470,59 +573,74 @@
         script_subdir="${SCRIPT_DEST_PATH}${script_subdir}"
         does_path_exist "${script_subdir}" || return 1
       done
+
+      return 0
     }
 
-  # <summary>Services logic</summary>
+  #
+  # DESC: Services logic
+  #
     function update_services
     {
       if ! systemctl daemon-reload &> /dev/null; then
-        print_error_to_log "Could not update services."
+        log_error "Could not update services."
         return 1
       fi
 
       if ! systemctl enable "${LIBVIRTD_SERVICE}" &> /dev/null; then
-        print_error_to_log "Could not enable ${LIBVIRTD_SERVICE}."
+        log_error "Could not enable ${LIBVIRTD_SERVICE}."
         return 1
       fi
 
       if ! systemctl restart "${LIBVIRTD_SERVICE}" &> /dev/null; then
-        print_error_to_log "Could not start ${LIBVIRTD_SERVICE}."
+        log_error "Could not start ${LIBVIRTD_SERVICE}."
         return 1
       fi
 
-      print_pass_to_log "Updated services."
+      log_pass "Updated services."
+      return 0
     }
 
-  # <summary>Set Permissions For Destination Files</summary>
+  #
+  # DESC: Set Permissions For Destination Files
+  #
     function set_permissions_for_destination_files
     {
-      set_permissions_for_binary_files || return 1
-      set_permissions_for_script_files || return 1
-      set_permissions_for_service_files
+      if ! set_permissions_for_binary_files \
+        || ! set_permissions_for_script_files \
+        || ! set_permissions_for_service_files; then
+        return 1
+      fi
+
+      return 0
     }
 
     function set_permissions_for_binary_files
     {
       if ! sudo chown --recursive --silent root:root "${BIN_DEST_PATH}" \
         || ! sudo chmod --recursive --silent +x "${BIN_DEST_PATH}"; then
-        print_error_to_log "Failed to set file permissions for binaries."
+        log_error "Failed to set file permissions for binaries."
         return 1
       fi
+
+      return 0
     }
 
     function set_permissions_for_script_files
     {
       if ! sudo chown --recursive --silent root:root "${SCRIPT_DEST_PATH}" \
         || ! sudo chmod --recursive --silent +x "${SCRIPT_DEST_PATH}"; then
-        print_error_to_log "Failed to set file permissions for script(s)."
+        log_error "Failed to set file permissions for script(s)."
         return 1
       fi
+
+      return 0
     }
 
     function set_permissions_for_service_files
     {
       if ! sudo chown --recursive --silent root:root "${SERVICE_DEST_PATH}"; then
-        print_error_to_log "Failed to set file permissions for service(s)."
+        log_error "Failed to set file permissions for service(s)."
         return 1
       fi
 
@@ -530,13 +648,17 @@
         local this_service_path="${SERVICE_DEST_PATH}$( basename "${service}" )"
 
         if ! sudo chmod --recursive --silent +x "${this_service_path}"; then
-          print_error_to_log "Failed to set file permissions for service '${service}'."
+          log_error "Failed to set file permissions for service '${service}'."
           return 1
         fi
       done
-    }
-# </functions>
 
-# <code>
+      return 0
+    }
+
+#
+# main
+#
+  trap 'catch_error' SIGINT SIGTERM ERR
+  trap 'catch_exit' EXIT
   main
-# </code>

@@ -9,23 +9,32 @@
 # Version:        1.0.0
 #
 
-# <params>
+#
+# params
+#
   DIR="$( dirname "$( realpath "${0}" )" )/"
   SOURCE="${DIR}set-service"
   DOMAIN_NAME="${1}"
   HOOK_NAME="$( basename "${0}" )"
   SERVICE_NAME="libvirt-${HOOK_NAME}@${DOMAIN_NAME}.service"
   ARGUMENTS=( "${SERVICE_NAME}" "$@" )
-# </params>
 
-# <functions>
-  function main
-  {
-    source "${SOURCE}"
-    main "${ARGUMENTS[@]}"
-  }
-# </functions>
+#
+# logic
+#
+  #
+  # DESC:     Call the source file and execute the expected function "main" for it.
+  # WARNING:  Without a source file declared, infinite recursion will occur.
+  #
+    function main
+    {
+      source "${SOURCE}"
 
-# <code>
+      # calls the function "main" from the source file
+      main "${ARGUMENTS[@]}"
+    }
+
+#
+# main
+#
   main
-# </code>
