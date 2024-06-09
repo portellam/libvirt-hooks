@@ -27,10 +27,10 @@
   #
   # DESC: append output
   #
-    PREFIX_PROMPT="libvirt-qemu $( basename "${0}" )"
-    PREFIX_ERROR="${PREFIX_PROMPT}An error occurred: "
-    PREFIX_FAIL="${PREFIX_PROMPT}Failure: "
-    PREFIX_PASS="${PREFIX_PROMPT}Success: "
+    STR_PREFIX_PROMPT="libvirt-qemu $( basename "${0}" )"
+    STR_PREFIX_ERROR="${STR_PREFIX_PROMPT}An error occurred: "
+    STR_PREFIX_FAIL="${STR_PREFIX_PROMPT}Failure: "
+    STR_PREFIX_PASS="${STR_PREFIX_PROMPT}Success: "
 
 #
 # logic
@@ -48,6 +48,7 @@
     fi
 
     log_pass "${str_output}"
+    return 0
   }
 
   #
@@ -60,7 +61,7 @@
     #
       function log_error
       {
-        echo -e "${PREFIX_ERROR}${1}" >&2
+        echo -e "${STR_PREFIX_ERROR}${1}" >&2
         return 0
       }
 
@@ -71,7 +72,7 @@
     #
       function log_fail
       {
-        echo -e "${PREFIX_FAIL}${1}" >&2
+        echo -e "${STR_PREFIX_FAIL}${1}" >&2
         return 0
       }
 
@@ -82,7 +83,7 @@
     #
       function log_output
       {
-        echo -e "${PREFIX_PROMPT}${1}" >&1
+        echo -e "${STR_PREFIX_PROMPT}${1}" >&1
         return 0
       }
 
@@ -93,7 +94,7 @@
     #
       function log_pass
       {
-        echo -e "${PREFIX_PASS}${1}" >&1
+        echo -e "${STR_PREFIX_PASS}${1}" >&1
         return 0
       }
 
@@ -110,6 +111,7 @@
       fi
 
       log_pass "Defragmented Host memory."
+      return 0
     }
 
 
@@ -126,6 +128,7 @@
       fi
 
       log_pass "Dropped filesystem caches."
+      return 0
     }
 
   #

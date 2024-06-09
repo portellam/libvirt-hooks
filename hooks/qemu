@@ -11,7 +11,7 @@
 #
 # params
 #
-  DIR="$( dirname "$( realpath "${0}" )" )/"
+  STR_DIR="$( dirname "$( realpath "${0}" )" )/"
 
 #
 # logic
@@ -27,9 +27,9 @@
     {
       # NOTE:     add new scripts to invoke here ( "PATH_TO_FILE" "$@" ).
       # WARNING:  do not add 'set-service'. This may cause infinite recursion.
-      if ! "${DIR}isolcpu" "$@" \
-        || "${DIR}nosleep" "$@" \
-        || "${DIR}set-hooks" "$@"; then
+      if ! "${STR_DIR}isolcpu" "$@" \
+        || "${STR_DIR}nosleep" "$@" \
+        || "${STR_DIR}set-hooks" "$@"; then
         return 1
       fi
 

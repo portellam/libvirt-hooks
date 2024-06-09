@@ -21,41 +21,41 @@
 #
 # params
 #
-  DOMAIN_NAME="${1}"
+  STR_DOMAIN_NAME="${1}"
 
   #
   # DESC: append output
   #
-    PREFIX_PROMPT="libvirt-qemu $( basename "${0}" )"
-    PREFIX_ERROR="${PREFIX_PROMPT}An error occurred: "
-    PREFIX_FAIL="${PREFIX_PROMPT}Failure: "
-    PREFIX_PASS="${PREFIX_PROMPT}Success: "
-    PREFIX_SKIP="${PREFIX_PROMPT}Skipped: "
+    STR_PREFIX_PROMPT="libvirt-qemu $( basename "${0}" )"
+    STR_PREFIX_ERROR="${STR_PREFIX_PROMPT}An error occurred: "
+    STR_PREFIX_FAIL="${STR_PREFIX_PROMPT}Failure: "
+    STR_PREFIX_PASS="${STR_PREFIX_PROMPT}Success: "
+    STR_PREFIX_SKIP="${STR_PREFIX_PROMPT}Skipped: "
 
-  HOOKS_BASE_DIR="$( dirname $( realpath "${0}" ) )/"
-  DOMAIN_NAME_BASE_DIR="${HOOKS_BASE_DIR}qemu.d/${DOMAIN_NAME}/"
-  DOMAIN_NAME_START_DIR="${DOMAIN_NAME_BASE_DIR}started/begin/"
-  DOMAIN_NAME_STOP_DIR="${DOMAIN_NAME_BASE_DIR}stopped/end/"
+  STR_HOOKS_BASE_DIR="$( dirname $( realpath "${0}" ) )/"
+  STR_DOMAIN_NAME_BASE_DIR="${STR_HOOKS_BASE_DIR}qemu.d/${STR_DOMAIN_NAME}/"
+  STR_DOMAIN_NAME_START_DIR="${STR_DOMAIN_NAME_BASE_DIR}started/begin/"
+  STR_DOMAIN_NAME_STOP_DIR="${STR_DOMAIN_NAME_BASE_DIR}stopped/end/"
 
-  STATEFUL_HOOKS_DIR="${0}.d/"
-  STATEFUL_HOOKS_START_ONLY_DIR="${STATEFUL_HOOKS_DIR}start-only/"
-  STATEFUL_HOOKS_STOP_ONLY_DIR="${STATEFUL_HOOKS_DIR}stop-only/"
-  STATEFUL_HOOKS_BOTH_DIR="${STATEFUL_HOOKS_DIR}start-and-stop/"
+  STR_STATEFUL_HOOKS_DIR="${0}.d/"
+  STR_STATEFUL_HOOKS_START_ONLY_DIR="${STR_STATEFUL_HOOKS_DIR}start-only/"
+  STR_STATEFUL_HOOKS_STOP_ONLY_DIR="${STR_STATEFUL_HOOKS_DIR}stop-only/"
+  STR_STATEFUL_HOOKS_BOTH_DIR="${STR_STATEFUL_HOOKS_DIR}start-and-stop/"
 
-  STATEFUL_HOOKS_START_LIST=( \
-    $( find -L "${STATEFUL_HOOKS_START_ONLY_DIR}" -maxdepth 1 -type f ) \
+  ARR_STATEFUL_HOOKS_START_LIST=( \
+    $( find -L "${STR_STATEFUL_HOOKS_START_ONLY_DIR}" -maxdepth 1 -type f ) \
   )
 
-  STATEFUL_HOOKS_START_LIST+=( \
-    $( find -L "${STATEFUL_HOOKS_BOTH_DIR}" -maxdepth 1 -type f ) \
+  ARR_STATEFUL_HOOKS_START_LIST+=( \
+    $( find -L "${STR_STATEFUL_HOOKS_BOTH_DIR}" -maxdepth 1 -type f ) \
   )
 
-  STATEFUL_HOOKS_STOP_LIST=( \
-    $( find -L "${STATEFUL_HOOKS_STOP_ONLY_DIR}" -maxdepth 1 -type f ) \
+  ARR_STATEFUL_HOOKS_STOP_LIST=( \
+    $( find -L "${STR_STATEFUL_HOOKS_STOP_ONLY_DIR}" -maxdepth 1 -type f ) \
   )
 
-  STATEFUL_HOOKS_STOP_LIST+=( \
-    $( find -L "${STATEFUL_HOOKS_BOTH_DIR}" -maxdepth 1 -type f ) \
+  ARR_STATEFUL_HOOKS_STOP_LIST+=( \
+    $( find -L "${STR_STATEFUL_HOOKS_BOTH_DIR}" -maxdepth 1 -type f ) \
   )
 
 #
@@ -97,7 +97,7 @@
     #
       function log_error
       {
-        echo -e "${PREFIX_ERROR}${1}" >&2
+        echo -e "${STR_PREFIX_ERROR}${1}" >&2
         return 0
       }
 
@@ -108,7 +108,7 @@
     #
       function log_fail
       {
-        echo -e "${PREFIX_FAIL}${1}" >&2
+        echo -e "${STR_PREFIX_FAIL}${1}" >&2
         return 0
       }
 
@@ -119,7 +119,7 @@
     #
       function log_output
       {
-        echo -e "${PREFIX_PROMPT}${1}" >&1
+        echo -e "${STR_PREFIX_PROMPT}${1}" >&1
         return 0
       }
 
@@ -130,7 +130,7 @@
     #
       function log_pass
       {
-        echo -e "${PREFIX_PASS}${1}" >&1
+        echo -e "${STR_PREFIX_PASS}${1}" >&1
         return 0
       }
 
@@ -141,7 +141,7 @@
     #
       function log_skip
       {
-        echo -e "${PREFIX_SKIP}${1}" >&1
+        echo -e "${STR_PREFIX_SKIP}${1}" >&1
         return 0
       }
 
@@ -155,10 +155,10 @@
     #
       function get_paths_for_domain
       {
-        if ! create_directory "${DOMAIN_NAME_BASE_DIR}" \
-          || ! create_directory "${DOMAIN_NAME_START_DIR}" \
-          || ! create_directory "${DOMAIN_NAME_STOP_DIR}"; then
-          log_error "Failed to create directories for Libvirt domain '${DOMAIN}'."
+        if ! create_directory "${STR_DOMAIN_NAME_BASE_DIR}" \
+          || ! create_directory "${STR_DOMAIN_NAME_START_DIR}" \
+          || ! create_directory "${STR_DOMAIN_NAME_STOP_DIR}"; then
+          log_error "Failed to create directories for Libvirt domain '${STR_DOMAIN}'."
           return 1
         fi
 
@@ -174,7 +174,7 @@
       {
         for str_hook_name in "${HOOKS_LIST[@]}"; do
           if [[ ! -e "${HOOK_BASE_DIR}${str_hook_name}" ]]; then
-            log_error "Failed to find hook(s) for Libvirt domain '${DOMAIN}'."
+            log_error "Failed to find hook(s) for Libvirt domain '${STR_DOMAIN}'."
             return 1
           fi
         done
@@ -215,17 +215,17 @@
         local -r str_domain="${str_domain}"
 
         if [[ -z "${str_domain}" ]] \
-          || [[ ! -e "${DOMAIN_NAME_START_DIR}${str_domain}" ]]; then
+          || [[ ! -e "${STR_DOMAIN_NAME_START_DIR}${str_domain}" ]]; then
           return 0
         fi
 
-        if ! ln -s "${DOMAIN_NAME_START_DIR}${str_domain}" \
+        if ! ln -s "${STR_DOMAIN_NAME_START_DIR}${str_domain}" \
           "${HOOK_BASE_DIR}${str_domain}" &> /dev/null; then
           log_error "Failed to set symlinks for start hook '${str_domain}'."
           return 1
         fi
 
-        if ! chmod +x "${DOMAIN_NAME_START_DIR}${str_domain}" &> /dev/null; then
+        if ! chmod +x "${STR_DOMAIN_NAME_START_DIR}${str_domain}" &> /dev/null; then
           log_error "Failed to set file permissions for start hook '${str_domain}'."
           return 1
         fi
@@ -244,17 +244,17 @@
         local -r str_domain="${1}"
 
         if [[ -z "${1}" ]] \
-          || [[ ! -e "${DOMAIN_NAME_STOP_DIR}${str_domain}" ]]; then
+          || [[ ! -e "${STR_DOMAIN_NAME_STOP_DIR}${str_domain}" ]]; then
           return 0
         fi
 
-        if ! ln -s "${DOMAIN_NAME_STOP_DIR}${str_domain}" \
+        if ! ln -s "${STR_DOMAIN_NAME_STOP_DIR}${str_domain}" \
           "${HOOK_BASE_DIR}${str_domain}" &> /dev/null; then
           log_error "Failed to set symlinks for stop hook '${str_domain}'."
           return 1
         fi
 
-        if ! chmod +x "${DOMAIN_NAME_STOP_DIR}${str_domain}" &> /dev/null; then
+        if ! chmod +x "${STR_DOMAIN_NAME_STOP_DIR}${str_domain}" &> /dev/null; then
           log_error "Failed to set file permissions for stop hook '${str_domain}'."
           return 1
         fi
@@ -268,13 +268,13 @@
     #
       function setup_stateful_hooks
       {
-        for str_hook in "${STATEFUL_HOOKS_START_LIST[@]}"; do
+        for str_hook in "${ARR_STATEFUL_HOOKS_START_LIST[@]}"; do
           if ! set_start_hook_for_domain "${str_hook}"; then
             unset_hook_for_domain "${str_hook}"
           fi
         done
 
-        for str_hook in "${STATEFUL_HOOKS_STOP_LIST[@]}"; do
+        for str_hook in "${ARR_STATEFUL_HOOKS_STOP_LIST[@]}"; do
           if ! set_stop_hook_for_domain "${str_hook}"; then
             unset_hook_for_domain "${str_hook}"
           fi
@@ -297,14 +297,14 @@
           return 0
         fi
 
-        if [[ ! -e "${DOMAIN_NAME_START_DIR}${str_domain}" ]] \
-          && ! rm -rf "${DOMAIN_NAME_START_DIR}${str_domain}" &> /dev/null; then
+        if [[ ! -e "${STR_DOMAIN_NAME_START_DIR}${str_domain}" ]] \
+          && ! rm -rf "${STR_DOMAIN_NAME_START_DIR}${str_domain}" &> /dev/null; then
           log_error "Failed to unset symlinks for start hook '${str_domain}'."
           return 1
         fi
 
-        if [[ ! -z "${DOMAIN_NAME_STOP_DIR}${str_domain}" ]] \
-          && ! rm -rf "${DOMAIN_NAME_STOP_DIR}${str_domain}" &> /dev/null; then
+        if [[ ! -z "${STR_DOMAIN_NAME_STOP_DIR}${str_domain}" ]] \
+          && ! rm -rf "${STR_DOMAIN_NAME_STOP_DIR}${str_domain}" &> /dev/null; then
           log_error "Failed to unset symlinks for stop hook '${str_domain}'."
           return 1
         fi
@@ -319,8 +319,8 @@
   #
     function is_valid_domain
     {
-      if [[ ! -z "${DOMAIN_NAME}" ]]; then
-        log_error "Stateful hook requires a Libvirt domain '${DOMAIN}'."
+      if [[ ! -z "${STR_DOMAIN_NAME}" ]]; then
+        log_error "Stateful hook requires a Libvirt domain '${STR_DOMAIN}'."
         return 1
       fi
 

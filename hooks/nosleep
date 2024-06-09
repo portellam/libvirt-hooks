@@ -12,12 +12,12 @@
 #
 # params
 #
-  DIR="$( dirname "$( realpath "${0}" )" )/"
-  SOURCE="${DIR}set-service"
-  DOMAIN_NAME="${1}"
-  HOOK_NAME="$( basename "${0}" )"
-  SERVICE_NAME="libvirt-${HOOK_NAME}@${DOMAIN_NAME}.service"
-  ARGUMENTS=( "${SERVICE_NAME}" "$@" )
+  STR_DIR="$( dirname "$( realpath "${0}" )" )/"
+  STR_SOURCE="${STR_DIR}set-service"
+  STR_DOMAIN_NAME="${1}"
+  STR_HOOK_NAME="$( basename "${0}" )"
+  STR_SERVICE_NAME="libvirt-${STR_HOOK_NAME}@${STR_DOMAIN_NAME}.service"
+  ARR_ARGUMENTS=( "${STR_SERVICE_NAME}" "$@" )
 
 #
 # logic
@@ -29,10 +29,10 @@
   #
     function main
     {
-      source "${SOURCE}"
+      source "${STR_SOURCE}"
 
       # calls the function "main" from the source file
-      main "${ARGUMENTS[@]}"
+      main "${ARR_ARGUMENTS[@]}"
     }
 
 #
