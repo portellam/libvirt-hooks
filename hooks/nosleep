@@ -25,6 +25,7 @@
   #
   # DESC:     Call the source file and execute the expected function "main" for it.
   # WARNING:  Without a source file declared, infinite recursion will occur.
+  # RETURN:   Always return code from called source file.
   #
     function main
     {
