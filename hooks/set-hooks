@@ -208,7 +208,7 @@
     #
     # DESC:     Set start hook for given domain.
     # $1:       the domain name as a string.
-    # RETURN:   If the start hook is set, return 0.
+    # RETURN:   If the start hook exists and is set or does not exist, return 0.
     #           If not, return 1.
     #
       function set_start_hook_for_domain
@@ -235,7 +235,7 @@
     #
     # DESC:     Set stop hook for given domain.
     # $1:       the domain name as a string.
-    # RETURN:   If the stop hook is set, return 0.
+    # RETURN:   If the stop hook exists and is set or does not exist, return 0.
     #           If not, return 1.
     #
       function set_stop_hook_for_domain
@@ -283,7 +283,7 @@
     #
     # DESC:     Unset hook for given domain.
     # $1:       the domain name as a string.
-    # RETURN:   If the hook is unset, return 0.
+    # RETURN:   If the hook exists and is unset or does not exist, return 0.
     #           If not, return 1.
     #
       function unset_hook_for_domain
@@ -308,7 +308,7 @@
       }
 
   #
-  # DESC:   validation
+  # DESC:   Is domain valid.
   # RETURN: If the domain is valid, return 0.
   #         If not, return 1.
   #
