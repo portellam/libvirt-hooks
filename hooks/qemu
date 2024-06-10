@@ -17,11 +17,10 @@
 # logic
 #
   #
-  # DESC:   main execution.
+  # DESC:   Main execution.
   # $@:     the arguments as an array.
   # RETURN: If successful, return 0.
   #         If not, return 1.
-  #
   #
     function main
     {
