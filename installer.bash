@@ -11,16 +11,16 @@
 #
 # params
 #
-  declare -r SCRIPT_VERSION="1.0.0"
-  declare -r REPO_NAME="libvirt-hooks"
-  declare -r WORKING_DIR="$( dirname $( realpath "${0}" ) )/"
-  declare -r OPTION="${1}"
+  declare -r STR_SCRIPT_VERSION="1.0.0"
+  declare -r STR_REPO_NAME="libvirt-hooks"
+  declare -r STR_WORKING_DIR="$( dirname $( realpath "${0}" ) )/"
+  declare -r STR_OPTION="${1}"
 
   #
   # DESC: Execution Flags
   #
-    DO_INSTALL=false
-    DO_UNINSTALL=false
+    BOOL_DO_INSTALL=false
+    BOOL_DO_UNINSTALL=false
 
   #
   # DESC: Color coding
@@ -29,7 +29,7 @@
     SET_COLOR_GREEN='\033[0;32m'
     SET_COLOR_RED='\033[0;31m'
     SET_COLOR_YELLOW='\033[0;33m'
-    RESET_COLOR='\033[0m'
+    STR_RESET_COLOR='\033[0m'
 
   #
   # DESC: append output
@@ -37,32 +37,39 @@
     STR_PREFIX_PROMPT="$( basename "${0}" ): "
 
     STR_PREFIX_ERROR="${STR_PREFIX_PROMPT}${SET_COLOR_YELLOW}An error occurred:"\
-      "${RESET_COLOR} "
+      "${STR_RESET_COLOR} "
 
-    STR_PREFIX_FAIL="${STR_PREFIX_PROMPT}${SET_COLOR_RED}Failure:${RESET_COLOR} "
-    STR_PREFIX_PASS="${STR_PREFIX_PROMPT}${SET_COLOR_GREEN}Success:${RESET_COLOR} "
+    STR_PREFIX_FAIL="${STR_PREFIX_PROMPT}${SET_COLOR_RED}Failure:${STR_RESET_COLOR} "
 
-  declare -r LIBVIRTD_SERVICE="libvirtd"
+    STR_PREFIX_PASS="${STR_PREFIX_PROMPT}${SET_COLOR_GREEN}Success:"\
+      "${STR_RESET_COLOR} "
 
-  declare -r BIN_DEST_PATH="/usr/local/bin/libvirt-hooks/"
-  declare -r BIN_SOURCE_PATH="${WORKING_DIR}bin/"
-  declare -r SCRIPT_DEST_PATH="/etc/libvirt/hooks/"
-  declare -r SCRIPT_SOURCE_RELATIVE_PATH="hooks/"
-  declare -r SERVICE_DEST_PATH="/etc/systemd/system/"
-  declare -r SERVICE_SOURCE_PATH="${WORKING_DIR}systemd/"
+  declare -r STR_LIBVIRTD_SERVICE="libvirtd"
 
-  declare -ar BIN_LIST=( $( find -L "${BIN_SOURCE_PATH}" -maxdepth 1 -type f ) )
-  declare -ar SCRIPT_LIST=( $( find -L "${SCRIPT_SOURCE_RELATIVE_PATH}" -type f ) )
+  declare -r STR_BIN_DEST_PATH="/usr/local/bin/libvirt-hooks/"
+  declare -r STR_BIN_SOURCE_PATH="${STR_WORKING_DIR}bin/"
+  declare -r STR_SCRIPT_DEST_PATH="/etc/libvirt/hooks/"
+  declare -r STR_SCRIPT_SOURCE_RELATIVE_PATH="hooks/"
+  declare -r STR_SERVICE_DEST_PATH="/etc/systemd/system/"
+  declare -r STR_SERVICE_SOURCE_PATH="${STR_WORKING_DIR}systemd/"
 
-  declare -a SCRIPT_SUBDIR_LIST=( \
-    $( find -L "${SCRIPT_SOURCE_RELATIVE_PATH}" -type d ) \
+  declare -ar ARR_BIN_LIST=( \
+    $( find -L "${STR_BIN_SOURCE_PATH}" -maxdepth 1 -type f ) \
   )
 
-  unset SCRIPT_SUBDIR_LIST[0]
-  readonly SCRIPT_SUBDIR_LIST
+  declare -ar ARR_SCRIPT_LIST=( \
+    $( find -L "${STR_SCRIPT_SOURCE_RELATIVE_PATH}" -type f ) \
+  )
 
-  declare -ar SERVICE_LIST=( \
-    $( find -L "${SERVICE_SOURCE_PATH}" -maxdepth 1 -type f ) \
+  declare -a ARR_SCRIPT_SUBDIR_LIST=( \
+    $( find -L "${STR_SCRIPT_SOURCE_RELATIVE_PATH}" -type d ) \
+  )
+
+  unset ARR_SCRIPT_SUBDIR_LIST[0]
+  readonly ARR_SCRIPT_SUBDIR_LIST
+
+  declare -ar ARR_SERVICE_LIST=( \
+    $( find -L "${STR_SERVICE_SOURCE_PATH}" -maxdepth 1 -type f ) \
   )
 
 #
@@ -79,12 +86,12 @@
         || ! get_option \
         || ! prompt_install \
         || ( \
-          "${DO_UNINSTALL}" \
+          "${BOOL_DO_UNINSTALL}" \
           && ! uninstall \
         ) \
         || ! are_dependencies_installed \
         || ( \
-          "${DO_INSTALL}" \
+          "${BOOL_DO_INSTALL}" \
           && ! install \
         ) \
         || ! update_services; then
@@ -101,12 +108,12 @@
   #
     function get_option
     {
-      case "${OPTION}" in
+      case "${STR_OPTION}" in
         "-u" | "--uninstall" )
-          DO_UNINSTALL=true ;;
+          BOOL_DO_UNINSTALL=true ;;
 
         "-i" | "--install" )
-          DO_INSTALL=true ;;
+          BOOL_DO_INSTALL=true ;;
 
         "" )
           return 0 ;;
@@ -126,12 +133,12 @@
     function print_usage
     {
       echo -e \
-        "Usage:\tbash libvirt-hooks [OPTION]\n"\
-        "Manages ${REPO_NAME} binaries, scripts, and services.\n"\
-        "Version ${SCRIPT_VERSION}.\n\n"\
+        "Usage:\tbash libvirt-hooks [STR_OPTION]\n"\
+        "Manages ${STR_REPO_NAME} binaries, scripts, and services.\n"\
+        "Version ${STR_SCRIPT_VERSION}.\n\n"\
         "  -h, --help\t\tPrint this help and exit.\n"\
-        "  -i, --install\t\tInstall ${REPO_NAME} to system.\n"\
-        "  -u, --uninstall\tUninstall ${REPO_NAME} from system.\n"\
+        "  -i, --install\t\tInstall ${STR_REPO_NAME} to system.\n"\
+        "  -u, --uninstall\tUninstall ${STR_REPO_NAME} from system.\n"\
 
       return 0
     }
@@ -209,12 +216,8 @@
           return 1
         fi
 
-        local -r str_output="$( systemctl status "${LIBVIRTD_SERVICE}" )"
-
-        if [[ \
-            "${str_output}" == "Unit ${LIBVIRTD_SERVICE}.service could not be found." \
-          ]]; then
-          log_error "Required service '${LIBVIRTD_SERVICE}' is not installed."
+        if ! systemctl status "${STR_LIBVIRTD_SERVICE}" &> /dev/null; then
+          log_error "Required service '${STR_LIBVIRTD_SERVICE}' is not installed."
           return 1
         fi
 
@@ -279,22 +282,22 @@
   #
     function prompt_install
     {
-      if "${DO_INSTALL}" \
-        || "${DO_UNINSTALL}"; then
+      if "${BOOL_DO_INSTALL}" \
+        || "${BOOL_DO_UNINSTALL}"; then
         return 0
       fi
 
-      yes_no_prompt "Install '${REPO_NAME}'?"
+      yes_no_prompt "Install '${STR_REPO_NAME}'?"
 
       case "${?}" in
         0 )
-          DO_INSTALL=true ;;
+          BOOL_DO_INSTALL=true ;;
 
         1 )
           return 1 ;;
 
         255 )
-          DO_UNINSTALL=true ;;
+          BOOL_DO_UNINSTALL=true ;;
       esac
 
       return 0
@@ -311,11 +314,11 @@
         || ! create_destination_directories \
         || ! copy_files_to_destination \
         || ! set_destination_files_permissions; then
-        log_fail "Could not install ${REPO_NAME}."
+        log_fail "Could not install ${STR_REPO_NAME}."
         return 1
       fi
 
-      log_pass "Installed ${REPO_NAME}."
+      log_pass "Installed ${STR_REPO_NAME}."
     }
 
   #
@@ -326,11 +329,11 @@
     function uninstall
     {
       if ! delete_destination_files; then
-        log_fail "Could not uninstall ${REPO_NAME}."
+        log_fail "Could not uninstall ${STR_REPO_NAME}."
         return 1
       fi
 
-      log_pass "Uninstalled ${REPO_NAME}."
+      log_pass "Uninstalled ${STR_REPO_NAME}."
     }
 
     #
@@ -358,9 +361,9 @@
     #
       function copy_binaries_to_destination
       {
-        for str_bin in "${BIN_LIST[@]}"; do
+        for str_bin in "${ARR_BIN_LIST[@]}"; do
           local str_bin_name="$( basename "${str_bin}" )"
-          local str_bin_path="${BIN_DEST_PATH}${str_bin_name}"
+          local str_bin_path="${STR_BIN_DEST_PATH}${str_bin_name}"
 
           if ! sudo cp --force "${str_bin}" "${str_bin_path}" &> /dev/null; then
             log_error "Could not copy binaries '${str_script_source_file}' to "\
@@ -380,9 +383,9 @@
     #
       function copy_scripts_to_destination
       {
-        for str_script in "${SCRIPT_LIST[@]}"; do
-          local str_script_source_file="${WORKING_DIR}${str_script}"
-          local str_script_dest_file="${SCRIPT_DEST_PATH}${str_script:6}"
+        for str_script in "${ARR_SCRIPT_LIST[@]}"; do
+          local str_script_source_file="${STR_WORKING_DIR}${str_script}"
+          local str_script_dest_file="${STR_SCRIPT_DEST_PATH}${str_script:6}"
           local str_script_dest_dir="$( dirname "${str_script_dest_file}" )/"
 
           if ! create_directory "${str_script_dest_dir}" \
@@ -406,9 +409,9 @@
     #
       function copy_services_to_destination
       {
-        for str_service in "${SERVICE_LIST[@]}"; do
+        for str_service in "${ARR_SERVICE_LIST[@]}"; do
           local str_service_name="$( basename "${service}" )"
-          local str_service_path="${SERVICE_DEST_PATH}/${str_service_name}"
+          local str_service_path="${STR_SERVICE_DEST_PATH}/${str_service_name}"
 
           if ! sudo cp --force "${str_service}" "${str_service_path}" \
               &> /dev/null; then
@@ -446,8 +449,8 @@
     #
       function delete_destination_files
       {
-        if ! delete_directory "${BIN_DEST_PATH}" \
-          || ! delete_directory "${SCRIPT_DEST_PATH}" \
+        if ! delete_directory "${STR_BIN_DEST_PATH}" \
+          || ! delete_directory "${STR_SCRIPT_DEST_PATH}" \
           || ! delete_destination_services; then
           log_error "Could not delete one or more destination file(s)."
           return 1
@@ -489,14 +492,14 @@
     #
       function delete_destination_services
       {
-        if [[ ! -d "${SERVICE_DEST_PATH}" ]]; then
+        if [[ ! -d "${STR_SERVICE_DEST_PATH}" ]]; then
           log_output "Services are deleted."
           return 0
         fi
 
-        for str_service in "${SERVICE_LIST[@]}"; do
+        for str_service in "${ARR_SERVICE_LIST[@]}"; do
           local str_service_name="$( basename "${str_service}" )"
-          local str_service_path="${SERVICE_DEST_PATH}${str_service_name}"
+          local str_service_path="${STR_SERVICE_DEST_PATH}${str_service_name}"
 
           if ! rm --force --recursive "${str_service_path}" &> /dev/null; then
             log_error "Could not delete service '${str_service_path}'."
@@ -515,7 +518,7 @@
     #
       function do_binary_files_exist
       {
-        for str_binary in "${BIN_LIST[@]}"; do
+        for str_binary in "${ARR_BIN_LIST[@]}"; do
           if [[ ! -e "${str_binary}" ]]; then
             log_error "Binary file '${str_binary}' does not exist."
             return 1
@@ -533,7 +536,7 @@
     #
       function do_script_files_exist
       {
-        for str_script in "${SCRIPT_LIST[@]}"; do
+        for str_script in "${ARR_SCRIPT_LIST[@]}"; do
           if [[ ! -e "${str_script}" ]]; then
             log_error "Script file '${script}' does not exist."
             return 1
@@ -551,7 +554,7 @@
     #
       function do_service_files_exist
       {
-        for str_service in "${SERVICE_LIST[@]}"; do
+        for str_service in "${ARR_SERVICE_LIST[@]}"; do
           if [[ ! -e "${str_service}" ]]; then
             log_error "Service file '${str_service}' does not exist."
             return 1
@@ -569,9 +572,9 @@
     #
       function create_destination_directories
       {
-        if ! create_directory "${BIN_DEST_PATH}" \
-          || ! create_directory "${SERVICE_DEST_PATH}" \
-          || ! create_directory "${SCRIPT_DEST_PATH}" \
+        if ! create_directory "${STR_BIN_DEST_PATH}" \
+          || ! create_directory "${STR_SERVICE_DEST_PATH}" \
+          || ! create_directory "${STR_SCRIPT_DEST_PATH}" \
           || ! create_script_directories; then
           log_error "One or more destination directories do not exist."
           return 1
@@ -613,9 +616,9 @@
     #
       function create_script_directories
       {
-        for str_script_subdir in "${SCRIPT_SUBDIR_LIST[@]}"; do
+        for str_script_subdir in "${ARR_SCRIPT_SUBDIR_LIST[@]}"; do
           str_script_subdir="${str_script_subdir:6}"
-          str_script_subdir="${SCRIPT_DEST_PATH}${str_script_subdir}"
+          str_script_subdir="${STR_SCRIPT_DEST_PATH}${str_script_subdir}"
 
           if ! create_directory "${str_script_subdir}"; then
             log_error "Script directory '${str_directory}' does not exist."
@@ -634,11 +637,11 @@
     #
       function set_destination_files_permissions
       {
-        if ! set_file_owner "${BIN_DEST_PATH}" "root" \
-          || ! set_file_execute_permission "${BIN_DEST_PATH}" \
-          || ! set_file_owner "${SCRIPT_DEST_PATH}" "root" \
-          || ! set_file_execute_permission "${SCRIPT_DEST_PATH}" \
-          || ! set_file_owner "${SERVICE_DEST_PATH}" "root" \
+        if ! set_file_owner "${STR_BIN_DEST_PATH}" "root" \
+          || ! set_file_execute_permission "${STR_BIN_DEST_PATH}" \
+          || ! set_file_owner "${STR_SCRIPT_DEST_PATH}" "root" \
+          || ! set_file_execute_permission "${STR_SCRIPT_DEST_PATH}" \
+          || ! set_file_owner "${STR_SERVICE_DEST_PATH}" "root" \
           || ! set_services_execute_permissions; then
           log_error "Could not set file permissions for destination files."
           return 1
@@ -728,8 +731,8 @@
     #
       function set_services_execute_permissions
       {
-        for str_service in "${SERVICE_LIST[@]}"; do
-          local str_service_path="${SERVICE_DEST_PATH}$( basename "${service}" )"
+        for str_service in "${ARR_SERVICE_LIST[@]}"; do
+          local str_service_path="${STR_SERVICE_DEST_PATH}$( basename "${service}" )"
 
           if ! set_file_execute_permission "${str_service_path}" ; then
             log_error "Could not set file permissions for service '${str_service}'."
@@ -753,13 +756,13 @@
           return 1
         fi
 
-        if ! systemctl enable "${LIBVIRTD_SERVICE}" &> /dev/null; then
-          log_error "Could not enable ${LIBVIRTD_SERVICE}."
+        if ! systemctl enable "${STR_LIBVIRTD_SERVICE}" &> /dev/null; then
+          log_error "Could not enable ${STR_LIBVIRTD_SERVICE}."
           return 1
         fi
 
-        if ! systemctl restart "${LIBVIRTD_SERVICE}" &> /dev/null; then
-          log_error "Could not start ${LIBVIRTD_SERVICE}."
+        if ! systemctl restart "${STR_LIBVIRTD_SERVICE}" &> /dev/null; then
+          log_error "Could not start ${STR_LIBVIRTD_SERVICE}."
           return 1
         fi
 
