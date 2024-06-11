@@ -16,9 +16,6 @@
   declare -r WORKING_DIR="$( dirname $( realpath "${0}" ) )/"
   declare -r OPTION="${1}"
 
-  SAVEIFS="${IFS}"
-  IFS=$'\n'
-
   #
   # DESC: Execution Flags
   #
@@ -128,29 +125,14 @@
   #
     function print_usage
     {
-      IFS=$'\n'
+      echo -e \
+        "Usage:\tbash libvirt-hooks [OPTION]\n"\
+        "Manages ${REPO_NAME} binaries, scripts, and services.\n"\
+        "Version ${SCRIPT_VERSION}.\n\n"\
+        "  -h, --help\t\tPrint this help and exit.\n"\
+        "  -i, --install\t\tInstall ${REPO_NAME} to system.\n"\
+        "  -u, --uninstall\tUninstall ${REPO_NAME} from system.\n"\
 
-      local -a str_output=(
-        "Usage:\tbash libvirt-hooks [OPTION]"
-        "Manages ${REPO_NAME} binaries, scripts, and services."
-        "Version ${SCRIPT_VERSION}.\n"
-        "  -h, --help\t\tPrint this help and exit."
-        "  -i, --install\t\tInstall ${REPO_NAME} to system."
-        "  -u, --uninstall\tUninstall ${REPO_NAME} from system."
-      )
-
-      echo -e "${output[*]}"
-      unset IFS
-      return 0
-    }
-
-  #
-  # DESC:   Reset internal field separator.
-  # RETURN: Always return 0.
-  #
-    function reset_ifs
-    {
-      IFS="${SAVEIFS}"
       return 0
     }
 
@@ -161,16 +143,6 @@
     function catch_error
     {
       exit 1
-    }
-
-  #
-  # DESC:   Execute logic on exit.
-  # RETURN: Always return 0.
-  #
-    function catch_exit
-    {
-      reset_ifs
-      return 0
     }
 
   #
@@ -276,13 +248,16 @@
     function yes_no_prompt
     {
       local str_output="${1}"
-      is_string "${str_output}" && output+=" "
 
-      for counter in $( seq 0 2 ); do
-        echo -en "${output}[Y/n]: "
-        read -r -p "" answer
+      if [[ "${str_output}" != "" ]]; then
+        str_output+=" "
+      fi
 
-        case "${answer}" in
+      for int_counter in $( seq 0 2 ); do
+        echo -en "${str_output}[Y/n]: "
+        read -r -p "" str_answer
+
+        case "${str_answer}" in
           [Yy]* )
             return 0 ;;
 
@@ -296,8 +271,6 @@
 
       return 1
     }
-
-
 
   #
   # DESC:   Prompt to install or uninstall.
@@ -798,5 +771,4 @@
 # main
 #
   trap 'catch_error' SIGINT SIGTERM ERR
-  trap 'catch_exit' EXIT
   main
