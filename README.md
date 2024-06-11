@@ -5,9 +5,11 @@ Install scripts (hooks) of which extend and enhance the functionality of Libvirt
 **[Latest release](/../../../releases/latest) | [View master branch...](/../../../tree/master)**
 
 #### Related Projects:
-**[Auto X.Org](/../../../../auto-xorg) | [Deploy VFIO](/../../../../deploy-VFIO) | [Generate Evdev](/../../../../generate-evdev)**
+**[Deploy VFIO](/../../../../deploy-VFIO)**
 
-**[Guest Machine Guide](/../../../../guest-machine-guide) | [Libvirt Hooks](/../../../../libvirt-hooks) | [Power State Virtual Machine Manager](/../../../../powerstate-virtmanager)**
+**[Auto X.Org](/../../../../auto-xorg) | [Generate Evdev](/../../../../generate-evdev) | [Guest Machine Guide](/../../../../guest-machine-guide)**
+
+**[Libvirt Hooks](/../../../../libvirt-hooks) | [Power State Virtual Machine Manager](/../../../../powerstate-virtmanager)**
 
 #### Other Links:
 **What is [VFIO?](#VFIO) | [VFIO Article](https://www.kernel.org/doc/html/latest/driver-api/vfio.html) | [VFIO Forum](https://old.reddit.com/r/VFIO) | [PCI Passthrough Guide](https://wiki.archlinux.org/title/PCI_passthrough_via_OVMF)**
