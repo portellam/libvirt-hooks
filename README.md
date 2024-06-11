@@ -1,16 +1,14 @@
 # Libvirt Hooks
-### v1.0.0
+### v1.0.1
 Install scripts (hooks) of which extend and enhance the functionality of Libvirt Virtual Machines (VM). Hooks may run at either VM start or stop, and be VM-specific. Develop your own!
 
-- **Latest release [on Codeberg](https://codeberg.org/portellam/libvirt-hooks/releases/latest) [on GitHub](https://github.com/portellam/libvirt-hooks/releases/latest)**
-- **View master branch... [on Codeberg](https://codeberg.org/portellam/libvirt-hooks/tree/master), [GitHub](https://github.com/portellam/libvirt-hooks/tree/master)**
+**[Latest release](/../../../releases/latest) | [View master branch...](/../../../tree/master)**
 
 #### Related Projects:
-- **Auto X.Org<sup>[Codeberg](https://codeberg.org/portellam/auto-xorg) [GitHub](https://github.com/portellam/auto-xorg)</sup>**
-- **Deploy VFIO<sup>[Codeberg](https://codeberg.org/portellam/deploy-VFIO) [GitHub](https://github.com/portellam/deploy-VFIO)</sup>**
-- **Generate Evdev<sup>[Codeberg](https://codeberg.org/portellam/generate-evdev) [GitHub](https://github.com/portellam/generate-evdev)</sup>**
-- **Guest Machine Guide<sup>[Codeberg](https://codeberg.org/portellam/guest-machine-guide) [GitHub](https://github.com/portellam/guest-machine-guide)</sup>**
-- **[Power State Virtual Machine Manager<sup>[Codeberg](https://codeberg.org/portellam/powerstate-virtmanager) [GitHub](https://github.com/portellam/powerstate-virtmanager)</sup>**
+**[Auto X.Org](https://github.com/portellam/auto-xorg) | [Generate Evdev](https://github.com/portellam/generate-evdev) | [Guest Machine Guide](https://github.com/portellam/guest-machine-guide) | [Libvirt Hooks](https://github.com/portellam/libvirt-hooks) | [Power State Virtual Machine Manager](https://github.com/portellam/powerstate-virtmanager)**
+
+#### Other Links:
+**What is [VFIO?](#VFIO) | [VFIO Article](https://www.kernel.org/doc/html/latest/driver-api/vfio.html) | [VFIO Forum](https://old.reddit.com/r/VFIO) | [PCI Passthrough Guide](https://wiki.archlinux.org/title/PCI_passthrough_via_OVMF)**
 
 ## Table of Contents
 - [Why?](#why)
