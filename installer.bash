@@ -82,7 +82,7 @@
         || ! get_option \
         || ! prompt_install \
         || ( \
-          ! "${DO_INSTALL}" \
+          "${DO_UNINSTALL}" \
           && ! uninstall \
         ) \
         || ! are_dependencies_installed \
@@ -98,76 +98,9 @@
     }
 
   #
-  # DESC: business logic
-  #
-    function prompt_install
-    {
-      if "${DO_INSTALL}" ||
-        "${DO_UNINSTALL}"; then
-        return 0
-      fi
-
-      yes_no_prompt "Install '${REPO_NAME}'?"
-
-      case "${?}" in
-        0 )
-          DO_INSTALL=true ;;
-
-        1 )
-          return 1 ;;
-
-        255 )
-          DO_UNINSTALL=true ;;
-      esac
-    }
-
-    function install
-    {
-      if ! do_source_files_exist \
-        || ! create_destination_directories \
-        || ! copy_files_to_destination \
-        || ! set_destination_files_permissions; then
-        log_fail "Could not install ${REPO_NAME}."
-        return 1
-      fi
-
-      log_pass "Installed ${REPO_NAME}."
-    }
-
-    function uninstall
-    {
-      if ! delete_destination_files; then
-        log_fail "Could not uninstall ${REPO_NAME}."
-        return 1
-      fi
-
-      log_pass "Uninstalled ${REPO_NAME}."
-    }
-
-  #
-  # DESC: clean up
-  #
-    function reset_ifs
-    {
-      IFS="${SAVEIFS}"
-    }
-
-  #
-  # DESC: handlers
-  #
-    function catch_error
-    {
-      exit 1
-    }
-
-    function catch_exit
-    {
-      reset_ifs
-      return 0
-    }
-
-  #
-  # DESC: Arguments logic
+  # DESC:   Set the flags given the option passed.
+  # RETURN: If option is valid, return 0.
+  #         If not, return 1.
   #
     function get_option
     {
@@ -189,6 +122,10 @@
       return 0
     }
 
+  #
+  # DESC:   Print usage.
+  # RETURN: Always return 0.
+  #
     function print_usage
     {
       IFS=$'\n'
@@ -206,6 +143,82 @@
       unset IFS
       return 0
     }
+
+  #
+  # DESC:   Reset internal field separator.
+  # RETURN: Always return 0.
+  #
+    function reset_ifs
+    {
+      IFS="${SAVEIFS}"
+      return 0
+    }
+
+  #
+  # DESC:   Exit on error.
+  # RETURN: Always exit 1.
+  #
+    function catch_error
+    {
+      exit 1
+    }
+
+  #
+  # DESC:   Execute logic on exit.
+  # RETURN: Always return 0.
+  #
+    function catch_exit
+    {
+      reset_ifs
+      return 0
+    }
+
+  #
+  # DESC: loggers
+  #
+    #
+    # DESC:   Log the output as an error.
+    # $1:     the output as a string.
+    # RETURN: Always return 0.
+    #
+      function log_error
+      {
+        echo -e "${STR_PREFIX_ERROR}${1}" >&2
+        return 0
+      }
+
+    #
+    # DESC:   Log the output as a fail.
+    # $1:     the output as a string.
+    # RETURN: Always return 0.
+    #
+      function log_fail
+      {
+        echo -e "${STR_PREFIX_FAIL}${1}" >&2
+        return 0
+      }
+
+    #
+    # DESC:   Log the output as a fail.
+    # $1:     the output as a string.
+    # RETURN: Always return 0.
+    #
+      function log_output
+      {
+        echo -e "${STR_PREFIX_PROMPT}${1}" >&1
+        return 0
+      }
+
+    #
+    # DESC:   Log the output as a pass.
+    # $1:     the output as a string.
+    # RETURN: Always return 0.
+    #
+      function log_pass
+      {
+        echo -e "${STR_PREFIX_PASS}${1}" >&1
+        return 0
+      }
 
   #
   # DESC: compatibility checks
@@ -284,57 +297,73 @@
       return 1
     }
 
+
+
   #
-  # DESC: loggers
+  # DESC:   Prompt to install or uninstall.
+  # RETURN: If selected to install or uninstall, return 0.
+  #         If not, return 1.
   #
-    #
-    # DESC:   Log the output as an error.
-    # $1:     the output as a string.
-    # RETURN: Always return 0.
-    #
-      function log_error
-      {
-        echo -e "${STR_PREFIX_ERROR}${1}" >&2
+    function prompt_install
+    {
+      if "${DO_INSTALL}" \
+        || "${DO_UNINSTALL}"; then
         return 0
-      }
+      fi
 
-    #
-    # DESC:   Log the output as a fail.
-    # $1:     the output as a string.
-    # RETURN: Always return 0.
-    #
-      function log_fail
-      {
-        echo -e "${STR_PREFIX_FAIL}${1}" >&2
-        return 0
-      }
+      yes_no_prompt "Install '${REPO_NAME}'?"
 
-    #
-    # DESC:   Log the output as a fail.
-    # $1:     the output as a string.
-    # RETURN: Always return 0.
-    #
-      function log_output
-      {
-        echo -e "${STR_PREFIX_PROMPT}${1}" >&1
-        return 0
-      }
+      case "${?}" in
+        0 )
+          DO_INSTALL=true ;;
 
-    #
-    # DESC:   Log the output as a pass.
-    # $1:     the output as a string.
-    # RETURN: Always return 0.
-    #
-      function log_pass
-      {
-        echo -e "${STR_PREFIX_PASS}${1}" >&1
-        return 0
-      }
+        1 )
+          return 1 ;;
+
+        255 )
+          DO_UNINSTALL=true ;;
+      esac
+
+      return 0
+    }
+
+  #
+  # DESC:   Install.
+  # RETURN: If successful, return 0.
+  #         If not, return 1.
+  #
+    function install
+    {
+      if ! do_source_files_exist \
+        || ! create_destination_directories \
+        || ! copy_files_to_destination \
+        || ! set_destination_files_permissions; then
+        log_fail "Could not install ${REPO_NAME}."
+        return 1
+      fi
+
+      log_pass "Installed ${REPO_NAME}."
+    }
+
+  #
+  # DESC:   Uninstall.
+  # RETURN: If successful, return 0.
+  #         If not, return 1.
+  #
+    function uninstall
+    {
+      if ! delete_destination_files; then
+        log_fail "Could not uninstall ${REPO_NAME}."
+        return 1
+      fi
+
+      log_pass "Uninstalled ${REPO_NAME}."
+    }
 
     #
     # DESC:   Copy services to destination.
-    # RETURN: If true, return 0.
-    #         If false, return 1.
+    # RETURN: If successful, return 0.
+    #         If not, return 1.
     #
       function copy_files_to_destination
       {
@@ -351,8 +380,8 @@
 
     #
     # DESC:   Copy services to destination.
-    # RETURN: If true, return 0.
-    #         If false, return 1.
+    # RETURN: If successful, return 0.
+    #         If not, return 1.
     #
       function copy_binaries_to_destination
       {
@@ -373,8 +402,8 @@
 
     #
     # DESC:   Copy script to destination.
-    # RETURN: If true, return 0.
-    #         If false, return 1.
+    # RETURN: If successful, return 0.
+    #         If not, return 1.
     #
       function copy_scripts_to_destination
       {
@@ -399,8 +428,8 @@
 
     #
     # DESC:   Copy services to destination.
-    # RETURN: If true, return 0.
-    #         If false, return 1.
+    # RETURN: If successful, return 0.
+    #         If not, return 1.
     #
       function copy_services_to_destination
       {
@@ -434,6 +463,75 @@
         fi
 
         log_output "Files exist."
+        return 0
+      }
+
+    #
+    # DESC:   Delete destination files.
+    # RETURN: If successful, return 0.
+    #         If not, return 1.
+    #
+      function delete_destination_files
+      {
+        if ! delete_directory "${BIN_DEST_PATH}" \
+          || ! delete_directory "${SCRIPT_DEST_PATH}" \
+          || ! delete_destination_services; then
+          log_error "Could not delete one or more destination file(s)."
+          return 1
+        fi
+
+        log_output "Deleted destination files."
+        return 0
+      }
+
+    #
+    # DESC:   Delete directory.
+    # $1:     the directory as a string.
+    # RETURN: If successful, return 0.
+    #         If not, return 1.
+    #
+      function delete_directory
+      {
+        local -r str_directory="${1}"
+
+        if [[ -z "${str_directory}" ]] \
+          || [[ ! -d "${str_directory}" ]]; then
+          log_output "Directory is deleted."
+          return 0
+        fi
+
+        if ! rm --force --recursive "${str_directory}" &> /dev/null; then
+          log_error "Could not delete directory."
+          return 1
+        fi
+
+        log_output "Deleted directory."
+        return 0
+      }
+
+    #
+    # DESC:   Delete directory.
+    # RETURN: If successful, return 0.
+    #         If not, return 1.
+    #
+      function delete_destination_services
+      {
+        if [[ ! -d "${SERVICE_DEST_PATH}" ]]; then
+          log_output "Services are deleted."
+          return 0
+        fi
+
+        for str_service in "${SERVICE_LIST[@]}"; do
+          local str_service_name="$( basename "${str_service}" )"
+          local str_service_path="${SERVICE_DEST_PATH}${str_service_name}"
+
+          if ! rm --force --recursive "${str_service_path}" &> /dev/null; then
+            log_error "Could not delete service '${str_service_path}'."
+            return 1
+          fi
+        done
+
+        log_output "Deleted services."
         return 0
       }
 
