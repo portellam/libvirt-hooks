@@ -171,30 +171,36 @@ access to storage.
     - Virtualizing an untrusted or legacy OS (example: Windows XP).
 
 ### References
-*CPU pinning* Retrieved from
+#### *CPU pinning*
+&ensp;Retrieved from
 [PCI Passthrough via OVMF, Arch Linux Wiki][reference1].
 
 [reference1]: https://wiki.archlinux.org/title/PCI_passthrough_via_OVMF#CPU_pinning
 
-*Hooks for specific system management* Retrieved from [Libvirt.org][reference2].
+#### *Hooks for specific system management*
+&ensp;Retrieved from [Libvirt.org][reference2].
 
 [reference2]: https://libvirt.org/hooks.html
 
-*Huge memory pages* Retrieved from
+#### *Huge memory pages*
+&ensp;Retrieved from
 [PCI Passthrough via OVMF, Arch Linux Wiki][reference3].
 
 [reference3]: https://wiki.archlinux.org/title/PCI_passthrough_via_OVMF#Huge_memory_pages
 
-*Host_lockup_if_Guest_is_left_running_during_sleep* Retrieved from
+#### *Host lockup if Guest is left running during sleep*
+&ensp;Retrieved from
 [PCI Passthrough via OVMF, Arch Linux Wiki][reference4].
 
 [reference4]: https://wiki.archlinux.org/title/PCI_passthrough_via_OVMF#Host_lockup_if_Guest_is_left_running_during_sleep
 
-*VFIO-Tools* Retrieved from [PassthroughPOST, GitHub][reference5].
+#### *VFIO-Tools*
+&ensp;Retrieved from [PassthroughPOST, GitHub][reference5].
 
 [reference5]: https://github.com/PassthroughPOST/VFIO-Tools
 
-*VFIO - “Virtual Function I/O”* Retrieved from
+#### *VFIO - “Virtual Function I/O”*
+&ensp;Retrieved from
 [The Linux Kernel Archives][reference6].
 
 [reference6]: https://www.kernel.org/doc/html/latest/driver-api/vfio.html
