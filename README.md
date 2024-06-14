@@ -27,16 +27,10 @@ VM-specific. Develop your own!
   - [2. `beforeoff-dohibernate`](#2-beforeoff-dohibernate)
   - [3. `dohibernate`](#3-dohibernate)
   - [4. `virtual-nas`](#4-virtual-nas)
-- [References](#references)
-  - [Hook](#hook)
-  - [Hugepages](#hugepages)
-  - [`isolcpu`](#isolcpu)
-  - [`nosleep`](#nosleep)
-  - [VFIO](#vfio)
-  - [VFIO-Tools](#vfio-tools)
 - [Credits](#credits)
 - [Disclaimer](#disclaimer)
 - [Contact](#contact)
+- [References](#references)
 
 ## Contents
 ### Why?
@@ -76,9 +70,9 @@ for Guests.
 [github6]:   https://github.com/portellam/powerstate-virtmanager
 
 ### Documentation
-#### [What is VFIO?](#8)
-#### [VFIO Forum](#7)
-#### [PCI Passthrough Guide](#6)
+- [What is VFIO?](#8)
+- [VFIO Forum](#7)
+- [PCI Passthrough Guide](#6)
 
 ### Download
 - To download this script, you may:
