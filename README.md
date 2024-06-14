@@ -171,28 +171,26 @@ access to storage.
     - Virtualizing an untrusted or legacy OS (example: Windows XP).
 
 ### References
-<sub>*CPU pinning* Retrieved from</sub>
-<sub>[PCI Passthrough via OVMF, Arch Linux Wiki][reference1].</sub>
+*CPU pinning* Retrieved from
+[PCI Passthrough via OVMF, Arch Linux Wiki][reference1].
 [reference1]: https://wiki.archlinux.org/title/PCI_passthrough_via_OVMF#CPU_pinning
 
-<sub>*Hooks for specific system management* Retrieved from</sub>
-<sub>[Libvirt.org][reference2].</sub>
+*Hooks for specific system management* Retrieved from [Libvirt.org][reference2].
 [reference2]: https://libvirt.org/hooks.html
 
-<sub>*Huge memory pages* Retrieved from</sub>
-<sub>[PCI Passthrough via OVMF, Arch Linux Wiki][reference3].</sub>
+*Huge memory pages* Retrieved from
+[PCI Passthrough via OVMF, Arch Linux Wiki][reference3].
 [reference3]: https://wiki.archlinux.org/title/PCI_passthrough_via_OVMF#Huge_memory_pages
 
-<sub>*Host_lockup_if_Guest_is_left_running_during_sleep* Retrieved from</sub>
-<sub>[PCI Passthrough via OVMF, Arch Linux Wiki][reference4].</sub>
+*Host_lockup_if_Guest_is_left_running_during_sleep* Retrieved from
+[PCI Passthrough via OVMF, Arch Linux Wiki][reference4].
 [reference4]: https://wiki.archlinux.org/title/PCI_passthrough_via_OVMF#Host_lockup_if_Guest_is_left_running_during_sleep
 
-<sub>*VFIO-Tools* Retrieved from</sub>
-<sub>[PassthroughPOST, GitHub][reference5].</sub>
+*VFIO-Tools* Retrieved from [PassthroughPOST, GitHub][reference5].
 [reference5]: https://github.com/PassthroughPOST/VFIO-Tools
 
-<sub>*VFIO - “Virtual Function I/O”* Retrieved from</sub>
-<sub>[The Linux Kernel Archives][reference6].</sub>
+*VFIO - “Virtual Function I/O”* Retrieved from
+[The Linux Kernel Archives][reference6].
 [reference6]: https://www.kernel.org/doc/html/latest/driver-api/vfio.html
 
 ### Credits
