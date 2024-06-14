@@ -176,7 +176,8 @@ PCI Passthrough via OVMF, *CPU pinning* Retrieved from
 
 [reference1]: https://wiki.archlinux.org/title/PCI_passthrough_via_OVMF#CPU_pinning
 
-“PCI Passthrough via OVMF: CPU Pinning.” PCI passthrough via OVMF - ArchWiki. Accessed June 14, 2024. https://wiki.archlinux.org/title/PCI_passthrough_via_OVMF#CPU_pinning.
+**"CPU Pinning.”** PCI passthrough via OVMF - ArchWiki. Accessed June 14, 2024.
+[URL][reference1].
 
 *Hooks for specific system management* Retrieved from [Libvirt.org][reference2].
 
