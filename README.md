@@ -175,8 +175,7 @@ Did you encounter a bug? Do you need help? Please visit the
 ### References
 #### 1.
 **Calling libvirt functions from within a hook script**. Hooks for Specific System Management - libvirt. Accessed June 14, 2024.
-<sup>https://libvirt.org/hooks.html#calling-libvirt-functions-from-within-a-hook-script
-.</sup>
+<sup>https://libvirt.org/hooks.html#calling-libvirt-functions-from-within-a-hook-script.</sup>
 
 #### 2.
 **CPU Pinning**. PCI passthrough via OVMF - ArchWiki. Accessed June 14, 2024.
