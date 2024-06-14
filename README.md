@@ -172,23 +172,30 @@ access to storage.
 
 ### References
 **CPU Pinning.** PCI passthrough via OVMF - ArchWiki. Accessed June 14, 2024.
+
 &ensp;<sub>https://wiki.archlinux.org/title/PCI_passthrough_via_OVMF#CPU_pinning</sub>
 
 **Hooks for Specific System Management** libvirt. Accessed June 14, 2024.
+
 &ensp;<sub>https://libvirt.org/hooks.html.</sub>
 
 **Host lockup if Guest is left running during sleep.** PCI passthrough via OVMF
 ArchWiki. Accessed June 14, 2024.
+
 &ensp;<sub>https://wiki.archlinux.org/title/PCI_passthrough_via_OVMF#Host_lockup_if_Guest_is_left_running_during_sleep.</sub>
 
 **Huge memory pages.** PCI passthrough via OVMF - ArchWiki. Accessed June 14, 2024.
+
 &ensp;<sub>https://wiki.archlinux.org/title/PCI_passthrough_via_OVMF#Huge_memory_pages.</sub>
 
-**PassthroughPOST/VFIO-Tools: A Collection of Tools and Scripts That Aim to Make PCI Passthrough a Little Easier.** GitHub. Accessed June 14, 2024.
+**PassthroughPOST/VFIO-Tools: A Collection of Tools and Scripts That Aim to**
+**MakePCI Passthrough a Little Easier.** GitHub. Accessed June 14, 2024.
+
 &ensp;<sub>https://github.com/PassthroughPOST/VFIO-Tools.</sub>
 
 **VFIO - ‘Virtual Function I/O’ - The Linux Kernel Documentation.**
 The linux kernel. Accessed June 14, 2024.
+
 &ensp;<sub>https://www.kernel.org/doc/html/latest/driver-api/vfio.html.</sub>
 
 ### Credits
