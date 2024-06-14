@@ -128,8 +128,6 @@ To assist beginners (and others), included are some useful scripts for VMs.
 - Prevent Host sleep if Guest is running.
 - [Documentation](#3)
 
-[`nosleep`]: #5-nosleep
-
 #### 5. `dosleep`
 - Sleep Guest at Host sleep.
 - Stops [`nosleep`] service.
@@ -155,6 +153,8 @@ access to storage.
     - For Read-Write permissions: ensure file system integrity.
     - For Read-only permissions: preventing malware transmission.
     - Virtualizing an untrusted or legacy OS (example: Windows XP).
+
+[`nosleep`]: #5-nosleep
 
 ### Credits
 Some of what you see here is directly inspired by others' work, from either the
