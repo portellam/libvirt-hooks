@@ -173,10 +173,10 @@ access to storage.
 ### References
 <sub>*CPU pinning* Retrieved from</sub>
 <sub>[PCI Passthrough via OVMF, Arch Linux Wiki][reference1].</sub>
-[reference1]:https://wiki.archlinux.org/title/PCI_passthrough_via_OVMF#CPU_pinning
+[reference1]: https://wiki.archlinux.org/title/PCI_passthrough_via_OVMF#CPU_pinning
 
 <sub>*Hooks for specific system management* Retrieved from</sub>
-<sub>[link][reference2].</sub>
+<sub>[Libvirt.org][reference2].</sub>
 [reference2]: https://libvirt.org/hooks.html
 
 <sub>*Huge memory pages* Retrieved from</sub>
@@ -197,10 +197,10 @@ access to storage.
 
 ### Credits
 Some of what you see here is directly inspired by others' work, from either the
-[Arch Wiki] or the [Reddit forum].
+[Arch Linux Wiki] or the [Reddit forum].
 
-[Arch Wiki]: https://wiki.archlinux.org/title/PCI_passthrough_via_OVMF
-[Reddit forum]: https://old.reddit.com/r/VFIO
+[Arch Linux Wiki]:  https://wiki.archlinux.org/title/PCI_passthrough_via_OVMF
+[Reddit forum]:     https://old.reddit.com/r/VFIO
 
 ### Disclaimer
 Use at your own risk. As stated in [this article](#hook), avoid recursion in
