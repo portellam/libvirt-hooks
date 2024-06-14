@@ -201,7 +201,7 @@ ArchWiki. Accessed June 14, 2024.
 <sup>https://github.com/PassthroughPOST/VFIO-Tools.</sup>
 
 #### 7.
-**PCI passthrough via OVMF** ArchWiki. Accessed June 14, 2024.
+**PCI passthrough via OVMF**. ArchWiki. Accessed June 14, 2024.
 <sup>https://wiki.archlinux.org/title/PCI_passthrough_via_OVMF.</sup>
 
 #### 8.
