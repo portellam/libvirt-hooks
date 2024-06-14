@@ -1,7 +1,7 @@
 # Libvirt Hooks
 ### v1.0.1
 Install scripts (hooks) of which extend and enhance the functionality of Libvirt
-Virtual Machines (VM). Hooks may run at either VM start or stop, and be
+Virtual Machines (VMs). Hooks may run at either VM start or stop, and be
 VM-specific. Develop your own!
 
 **Download the Latest Release:**&ensp;[Codeberg][codeberg-releases],
@@ -111,8 +111,6 @@ To assist beginners (and others), included are some useful scripts for VMs.
   - The installer will place all project script files in `/usr/local/bin/`.
 
 ### Current Features
-References are either links to technical documentation or original sources.
-
 #### 1. `cfscpu`
 - Set CPU thread priority in CPU scheduler.
 - [Source](#6)
@@ -137,8 +135,6 @@ References are either links to technical documentation or original sources.
 - Stops [`nosleep`] service.
 
 ### Planned Features
-References are either links to technical documentation or original sources.
-
 #### 1. `ddcutil`
 - Switch active monitor input at VM start.
 - [Source](#6)
