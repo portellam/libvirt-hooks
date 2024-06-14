@@ -170,6 +170,13 @@ access to storage.
     - For Read-only permissions: preventing malware transmission.
     - Virtualizing an untrusted or legacy OS (example: Windows XP).
 
+### Credits
+Some of what you see here is directly inspired by others' work, from either the
+[Arch Linux Wiki] or the [Reddit forum].
+
+[Arch Linux Wiki]:  https://wiki.archlinux.org/title/PCI_passthrough_via_OVMF
+[Reddit forum]:     https://old.reddit.com/r/VFIO
+
 ### References
 **CPU Pinning.** PCI passthrough via OVMF - ArchWiki. Accessed June 14, 2024.
 <sup>https://wiki.archlinux.org/title/PCI_passthrough_via_OVMF#CPU_pinning</sup>
@@ -188,16 +195,16 @@ ArchWiki. Accessed June 14, 2024.
 **MakePCI Passthrough a Little Easier.** GitHub. Accessed June 14, 2024.
 <sup>https://github.com/PassthroughPOST/VFIO-Tools.</sup>
 
+**PCI passthrough via OVMF.** ArchWiki. Accessed June 14, 2024.
+<sup>https://wiki.archlinux.org/title/PCI_passthrough_via_OVMF</sup>
+
+**r/VFIO**. Accessed June 14, 2024.
+<sup>https://www.reddit.com/r/VFIO/.</sup>
+
 **VFIO - ‘Virtual Function I/O’ - The Linux Kernel Documentation.**
 The linux kernel. Accessed June 14, 2024.
 <sup>https://www.kernel.org/doc/html/latest/driver-api/vfio.html.</sup>
 
-### Credits
-Some of what you see here is directly inspired by others' work, from either the
-[Arch Linux Wiki] or the [Reddit forum].
-
-[Arch Linux Wiki]:  https://wiki.archlinux.org/title/PCI_passthrough_via_OVMF
-[Reddit forum]:     https://old.reddit.com/r/VFIO
 
 ### Disclaimer
 Use at your own risk. As stated in [this article](#hook), avoid recursion in
