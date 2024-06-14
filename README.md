@@ -171,36 +171,32 @@ access to storage.
     - Virtualizing an untrusted or legacy OS (example: Windows XP).
 
 ### References
-#### *CPU pinning*
-&ensp;Retrieved from
-[PCI Passthrough via OVMF, Arch Linux Wiki][reference1].
+PCI Passthrough via OVMF, *CPU pinning* Retrieved from
+[, Arch Linux Wiki][reference1].
 
 [reference1]: https://wiki.archlinux.org/title/PCI_passthrough_via_OVMF#CPU_pinning
 
-#### *Hooks for specific system management*
-&ensp;Retrieved from [Libvirt.org][reference2].
+“PCI Passthrough via OVMF: CPU Pinning.” PCI passthrough via OVMF - ArchWiki. Accessed June 14, 2024. https://wiki.archlinux.org/title/PCI_passthrough_via_OVMF#CPU_pinning.
+
+*Hooks for specific system management* Retrieved from [Libvirt.org][reference2].
 
 [reference2]: https://libvirt.org/hooks.html
 
-#### *Huge memory pages*
-&ensp;Retrieved from
+*Huge memory pages* Retrieved from
 [PCI Passthrough via OVMF, Arch Linux Wiki][reference3].
 
 [reference3]: https://wiki.archlinux.org/title/PCI_passthrough_via_OVMF#Huge_memory_pages
 
-#### *Host lockup if Guest is left running during sleep*
-&ensp;Retrieved from
+*Host lockup if Guest is left running during sleep* Retrieved from
 [PCI Passthrough via OVMF, Arch Linux Wiki][reference4].
 
 [reference4]: https://wiki.archlinux.org/title/PCI_passthrough_via_OVMF#Host_lockup_if_Guest_is_left_running_during_sleep
 
-#### *VFIO-Tools*
-&ensp;Retrieved from [PassthroughPOST, GitHub][reference5].
+*VFIO-Tools* Retrieved from [PassthroughPOST, GitHub][reference5].
 
 [reference5]: https://github.com/PassthroughPOST/VFIO-Tools
 
-#### *VFIO - “Virtual Function I/O”*
-&ensp;Retrieved from
+*VFIO - “Virtual Function I/O”* Retrieved from
 [The Linux Kernel Archives][reference6].
 
 [reference6]: https://www.kernel.org/doc/html/latest/driver-api/vfio.html
