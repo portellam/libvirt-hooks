@@ -28,7 +28,7 @@
 #
 # params
 #
-  OPERATION="${2}"
+  STR_OPERATION="${2}"
 
   #
   # DESC: append output
@@ -39,7 +39,7 @@
     PREFIX_PASS="${PREFIX_PROMPT}Success: "
     PREFIX_SKIP="${PREFIX_PROMPT}Skipped: "
 
-  FLAG_USE_HEX_MASKS=true
+  BOOL_USE_HEX_MASKS=true
   GUEST_THREADS_DELIM=""
   GUEST_THREADS_HEX=""
   HOST_THREADS_DELIM=""
@@ -59,8 +59,15 @@
       return 0
     fi
 
+    local str_cpu_thread_set_hex_mask="${1}"
+    local str_cpu_thread_set_delim="${2}"
+
     if ! get_cpu \
-      || ! release_or_reserve_cpu; then
+        "${str_cpu_thread_set_hex_mask}" \
+        "${str_cpu_thread_set_delim}" \
+      || ! release_or_reserve_cpu_threads \
+        "${str_cpu_thread_set_hex_mask}" \
+        "${str_cpu_thread_set_delim}"; then
       log_fail "${str_output}"
       return 1
     fi
@@ -133,11 +140,11 @@
     function are_values_not_empty
     {
       if ( \
-          "${FLAG_USE_HEX_MASKS}" \
+          "${BOOL_USE_HEX_MASKS}" \
           && are_hex_masks_not_empty \
           && are_thread_sets_not_empty \
         ) || ( \
-          ! "${FLAG_USE_HEX_MASKS}" \
+          ! "${BOOL_USE_HEX_MASKS}" \
           && are_thread_sets_not_empty \
         ); then
         return 0
@@ -181,8 +188,19 @@
   #
   # DESC: getters
   #
+
+  #
+  # DESC:   Get CPU threads.
+  # $1:     the CPU thread set hex mask as a string.
+  # $2:     the CPU thread set delim as a string.
+  # RETURN: If successful, return 0.
+  #         If not, return 1.
+  #
     function get_cpu
     {
+      local -r str_cpu_thread_set_hex_mask="${1}"
+      local -r str_cpu_thread_set_delim="${2}"
+
       are_values_not_empty &> /dev/null && return 0
 
       local -i cores_allocated_to_host=0
@@ -194,10 +212,6 @@
       local -i total_threads_count=$( \
         cat /proc/cpuinfo | grep "siblings" | uniq | grep -o "[0-9]\+" \
       )
-
-      if ! set_cores_allocated_to_host; then
-        return 1
-      fi
 
       local -a host_cores_list=( $( seq 0 $(( "${cores_allocated_to_host}" - 1 )) ) )
 
@@ -292,11 +306,17 @@
     }
 
   #
-  # DESC: Release/Reserve
+  # DESC:   Release CPU thread set hex mask.
+  # $1:     the CPU thread set hex mask as a string.
+  # RETURN: If successful, return 0.
+  #         If not, return 1.
   #
     function release_hex_mask
     {
-      if ! echo "${HOST_THREADS_HEX}" > /sys/bus/workqueue/devices/writeback/cpumask \
+      local -r str_cpu_thread_set_hex_mask="${1}"
+
+      if ! echo "${str_cpu_thread_set_hex_mask}" > \
+          /sys/bus/workqueue/devices/writeback/cpumask \
         || ! echo 0 > /sys/bus/workqueue/devices/writeback/numa; then
         log_error "Failed to release CPU mask to Host."
         return 1
@@ -306,136 +326,163 @@
       return 0
     }
 
-    function release_operation
-    {
-      if "${FLAG_USE_HEX_MASKS}" \
-        && ! release_hex_mask; then
-        return 1
-      fi
+    #
+    # DESC:   Execute reserve operation.
+    # RETURN: If successful, return 0.
+    #         If not, return 1.
+    #
+      function release_operation
+      {
+        if ! "${BOOL_USE_HEX_MASKS}"; then
+          return 0
+        fi
 
-      local -i last_thread_id=$( \
-        cat /proc/cpuinfo | grep "siblings" | uniq | grep -o "[0-9]\+" \
-      )
+        local -r str_cpu_thread_set_hex_mask="${1}"
 
-      (( last_thread_id-- ))
-      local release_cpu_set="0-${last_thread_id}"
-      release_thread_sets "${release_cpu_set}"
-    }
+        if release_hex_mask "${str_cpu_thread_set_hex_mask}"; then
+          return 1
+        fi
 
-    function release_thread_sets
-    {
-      local cpu_set="${1}"
+        local -i int_last_thread_id=$( \
+          cat /proc/cpuinfo | grep "siblings" | uniq | grep -o "[0-9]\+" \
+        )
 
-      if ! systemctl set-property --runtime -- system.slice AllowedCPUs="${cpu_set}" \
-        || ! systemctl set-property --runtime -- user.slice AllowedCPUs="${cpu_set}" \
-        || ! systemctl set-property --runtime -- \
-          init.scope AllowedCPUs="${cpu_set}"; then
-        log_error "Failed to release CPU threads to Host."
-        return 1
-      fi
+        (( int_last_thread_id-- ))
+        local str_cpu_thread_set_to_release_delim="0-${int_last_thread_id}"
 
-      log_output "Releasing CPU threads to Host."
-      return 0
-    }
+        if ! release_thread_set "${str_cpu_thread_set_to_release_delim}"; then
+          return 1
+        fi
 
-    function reserve_hex_mask
-    {
-      if ! echo "${GUEST_THREADS_HEX}" > \
-          /sys/bus/workqueue/devices/writeback/cpumask \
-        || ! echo 1 > /sys/bus/workqueue/devices/writeback/numa; then
-        log_error "Failed to reserve CPU mask to Libvirt domain(s)."
-        return 1
-      fi
+        return 0
+      }
 
-      log_output "Reserving CPU mask to Libvirt domain(s)."
-      return 0
-    }
+    #
+    # DESC:   Release or reserve CPU threads.
+    # $1:     the CPU thread set hex mask as a string.
+    # $2:     the CPU thread set delim as a string.
+    # RETURN: If successful, return 0.
+    #         If not, return 1.
+    #
+      function release_or_reserve_cpu_threads
+      {
+        local -r str_cpu_thread_set_hex_mask="${1}"
+        local -r str_cpu_thread_set_delim="${2}"
 
-    function reserve_operation
-    {
-      if "${FLAG_USE_HEX_MASKS}" \
-        || ! reserve_hex_mask \
-        || ! reserve_thread_sets; then
-        return 1
-      fi
+        case "${STR_OPERATION}" in
+          "release" )
+            if ! release_operation \
+              "${str_cpu_thread_set_hex_mask}" \
+              "${str_cpu_thread_set_delim}"; then
+              return 1
+            fi
+            ;;
 
-      return 0
-    }
+          "started" )
+            if ! reserve_operation \
+              "${str_cpu_thread_set_hex_mask}" \
+              "${str_cpu_thread_set_delim}"; then
+              return 1
+            fi
+            ;;
+        esac
 
-    function reserve_thread_sets
-    {
-      if ! systemctl set-property --runtime -- system.slice \
-          AllowedCPUs="${GUEST_THREADS_DELIM}" \
-        || ! systemctl set-property --runtime -- user.slice \
-          AllowedCPUs="${GUEST_THREADS_DELIM}" \
-        || ! systemctl set-property --runtime -- init.scope \
-          AllowedCPUs="${GUEST_THREADS_DELIM}"; then
-        log_error "Failed to reserve CPU threads to Libvirt domain(s)."
-        return 1
-      fi
+        return 0
+      }
 
-      log_output "Reserving CPU threads to Libvirt domain(s)."
-      return 0
-    }
+    #
+    # DESC:   Release CPU thread sets to Host.
+    # $1:     the CPU thread set delim as a string.
+    # RETURN: If successful, return 0.
+    #         If not, return 1.
+    #
+      function release_thread_set
+      {
+        local -r str_cpu_thread_set_delim="${1}"
 
-    function release_or_reserve_cpu
-    {
-      case "${OPERATION}" in
-        "started" | "release" )
-          if ! reserve_operation; then
-            return 1
-          fi
-          ;;
-      esac
+        if ! systemctl set-property --runtime -- system.slice \
+            AllowedCPUs="${str_cpu_thread_set_delim}" \
+          || ! systemctl set-property --runtime -- user.slice \
+            AllowedCPUs="${str_cpu_thread_set_delim}" \
+          || ! systemctl set-property --runtime -- init.scope \
+            AllowedCPUs="${str_cpu_thread_set_delim}"; then
+          log_error "Failed to release CPU threads to Host."
+          return 1
+        fi
 
-      return 0
-    }
+        log_output "Releasing CPU threads to Host."
+        return 0
+      }
 
-  #
-  # DESC: setters
-  #
-    function add_threads_to_lists
-    {
-      add_threads_to_host_list
-      add_threads_to_guest_list
-    }
+    #
+    # DESC:   Reserve CPU thread set hex mask.
+    # $1:     the CPU thread set hex mask as a string.
+    # RETURN: If successful, return 0.
+    #         If not, return 1.
+    #
+      function reserve_hex_mask
+      {
+        local -r str_cpu_thread_set_hex_mask="${1}"
 
-    function add_threads_to_guest_list
-    {
-      for core in ${guest_cores_list[@]}; do
-        get_thread_by_core_and_smt
-        guest_threads_list+=( "${thread}" )
-        guest_threads_delim_list+=( "${thread}" )
-      done
-    }
+        if ! echo "${str_cpu_thread_set_hex_mask}" > \
+            /sys/bus/workqueue/devices/writeback/cpumask \
+          || ! echo 1 > /sys/bus/workqueue/devices/writeback/numa; then
+          log_error "Failed to reserve CPU mask to Libvirt domain(s)."
+          return 1
+        fi
 
-    function add_threads_to_host_list
-    {
-      for core in ${host_cores_list[@]}; do
-        get_thread_by_core_and_smt
-        host_threads_list+=( "${thread}" )
-        host_threads_delim_list+=( "${thread}" )
-      done
+        log_output "Reserving CPU mask to Libvirt domain(s)."
+        return 0
+      }
 
-      return 0
-    }
+    #
+    # DESC:   Execute reserve operation.
+    # $1:     the CPU thread set hex mask as a string.
+    # $2:     the CPU thread set delim as a string.
+    # RETURN: If successful, return 0.
+    #         If not, return 1.
+    #
+      function reserve_operation
+      {
+        local -r str_cpu_thread_set_hex_mask="${1}"
+        local -r str_cpu_thread_set_delim="${2}"
 
-    function set_cores_allocated_to_host
-    {
-      if [[ "${total_cores_count}" -ge 4 ]]; then
-        cores_allocated_to_host=2
+        if ! "${BOOL_USE_HEX_MASKS}"; then
+          return 0
+        fi
 
-      elif [[ "${total_cores_count}" -le 3 ]] \
-        && [[ "${total_cores_count}" -ge 2 ]]; then
-        cores_allocated_to_host=1
+        if "${BOOL_USE_HEX_MASKS}" \
+          || ! reserve_hex_mask "${str_cpu_thread_set_hex_mask}" \
+          || ! reserve_thread_sets "${str_cpu_thread_set_delim}"; then
+          return 1
+        fi
 
-      else
-        log_error "Insufficient CPU cores. Minimum is two (2) cores."
-        return 1
-      fi
+        return 0
+      }
 
-      return 0
-    }
+    #
+    # DESC:   Reserve CPU thread sets to Libvirt domain(s).
+    # $1:     the CPU thread set delim as a string.
+    # RETURN: If successful, return 0.
+    #         If not, return 1.
+    #
+      function reserve_thread_sets
+      {
+        local -r str_cpu_thread_set_delim="${1}"
+
+        if ! systemctl set-property --runtime -- system.slice \
+            AllowedCPUs="${str_cpu_thread_set_delim}" \
+          || ! systemctl set-property --runtime -- user.slice \
+            AllowedCPUs="${str_cpu_thread_set_delim}" \
+          || ! systemctl set-property --runtime -- init.scope \
+            AllowedCPUs="${str_cpu_thread_set_delim}"; then
+          log_error "Failed to reserve CPU threads to Libvirt domain(s)."
+          return 1
+        fi
+
+        log_output "Reserving CPU threads to Libvirt domain(s)."
+        return 0
+      }
 
 #
 # main

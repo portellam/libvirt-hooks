@@ -2,12 +2,12 @@
 ### v1.0.1
 Install scripts (hooks) of which extend and enhance the functionality of Libvirt Virtual Machines (VM). Hooks may run at either VM start or stop, and be VM-specific. Develop your own!
 
-**[Latest release](/../../../releases/latest) | [View master branch...](/../../../tree/master)**
+**[Latest release](/../../releases/latest) | [View master branch...](/../../tree/master)**
 
 ### Related Projects
-**[Deploy VFIO](/../../../../deploy-VFIO)** | **[Auto X.Org](/../../../../auto-xorg)** | **[Generate Evdev](/../../../../generate-evdev)**
+**[Deploy VFIO](/../../../deploy-VFIO)** | **[Auto X.Org](/../../../auto-xorg)** | **[Generate Evdev](/../../../generate-evdev)**
 
-**[Guest Machine Guide](/../../../../guest-machine-guide)** | [Libvirt Hooks](/../../../../libvirt-hooks) | **[Power State Virtual Machine Manager](/../../../../powerstate-virtmanager)**
+**[Guest Machine Guide](/../../../guest-machine-guide)** | [Libvirt Hooks](/../../../libvirt-hooks) | **[Power State Virtual Machine Manager](/../../../powerstate-virtmanager)**
 
 ### Other Links
 **What is [VFIO?](#VFIO) | [VFIO Article](https://www.kernel.org/doc/html/latest/driver-api/vfio.html) | [VFIO Forum](https://old.reddit.com/r/VFIO) | [PCI Passthrough Guide](https://wiki.archlinux.org/title/PCI_passthrough_via_OVMF)**
@@ -49,7 +49,7 @@ To assist eager enthusiasts who wish to develop new Hooks, [see below](#how-to-d
 
 ### Download
 - To download this script, you may:
-  - Download the latest release [here](/../../../../deploy-vfio/releases/latest).
+  - Download the latest release [here](/../../../deploy-vfio/releases/latest).
   - Download the ZIP file:
     1. Viewing from the top of the repository's (current) webpage, click the drop-down icon:
       - `···` on Codeberg.
@@ -156,7 +156,7 @@ Some of what you see here is directly inspired by others' work, from either the 
 Use at your own risk. As stated in [this article](#hook), avoid recursion in your Hooks. This can lead to at worst a deadlock of all Guests or at best the failure of a single Guest to start.
 
 ### Contact
-Did you encounter a bug? Do you need help? Notice any dead links? Please contact by **raising an issue**<sup>[Codeberg](https://codeberg.org/portellam/libvirt-hooks/issues) [GitHub](/../../../../libvirt-hooks/issues)</sup> with the project itself.
+Did you encounter a bug? Do you need help? Notice any dead links? Please contact by **raising an issue**<sup>[Codeberg](https://codeberg.org/portellam/libvirt-hooks/issues) [GitHub](/../../../libvirt-hooks/issues)</sup> with the project itself.
 
 ## TODO:
 - [ ] what is the installer doing? Is `/usr/local/bin/` necessary? Maybe use it as an updater?
