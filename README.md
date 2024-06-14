@@ -1,8 +1,8 @@
 # Libvirt Hooks
 ### v1.0.1
 Install scripts (hooks) of which extend and enhance the functionality of Libvirt
-Virtual Machines (VMs). Hooks may run at either VM start or stop, and be
-VM-specific. Develop your own!
+Virtual Machines (VMs). Hooks may run at either VM start or stop, and/or be
+VM-specific. Develop your own, too!
 
 **Download the Latest Release:**&ensp;[Codeberg][codeberg-releases],
 [GitHub][github-releases]
