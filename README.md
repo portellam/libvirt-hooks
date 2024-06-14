@@ -174,34 +174,34 @@ Did you encounter a bug? Do you need help? Please visit the
 
 ### References
 #### 1.
-**Calling libvirt functions from within a hook script** Hooks for Specific System Management - libvirt. Accessed June 14, 2024.
+**Calling libvirt functions from within a hook script**. Hooks for Specific System Management - libvirt. Accessed June 14, 2024.
 <sup>https://libvirt.org/hooks.html#calling-libvirt-functions-from-within-a-hook-script
 .</sup>
 
 #### 2.
-**CPU Pinning.** PCI passthrough via OVMF - ArchWiki. Accessed June 14, 2024.
+**CPU Pinning**. PCI passthrough via OVMF - ArchWiki. Accessed June 14, 2024.
 <sup>https://wiki.archlinux.org/title/PCI_passthrough_via_OVMF#CPU_pinning.</sup>
 
 #### 3.
-**Hooks for Specific System Management** libvirt. Accessed June 14, 2024.
+**Hooks for Specific System Management**. libvirt. Accessed June 14, 2024.
 <sup>https://libvirt.org/hooks.html.</sup>
 
 #### 4.
-**Host lockup if Guest is left running during sleep.** PCI passthrough via OVMF
+**Host lockup if Guest is left running during sleep**. PCI passthrough via OVMF
 ArchWiki. Accessed June 14, 2024.
 <sup>https://wiki.archlinux.org/title/PCI_passthrough_via_OVMF#Host_lockup_if_Guest_is_left_running_during_sleep.</sup>
 
 #### 5.
-**Huge memory pages.** PCI passthrough via OVMF - ArchWiki. Accessed June 14, 2024.
+**Huge memory pages**. PCI passthrough via OVMF - ArchWiki. Accessed June 14, 2024.
 <sup>https://wiki.archlinux.org/title/PCI_passthrough_via_OVMF#Huge_memory_pages.</sup>
 
 #### 6.
 **PassthroughPOST/VFIO-Tools: A Collection of Tools and Scripts That Aim to**
-**MakePCI Passthrough a Little Easier.** GitHub. Accessed June 14, 2024.
+**MakePCI Passthrough a Little Easier**. GitHub. Accessed June 14, 2024.
 <sup>https://github.com/PassthroughPOST/VFIO-Tools.</sup>
 
 #### 7.
-**PCI passthrough via OVMF.** ArchWiki. Accessed June 14, 2024.
+**PCI passthrough via OVMF** ArchWiki. Accessed June 14, 2024.
 <sup>https://wiki.archlinux.org/title/PCI_passthrough_via_OVMF.</sup>
 
 #### 8.
@@ -209,6 +209,6 @@ ArchWiki. Accessed June 14, 2024.
 <sup>https://www.reddit.com/r/VFIO/.</sup>
 
 #### 9.
-**VFIO - ‘Virtual Function I/O’ - The Linux Kernel Documentation.**
+**VFIO - ‘Virtual Function I/O’ - The Linux Kernel Documentation**.
 The linux kernel. Accessed June 14, 2024.
 <sup>https://www.kernel.org/doc/html/latest/driver-api/vfio.html.</sup>
