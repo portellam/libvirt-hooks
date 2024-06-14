@@ -171,36 +171,25 @@ access to storage.
     - Virtualizing an untrusted or legacy OS (example: Windows XP).
 
 ### References
-PCI Passthrough via OVMF, *CPU pinning* Retrieved from
-[, Arch Linux Wiki][reference1].
+**CPU Pinning.** PCI passthrough via OVMF - ArchWiki. Accessed June 14, 2024.
+<sub>https://wiki.archlinux.org/title/PCI_passthrough_via_OVMF#CPU_pinning</sub>
 
-[reference1]: https://wiki.archlinux.org/title/PCI_passthrough_via_OVMF#CPU_pinning
+**Hooks for Specific System Management** libvirt. Accessed June 14, 2024.
+<sub>https://libvirt.org/hooks.html.</sub>
 
-**"CPU Pinning.”** PCI passthrough via OVMF - ArchWiki. Accessed June 14, 2024.
-[URL][reference1].
+**Host lockup if Guest is left running during sleep.** PCI passthrough via OVMF
+- ArchWiki. Accessed June 14, 2024.
+<sub>https://wiki.archlinux.org/title/PCI_passthrough_via_OVMF#Host_lockup_if_Guest_is_left_running_during_sleep.</sub>
 
-*Hooks for specific system management* Retrieved from [Libvirt.org][reference2].
+**Huge memory pages.** PCI passthrough via OVMF - ArchWiki. Accessed June 14, 2024.
+<sub>https://wiki.archlinux.org/title/PCI_passthrough_via_OVMF#Huge_memory_pages.</sub>
 
-[reference2]: https://libvirt.org/hooks.html
+**PassthroughPOST/VFIO-Tools: A Collection of Tools and Scripts That Aim to Make PCI Passthrough a Little Easier.** GitHub. Accessed June 14, 2024.
+<sub>https://github.com/PassthroughPOST/VFIO-Tools.</sub>
 
-*Huge memory pages* Retrieved from
-[PCI Passthrough via OVMF, Arch Linux Wiki][reference3].
-
-[reference3]: https://wiki.archlinux.org/title/PCI_passthrough_via_OVMF#Huge_memory_pages
-
-*Host lockup if Guest is left running during sleep* Retrieved from
-[PCI Passthrough via OVMF, Arch Linux Wiki][reference4].
-
-[reference4]: https://wiki.archlinux.org/title/PCI_passthrough_via_OVMF#Host_lockup_if_Guest_is_left_running_during_sleep
-
-*VFIO-Tools* Retrieved from [PassthroughPOST, GitHub][reference5].
-
-[reference5]: https://github.com/PassthroughPOST/VFIO-Tools
-
-*VFIO - “Virtual Function I/O”* Retrieved from
-[The Linux Kernel Archives][reference6].
-
-[reference6]: https://www.kernel.org/doc/html/latest/driver-api/vfio.html
+**VFIO - ‘Virtual Function I/O’ - The Linux Kernel Documentation.**
+The linux kernel. Accessed June 14, 2024.
+<sub>https://www.kernel.org/doc/html/latest/driver-api/vfio.html.</sub>
 
 ### Credits
 Some of what you see here is directly inspired by others' work, from either the
