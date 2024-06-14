@@ -1,5 +1,5 @@
 # Libvirt Hooks
-### v1.0.0
+### v1.0.1
 Install scripts (hooks) of which extend and enhance the functionality of Libvirt
 Virtual Machines (VM). Hooks may run at either VM start or stop, and be
 VM-specific. Develop your own!
@@ -76,11 +76,9 @@ for Guests.
 [github6]:   https://github.com/portellam/powerstate-virtmanager
 
 ### Documentation
-[VFIO article] | [VFIO forum] | [PCI Passthrough Guide]
-
-[VFIO Article]:          https://www.kernel.org/doc/html/latest/driver-api/vfio.html
-[VFIO Forum]:            https://old.reddit.com/r/VFIO
-[PCI Passthrough Guide]: https://wiki.archlinux.org/title/PCI_passthrough_via_OVMF
+#### [What is VFIO?](#8)
+#### [VFIO Forum](#7)
+#### [PCI Passthrough Guide](#6)
 
 ### Download
 - To download this script, you may:
@@ -132,34 +130,43 @@ for Guests.
 References are either links to technical documentation or original sources.
 
 #### 1. `cfscpu`
-- Set CPU thread priority in CPU scheduler.<sup>[6](#vfio-tools)</sup>
+- Set CPU thread priority in CPU scheduler.
+- [Source](#5)
 
 #### 2. `hugepages`
-- Allocate Host RAM to pages for Guest(s).<sup>[2](#hugepages)</sup> <sup>[6](#vfio-tools)</sup>
+- Allocate Host RAM to pages for Guest(s).
+- [Documentation](#4)
+- [Source](#5)
 
 #### 3. `isolcpu`
-- Isolate CPU threads from Host, to allocate to Guest(s).<sup>[3](#isolcpu)</sup> <sup>[6](#vfio-tools)</sup>
+- Isolate CPU threads from Host, to allocate to Guest(s).
+- [Documentation](#1)
+- [Source]
 
 #### 4. `nosleep`
-- Prevent Host sleep if Guest is running.<sup>[4](#nosleep)</sup>
+- Prevent Host sleep if Guest is running.
+- [Source]
+
+[`nosleep`]: #4-nosleep
 
 #### 5. `dosleep`
-- Sleep Guest at Host sleep.<sup>[4](#nosleep)</sup>
-- Stops `nosleep` service.
+- Sleep Guest at Host sleep.
+- Stops [`nosleep`] service.
 
 ### Planned Features
 References are either links to technical documentation or original sources.
 
 #### 1. `ddcutil`
-- Switch active monitor input at VM start.<sup>[6](#vfio-tools)</sup>
+- Switch active monitor input at VM start.
+- [Source](#5)
 
 #### 2. `beforeoff-dohibernate`
 - Hibernate Guest at Host shutdown.
-- Stops `nosleep` service.
+- Stops [`nosleep`] service.
 
 #### 3. `dohibernate`
 - Hibernate Guest at Host sleep.
-- Stops `nosleep` service.
+- Stops [`nosleep`] service.
 
 #### 4. `virtual-nas`
 - Share designated Host directory storage to Guest, on a file server over a
@@ -172,42 +179,10 @@ access to storage.
 
 ### Credits
 Some of what you see here is directly inspired by others' work, from either the
-[Arch Linux Wiki] or the [Reddit forum].
-
-[Arch Linux Wiki]:  https://wiki.archlinux.org/title/PCI_passthrough_via_OVMF
-[Reddit forum]:     https://old.reddit.com/r/VFIO
-
-### References
-**CPU Pinning.** PCI passthrough via OVMF - ArchWiki. Accessed June 14, 2024.
-<sup>https://wiki.archlinux.org/title/PCI_passthrough_via_OVMF#CPU_pinning</sup>
-
-**Hooks for Specific System Management** libvirt. Accessed June 14, 2024.
-<sup>https://libvirt.org/hooks.html.</sup>
-
-**Host lockup if Guest is left running during sleep.** PCI passthrough via OVMF
-ArchWiki. Accessed June 14, 2024.
-<sup>https://wiki.archlinux.org/title/PCI_passthrough_via_OVMF#Host_lockup_if_Guest_is_left_running_during_sleep.</sup>
-
-**Huge memory pages.** PCI passthrough via OVMF - ArchWiki. Accessed June 14, 2024.
-<sup>https://wiki.archlinux.org/title/PCI_passthrough_via_OVMF#Huge_memory_pages.</sup>
-
-**PassthroughPOST/VFIO-Tools: A Collection of Tools and Scripts That Aim to**
-**MakePCI Passthrough a Little Easier.** GitHub. Accessed June 14, 2024.
-<sup>https://github.com/PassthroughPOST/VFIO-Tools.</sup>
-
-**PCI passthrough via OVMF.** ArchWiki. Accessed June 14, 2024.
-<sup>https://wiki.archlinux.org/title/PCI_passthrough_via_OVMF</sup>
-
-**r/VFIO**. Accessed June 14, 2024.
-<sup>https://www.reddit.com/r/VFIO/.</sup>
-
-**VFIO - ‘Virtual Function I/O’ - The Linux Kernel Documentation.**
-The linux kernel. Accessed June 14, 2024.
-<sup>https://www.kernel.org/doc/html/latest/driver-api/vfio.html.</sup>
-
+[Arch Wiki](#6) or the [Reddit forum](#7).
 
 ### Disclaimer
-Use at your own risk. As stated in [this article](#hook), avoid recursion in
+Use at your own risk. As stated in [this article](#3), avoid recursion in
 your Hooks. This can lead to at worst a deadlock of the Host (and all Guests) or
 at best the failure of a single Guest to start.
 
@@ -217,3 +192,39 @@ Did you encounter a bug? Do you need help? Please visit the
 
 [codeberg-issues]: https://codeberg.org/portellam/libvirt-hooks/issues
 [github-issues]:   https://github.com/portellam/libvirt-hooks/issues
+
+### References
+#### 1.
+**CPU Pinning.** PCI passthrough via OVMF - ArchWiki. Accessed June 14, 2024.
+<sup>https://wiki.archlinux.org/title/PCI_passthrough_via_OVMF#CPU_pinning.</sup>
+
+#### 2.
+**Hooks for Specific System Management** libvirt. Accessed June 14, 2024.
+<sup>https://libvirt.org/hooks.html.</sup>
+
+#### 3.
+**Host lockup if Guest is left running during sleep.** PCI passthrough via OVMF
+ArchWiki. Accessed June 14, 2024.
+<sup>https://wiki.archlinux.org/title/PCI_passthrough_via_OVMF#Host_lockup_if_Guest_is_left_running_during_sleep.</sup>
+
+#### 4.
+**Huge memory pages.** PCI passthrough via OVMF - ArchWiki. Accessed June 14, 2024.
+<sup>https://wiki.archlinux.org/title/PCI_passthrough_via_OVMF#Huge_memory_pages.</sup>
+
+#### 5.
+**PassthroughPOST/VFIO-Tools: A Collection of Tools and Scripts That Aim to**
+**MakePCI Passthrough a Little Easier.** GitHub. Accessed June 14, 2024.
+<sup>https://github.com/PassthroughPOST/VFIO-Tools.</sup>
+
+#### 6.
+**PCI passthrough via OVMF.** ArchWiki. Accessed June 14, 2024.
+<sup>https://wiki.archlinux.org/title/PCI_passthrough_via_OVMF.</sup>
+
+#### 7.
+**r/VFIO**. Accessed June 14, 2024.
+<sup>https://www.reddit.com/r/VFIO/.</sup>
+
+#### 8.
+**VFIO - ‘Virtual Function I/O’ - The Linux Kernel Documentation.**
+The linux kernel. Accessed June 14, 2024.
+<sup>https://www.kernel.org/doc/html/latest/driver-api/vfio.html.</sup>
