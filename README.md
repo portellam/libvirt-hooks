@@ -173,8 +173,8 @@ Did you encounter a bug? Do you need help? Please visit the
 [github-issues]:   https://github.com/portellam/libvirt-hooks/issues
 
 ### References
-#### Calling libvirt functions from within a hook script.
-##### Hooks for Specific System Management - libvirt. Accessed June 14, 2024.
+#### 1.
+**Calling libvirt functions from within a hook script**. Hooks for Specific System Management - libvirt. Accessed June 14, 2024.
 <sup>https://libvirt.org/hooks.html#calling-libvirt-functions-from-within-a-hook-script
 .</sup>
 
