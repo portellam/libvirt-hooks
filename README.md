@@ -66,6 +66,9 @@ To assist beginners (and others), included are some useful scripts for VMs.
 
 ### Download
 - To download this script, you may:
+  - Download the Latest Release:&ensp;[Codeberg][codeberg-releases],
+[GitHub][github-releases]
+
   - Download the ZIP file:
     1. Viewing from the top of the repository's (current) webpage, click the
        drop-down icon:
