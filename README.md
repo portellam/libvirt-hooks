@@ -71,7 +71,9 @@ To assist beginners (and others), included are some useful scripts for VMs.
        drop-down icon:
       - `···` on Codeberg.
       - `<> Code ` on GitHub.
+
     2. Click `Download ZIP`. Save this file.
+
     3. Open the `.zip` file, then extract its contents.
 
   - Clone the repository:
@@ -85,13 +87,17 @@ To assist beginners (and others), included are some useful scripts for VMs.
         - `F8` and above are unused.
 
     2. Change your directory to your home folder or anywhere safe: `cd ~`
+
     3. Clone the repository:
       - `git clone https://www.codeberg.org/portellam/libvirt-hooks`
       - `git clone https://www.github.com/portellam/libvirt-hooks`
 
 - To make this script executable, you must:
   1. Open the CLI (see above).
-  2. Go to the directory of where the cloned/extracted repository folder is: `cd name_of_parent_folder/libvirt-hooks/`
+
+  2. Go to the directory of where the cloned/extracted repository folder is:
+  `cd name_of_parent_folder/libvirt-hooks/`
+
   3. Make the installer script file executable: `chmod +x installer.bash`
     - Do **not** make any other script files executable. The installer will perform
     this action.
@@ -174,7 +180,8 @@ Did you encounter a bug? Do you need help? Please visit the
 
 ### References
 #### 1.
-**Calling libvirt functions from within a hook script**. Hooks for Specific System Management - libvirt. Accessed June 14, 2024.
+**Calling libvirt functions from within a hook script**. Hooks for Specific
+System Management - libvirt. Accessed June 14, 2024.
 <sup>https://libvirt.org/hooks.html#calling-libvirt-functions-from-within-a-hook-script.</sup>
 
 #### 2.
@@ -191,7 +198,8 @@ ArchWiki. Accessed June 14, 2024.
 <sup>https://wiki.archlinux.org/title/PCI_passthrough_via_OVMF#Host_lockup_if_Guest_is_left_running_during_sleep.</sup>
 
 #### 5.
-**Huge memory pages**. PCI passthrough via OVMF - ArchWiki. Accessed June 14, 2024.
+**Huge memory pages**. PCI passthrough via OVMF - ArchWiki. Accessed June 14,
+2024.
 <sup>https://wiki.archlinux.org/title/PCI_passthrough_via_OVMF#Huge_memory_pages.</sup>
 
 #### 6.
