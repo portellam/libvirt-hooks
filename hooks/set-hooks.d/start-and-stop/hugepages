@@ -5,23 +5,21 @@
 # Description:    Reserve memory hugepages at start of Libvirt domain(s).
 # URL(s):         https://github.com/PassthroughPOST/VFIO-Tools
 # Author(s):      Sebastiaan <github.com/SharkWipf>
-# Maintainer(s):  Alex Portell <github.com/portellam>
+# Maintainer(s):  Alex Portell <codeberg.org/portellam> <github.com/portellam>
 # Version:        1.0.0
 #
 
 # <remarks>
 # This hook only needs to run on `prepare/begin`, not on stop.
 #
-# This hook will help free and compact memory to ease THP allocation.
-# QEMU VMs will use THP (Transparent HugePages) by default if enough
-# unfragmented memory can be found on startup. If your memory is very
-# fragmented, this may cause a slow VM startup (like a slowly responding
-# VM start button/command), and may cause QEMU to fall back to regular
-# memory pages, slowing down VM performance.
-# If you (suspect you) suffer from this, this hook will help ease THP
-# allocation so you don't need to resort to misexplained placebo scripts.
+# This hook will help free and compact memory to ease Transparent HugePages
+# allocation (THP). QEMU VMs will use THP  by default if enough unfragmented memory
+# can be found on startup. If your memory is very fragmented, this may cause a slow VM
+# startup (like a slowly responding VM start button/command), and may cause QEMU to
+# fall back to regular memory pages, slowing down VM performance. If you suspect you
+# suffer from this, this hook will help ease THP allocation so you don't need to
+# resort to less understood or placebo scripts.
 # </remarks>
-
 
 # <params>
   # <summary>Append output</summary>

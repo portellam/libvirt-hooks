@@ -5,7 +5,7 @@
 # Description:    Set the "nice level" of the Completely Fair Scheduler of vCPU threads.
 # URL(s):         https://github.com/PassthroughPOST/VFIO-Tools
 # Author(s):      Danny Lin <danny@kdrag0n.dev>
-# Maintainer(s):  Alex Portell <github.com/portellam>
+# Maintainer(s):  Alex Portell <codeberg.org/portellam> <github.com/portellam>
 # Version:        1.0.0
 #
 

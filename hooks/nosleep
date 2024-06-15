@@ -5,7 +5,7 @@
 # Description:    Prevent host sleep while libvirt domain is running.
 # URL(s):         https://web.archive.org/web/20220808031554/https://old.reddit.com/r/VFIO/comments/8ypedp/for_anyone_getting_issues_with_their_guest_when/
 # Author(s):      sm-Fifteen <reddit.com/u/sm-Fifteen>
-# Maintainer(s):  Alex Portell <github.com/portellam>
+# Maintainer(s):  Alex Portell <codeberg.org/portellam> <github.com/portellam>
 # Version:        1.0.0
 #
 
