@@ -5,7 +5,7 @@
 # Description:    Automatically switch monitor inputs when starting/stopping a libvirt domain.
 # URL(s):         https://github.com/PassthroughPOST/VFIO-Tools
 # Author(s):      Sebastiaan <github.com/SharkWipf>
-# Maintainer(s):  Alex Portell <github.com/portellam>
+# Maintainer(s):  Alex Portell <codeberg.org/portellam> <github.com/portellam>
 # Version:        1.0.0
 #
 

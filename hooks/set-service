@@ -3,8 +3,8 @@
 #
 # Filename:       /etc/libvirt/hooks/set-service
 # Description:    Source file. Start or stop given systemd service.
-# Author(s):      Alex Portell <github.com/portellam>
-# Maintainer(s):  Alex Portell <github.com/portellam>
+# Author(s):      Alex Portell <codeberg.org/portellam> <github.com/portellam>
+# Maintainer(s):  Alex Portell <codeberg.org/portellam> <github.com/portellam>
 # Version:        1.0.0
 #
 
