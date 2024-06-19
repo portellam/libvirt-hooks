@@ -62,7 +62,8 @@ To assist beginners (and others), included are some useful scripts for VMs.
 ### Documentation
 - [What is VFIO?](#9)
 - [VFIO Forum](#8)
-- [PCI Passthrough Guide](#7)
+- [Hardware-Passthrough Guide](#7)
+- [Virtual Machine XML Format Guide](#10)
 
 ### Download
 - To download this script, you may:
@@ -222,3 +223,7 @@ ArchWiki. Accessed June 14, 2024.
 **VFIO - ‘Virtual Function I/O’ - The Linux Kernel Documentation**.
 The linux kernel. Accessed June 14, 2024.
 <sup>https://www.kernel.org/doc/html/latest/driver-api/vfio.html.</sup>
+
+#### 10.
+**libvirt/libvirt - XML Design Format** GitHub. Accessed June 18, 2024.
+<sup>https://github.com/libvirt/libvirt/blob/master/docs/formatdomain.rst.</sup>
