@@ -85,8 +85,8 @@ Linux.
 - `QEMU`
 
 #### 4.3. Hardware
-IOMMU is supported (by the CPU) and enabled in the motherboard firmware (BIOS
-or UEFI).
+The following firmware options are supported and enabled (motherboard and CPU):
+- IOMMU
     - For AMD machines:&nbsp;`AMD-Vi`
     - For Intel machines:&ensp;&nbsp;`VT-d`
     - For ARM architectures:&nbsp;`SMMU`
