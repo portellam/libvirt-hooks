@@ -109,21 +109,21 @@ or UEFI).
   3. Open the `.zip` file, then extract its contents.
 
 - Clone the repository:
-  1. Open a Command Line Interface (CLI).
-- Open a console emulator (for Debian systems: Konsole).
+    1. Open a Command Line Interface (CLI).
+        - Open a console emulator (for Debian systems: Konsole).
 
-- Open a existing console: press `CTRL` + `ALT` + `F2`, `F3`, `F4`, `F5`,  or
-`F6`.
-    - **To return to the desktop,** press `CTRL` + `ALT` + `F7`.
-    - `F1` is reserved for debug output of the Linux kernel.
-    - `F7` is reserved for video output of the desktop environment.
-    - `F8` and above are unused.
+        - Open a existing console: press `CTRL` + `ALT` + `F2`, `F3`, `F4`, `F5`,  or
+        `F6`.
+            - **To return to the desktop,** press `CTRL` + `ALT` + `F7`.
+            - `F1` is reserved for debug output of the Linux kernel.
+            - `F7` is reserved for video output of the desktop environment.
+            - `F8` and above are unused.
 
-  2. Change your directory to your home folder or anywhere safe: `cd ~`
+    2. Change your directory to your home folder or anywhere safe: `cd ~`
 
-  3. Clone the repository:
-      - `git clone https://www.codeberg.org/portellam/libvirt-hooks`
-      - `git clone https://www.github.com/portellam/libvirt-hooks`
+    3. Clone the repository:
+        - `git clone https://www.codeberg.org/portellam/libvirt-hooks`
+        - `git clone https://www.github.com/portellam/libvirt-hooks`
 
 ### 6. Usage
 #### 6.1. Verify Installer is Executable
