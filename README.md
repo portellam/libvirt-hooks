@@ -94,13 +94,15 @@ or UEFI).
 ### 5. Download
 - Download the Latest Release:&ensp;[Codeberg][codeberg-releases],
 [GitHub][github-releases]
-- Download the ZIP file:
+
+- Download the `.zip` file:
     1. Viewing from the top of the repository's (current) webpage, click the
         drop-down icon:
         - `···` on Codeberg.
         - `<> Code ` on GitHub.
-    2. Click `Download ZIP`. Save this file.
+    2. Click `Download ZIP` and save.
     3. Open the `.zip` file, then extract its contents.
+
 - Clone the repository:
     1. Open a Command Line Interface (CLI).
         - Open a console emulator (for Debian systems: Konsole).
