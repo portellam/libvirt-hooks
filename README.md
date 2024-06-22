@@ -113,7 +113,7 @@ or UEFI).
             - `F7` is reserved for video output of the desktop environment.
             - `F8` and above are unused.
     2. Change your directory to your home folder or anywhere safe:
-    Example: `cd ~`
+        - `cd ~`
     3. Clone the repository:
         - `git clone https://www.codeberg.org/portellam/libvirt-hooks`
         - `git clone https://www.github.com/portellam/libvirt-hooks`
