@@ -232,8 +232,7 @@ ArchWiki. Accessed June 14, 2024.
 <sup>https://wiki.archlinux.org/title/PCI_passthrough_via_OVMF#Huge_memory_pages.</sup>
 
 #### 6.
-**PassthroughPOST/VFIO-Tools: A Collection of Tools and Scripts That Aim to**
-**MakePCI Passthrough a Little Easier**. GitHub. Accessed June 14, 2024.
+**PassthroughPOST/VFIO-Tools**. GitHub. Accessed June 14, 2024.
 <sup>https://github.com/PassthroughPOST/VFIO-Tools.</sup>
 
 #### 7.
