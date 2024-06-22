@@ -249,5 +249,5 @@ The linux kernel. Accessed June 14, 2024.
 <sup>https://www.reddit.com/r/VFIO/.</sup>
 
 #### 10.
-**XML Design Format** GitHub - libvirt/libvirt. Accessed June 18, 2024.
+**XML Design Format**. GitHub - libvirt/libvirt. Accessed June 18, 2024.
 <sup>https://github.com/libvirt/libvirt/blob/master/docs/formatdomain.rst.</sup>
