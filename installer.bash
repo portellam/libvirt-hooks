@@ -26,9 +26,9 @@
   # DESC: Color coding
   # Reference URL: 'https://www.shellhacks.com/bash-colors'
   #
-    SET_COLOR_GREEN='\033[0;32m'
-    SET_COLOR_RED='\033[0;31m'
-    SET_COLOR_YELLOW='\033[0;33m'
+    STR_SET_COLOR_GREEN='\033[0;32m'
+    STR_SET_COLOR_RED='\033[0;31m'
+    STR_SET_COLOR_YELLOW='\033[0;33m'
     STR_RESET_COLOR='\033[0m'
 
   #
@@ -36,12 +36,13 @@
   #
     STR_PREFIX_PROMPT="$( basename "${0}" ): "
 
-    STR_PREFIX_ERROR="${STR_PREFIX_PROMPT}${SET_COLOR_YELLOW}An error occurred:"\
+    STR_PREFIX_ERROR="${STR_PREFIX_PROMPT}${STR_SET_COLOR_YELLOW}"\
+      "An error occurred:${STR_RESET_COLOR} "
+
+    STR_PREFIX_FAIL="${STR_PREFIX_PROMPT}${STR_SET_COLOR_RED}Failure:"\
       "${STR_RESET_COLOR} "
 
-    STR_PREFIX_FAIL="${STR_PREFIX_PROMPT}${SET_COLOR_RED}Failure:${STR_RESET_COLOR} "
-
-    STR_PREFIX_PASS="${STR_PREFIX_PROMPT}${SET_COLOR_GREEN}Success:"\
+    STR_PREFIX_PASS="${STR_PREFIX_PROMPT}${STR_SET_COLOR_GREEN}Success:"\
       "${STR_RESET_COLOR} "
 
   declare -r STR_LIBVIRTD_SERVICE="libvirtd"
