@@ -157,7 +157,7 @@ your Hooks. This can lead to at worst a deadlock of the Host (and all Guests) or
 at best the failure of a single Guest to start.
 
 ### 10. Contact
-Wish to recommend a project? Do you need help? Please visit the [Issues][101] page.
+Do you need help? Please visit the [Issues][101] page.
 
 [101]: https://github.com/portellam/libvirt-hooks/issues
 
