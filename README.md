@@ -5,7 +5,7 @@ Virtual Machines (VMs). Hooks may run at either VM start or stop, and/or be
 VM-specific. Develop your own, too!
 
 ## [Download](#4-download)
-#### View this repository on [Codeberg][01], [GitHub][02].
+#### View this repository on [Codeberg][01] or [GitHub][02].
 [01]: https://codeberg.org/portellam/libvirt-hooks
 [02]: https://github.com/portellam/libvirt-hooks
 ##
@@ -49,7 +49,7 @@ or [GitHub][22].
 - Hardware-Passthrough Guide[<sup>[7]</sup>](#7)
 
 ### 4. Download
-- Download the Latest Release:&ensp;[Codeberg][51], [GitHub][52]
+- Download the Latest Release:&ensp;[Codeberg][51] or [GitHub][52].
 
 - Download the `.zip` file:
     1. Viewing from the top of the repository's (current) webpage, click the
